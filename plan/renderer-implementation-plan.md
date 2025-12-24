@@ -54,10 +54,10 @@ This plan covers the implementation of the Stage 1 C++ renderer for Platyplaty. 
 | TASK-0100 | Create `renderer/` directory for C++ source files                                                       | Done      | 2025-12-24 |
 | TASK-0200 | Create `build/` directory for compiled output (add to .gitignore)                                       | Done      | 2025-12-24 |
 | TASK-0300 | Create `presets/test/` directory and copy test presets from `reference/libprojectM-4.1.6/presets/tests/`| Done      | 2025-12-24 |
-| TASK-0400 | Create `Makefile` at project root with targets for building renderer                                    |           |      |
-| TASK-0500 | Configure Makefile to use pkg-config for projectM-4 and SDL2 flags                                      |           |      |
-| TASK-0600 | Configure Makefile with C++17 standard and warning flags (-Wall -Wextra -Wpedantic)                     |           |      |
-| TASK-0700 | Add `clean` target to Makefile                                                                          |           |      |
+| TASK-0400 | Create `Makefile` at project root with targets for building renderer                                    | Done      | 2025-12-24 |
+| TASK-0500 | Configure Makefile to use pkg-config for projectM-4 and SDL2 flags                                      | Done      | 2025-12-24 |
+| TASK-0600 | Configure Makefile with C++17 standard and warning flags (-Wall -Wextra -Wpedantic)                     | Done      | 2025-12-24 |
+| TASK-0700 | Add `clean` target to Makefile                                                                          | Done      | 2025-12-24 |
 
 ### Implementation Phase 2: Core Application Entry Point
 
