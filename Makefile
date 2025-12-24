@@ -55,6 +55,6 @@ clean:
 	find $(BUILD_DIR) -type f ! -name '.keep' -delete
 
 cppcheck-renderer:
-	cppcheck --enable=all --std=c++17 --inline-suppr $(SRC_DIR)
+	cppcheck --enable=all --std=c++17 --inline-suppr --suppress=missingIncludeSystem $(SRC_DIR)
 
 test-renderer: cppcheck-renderer
