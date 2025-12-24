@@ -120,15 +120,15 @@ This plan covers the implementation of the Stage 1 C++ renderer for Platyplaty. 
 
 | Task       | Description                                                                                             | Completed | Date |
 | ---------- | ------------------------------------------------------------------------------------------------------- | --------- | ---- |
-| TASK-4100 | Create `renderer/event_loop.hpp` declaring run_event_loop() function                                    |           |      |
-| TASK-4200 | Create `renderer/event_loop.cpp` implementing the render loop                                           |           |      |
-| TASK-4300 | Loop continues while shutdown flag is false                                                             |           |      |
-| TASK-4400 | Poll SDL events each frame via SDL_PollEvent                                                            |           |      |
-| TASK-4500 | Handle SDL_QUIT event by setting shutdown flag                                                          |           |      |
-| TASK-4600 | Handle SDL_WINDOWEVENT_SIZE_CHANGED by calling visualizer set_window_size() with new drawable size           |           |      |
-| TASK-4700 | Clear buffers with glClear(GL_COLOR_BUFFER_BIT \| GL_DEPTH_BUFFER_BIT)                                  |           |      |
-| TASK-4800 | Call visualizer render_frame()                                                                          |           |      |
-| TASK-4900 | Call window swap_buffers()                                                                              |           |      |
+| TASK-4100 | Create `renderer/event_loop.hpp` declaring run_event_loop() function                                    | Done      | 2025-12-24 |
+| TASK-4200 | Create `renderer/event_loop.cpp` implementing the render loop                                           | Done      | 2025-12-24 |
+| TASK-4300 | Loop continues while shutdown flag is false                                                             | Done      | 2025-12-24 |
+| TASK-4400 | Poll SDL events each frame via SDL_PollEvent                                                            | Done      | 2025-12-24 |
+| TASK-4500 | Handle SDL_QUIT event by setting shutdown flag                                                          | Done      | 2025-12-24 |
+| TASK-4600 | Handle SDL_WINDOWEVENT_SIZE_CHANGED by calling visualizer set_window_size() with new drawable size           | Done      | 2025-12-24 |
+| TASK-4700 | Clear buffers with glClear(GL_COLOR_BUFFER_BIT \| GL_DEPTH_BUFFER_BIT)                                  | Done      | 2025-12-24 |
+| TASK-4800 | Call visualizer render_frame()                                                                          | Done      | 2025-12-24 |
+| TASK-4900 | Call window swap_buffers()                                                                              | Done      | 2025-12-24 |
 
 ### Implementation Phase 6: Main Function Integration
 
