@@ -7,11 +7,8 @@
 
 namespace platyplaty {
 
-Visualizer::Visualizer(std::size_t width, std::size_t height) {
-    handle_ = projectm_create();
-    if (handle_ == nullptr) {
-        throw std::runtime_error("Failed to create projectM instance");
-    }
+Visualizer::Visualizer(std::size_t width, std::size_t height)
+    : handle_(create_projectm_instance()) {
 
     projectm_set_window_size(handle_, width, height);
     projectm_set_preset_locked(handle_, true);
@@ -64,6 +61,14 @@ void Visualizer::preset_switch_failed_callback(
     std::strncpy(self->error_buffer_, message, ERROR_BUFFER_SIZE - 1);
     self->error_buffer_[ERROR_BUFFER_SIZE - 1] = '\0';
     (void)preset_filename; // Unused parameter
+}
+
+projectm_handle Visualizer::create_projectm_instance() {
+    projectm_handle handle = projectm_create();
+    if (handle == nullptr) {
+        throw std::runtime_error("Failed to create projectM instance");
+    }
+    return handle;
 }
 
 } // namespace platyplaty

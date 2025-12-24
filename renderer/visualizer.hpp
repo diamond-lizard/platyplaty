@@ -49,6 +49,9 @@ private:
         const char* message,
         void* user_data);
 
+    // Helper to create projectM instance; throws on failure.
+    static projectm_handle create_projectm_instance();
+
     projectm_handle handle_{nullptr};
     static constexpr std::size_t ERROR_BUFFER_SIZE = 32768;
     char error_buffer_[ERROR_BUFFER_SIZE]{};
