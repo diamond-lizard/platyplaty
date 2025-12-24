@@ -45,4 +45,4 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 clean:
-	rm -rf $(BUILD_DIR)
+	find $(BUILD_DIR) -type f ! -name '.keep' -delete
