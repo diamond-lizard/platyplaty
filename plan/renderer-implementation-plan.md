@@ -78,20 +78,20 @@ This plan covers the implementation of the Stage 1 C++ renderer for Platyplaty. 
 
 | Task       | Description                                                                                             | Completed | Date |
 | ---------- | ------------------------------------------------------------------------------------------------------- | --------- | ---- |
-| TASK-1300 | Create `renderer/window.hpp` declaring Window class with RAII semantics                                 |           |      |
-| TASK-1400 | Create `renderer/window.cpp` implementing Window class                                                  |           |      |
-| TASK-1500 | Include `<SDL_opengl.h>` for portable OpenGL declarations (pkg-config provides include path)                                       |           |      |
-| TASK-1600 | Window constructor initializes SDL2 with SDL_INIT_VIDEO                                                 |           |      |
-| TASK-1700 | Request OpenGL 2.1 with SDL_GL_CONTEXT_PROFILE_CORE via SDL GL attributes; check return values and throw on failure                               |           |      |
-| TASK-1800 | Create window with flags: SDL_WINDOW_OPENGL, SDL_WINDOW_RESIZABLE, SDL_WINDOW_MAXIMIZED, SDL_WINDOW_ALLOW_HIGHDPI             |           |      |
-| TASK-1900 | Initial window size 1280x720 (fallback if maximize ignored), title "Platyplaty"                         |           |      |
-| TASK-2000 | Create OpenGL context via SDL_GL_CreateContext                                                          |           |      |
-| TASK-2100 | Throw std::runtime_error if SDL_Init, SDL_CreateWindow, or SDL_GL_CreateContext fails         |           |      |
-| TASK-2200 | Enable vsync: try adaptive vsync (-1), fall back to regular vsync (1)                                   |           |      |
-| TASK-2300 | Call glClearColor(0.0, 0.0, 0.0, 1.0) once during initialization                                        |           |      |
-| TASK-2400 | Window destructor cleans up OpenGL context and SDL window                                               |           |      |
-| TASK-2500 | Implement get_drawable_size() method using SDL_GL_GetDrawableSize for HiDPI support                     |           |      |
-| TASK-2600 | Implement swap_buffers() method wrapping SDL_GL_SwapWindow                                              |           |      |
+| TASK-1300 | Create `renderer/window.hpp` declaring Window class with RAII semantics                                 | Done      | 2025-12-24 |
+| TASK-1400 | Create `renderer/window.cpp` implementing Window class                                                  | Done      | 2025-12-24 |
+| TASK-1500 | Include `<SDL_opengl.h>` for portable OpenGL declarations (pkg-config provides include path)                                       | Done      | 2025-12-24 |
+| TASK-1600 | Window constructor initializes SDL2 with SDL_INIT_VIDEO                                                 | Done      | 2025-12-24 |
+| TASK-1700 | Request OpenGL 2.1 with SDL_GL_CONTEXT_PROFILE_CORE via SDL GL attributes; check return values and throw on failure                               | Done      | 2025-12-24 |
+| TASK-1800 | Create window with flags: SDL_WINDOW_OPENGL, SDL_WINDOW_RESIZABLE, SDL_WINDOW_MAXIMIZED, SDL_WINDOW_ALLOW_HIGHDPI             | Done      | 2025-12-24 |
+| TASK-1900 | Initial window size 1280x720 (fallback if maximize ignored), title "Platyplaty"                         | Done      | 2025-12-24 |
+| TASK-2000 | Create OpenGL context via SDL_GL_CreateContext                                                          | Done      | 2025-12-24 |
+| TASK-2100 | Throw std::runtime_error if SDL_Init, SDL_CreateWindow, or SDL_GL_CreateContext fails         | Done      | 2025-12-24 |
+| TASK-2200 | Enable vsync: try adaptive vsync (-1), fall back to regular vsync (1)                                   | Done      | 2025-12-24 |
+| TASK-2300 | Call glClearColor(0.0, 0.0, 0.0, 1.0) once during initialization                                        | Done      | 2025-12-24 |
+| TASK-2400 | Window destructor cleans up OpenGL context and SDL window                                               | Done      | 2025-12-24 |
+| TASK-2500 | Implement get_drawable_size() method using SDL_GL_GetDrawableSize for HiDPI support                     | Done      | 2025-12-24 |
+| TASK-2600 | Implement swap_buffers() method wrapping SDL_GL_SwapWindow                                              | Done      | 2025-12-24 |
 
 ### Implementation Phase 4: ProjectM Integration
 
