@@ -31,7 +31,7 @@ OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 # Target binary
 TARGET := $(BUILD_DIR)/platyplaty-renderer
 
-.PHONY: all clean
+.PHONY: all clean cppcheck-renderer
 
 all: $(TARGET)
 
@@ -46,3 +46,6 @@ $(BUILD_DIR):
 
 clean:
 	find $(BUILD_DIR) -type f ! -name '.keep' -delete
+
+cppcheck-renderer:
+	cppcheck --enable=all --std=c++17 $(SRC_DIR)
