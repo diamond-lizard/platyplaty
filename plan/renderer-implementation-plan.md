@@ -152,13 +152,13 @@ This plan covers the implementation of the Stage 1 C++ renderer for Platyplaty. 
 
 | Task       | Description                                                                                             | Completed | Date |
 | ---------- | ------------------------------------------------------------------------------------------------------- | --------- | ---- |
-| TASK-5900 | Build renderer with `make` and verify no compilation errors or warnings                                 |           |      |
-| TASK-6000 | Run renderer from project root and verify window appears maximized                                      |           |      |
-| TASK-6100 | Verify preset loads and animation displays (not just idle "M" logo)                                     |           |      |
-| TASK-6200 | Resize window and verify visualization adjusts to new size                                              |           |      |
-| TASK-6300 | Close window via window manager and verify clean exit (exit code 0)                                     |           |      |
-| TASK-6400 | Test Ctrl+C (SIGINT) and verify clean exit (exit code 0)                                                |           |      |
-| TASK-6500 | Test with missing preset file and verify warning printed, idle preset shown                             |           |      |
+| TASK-5900 | Build renderer with `make` and verify no compilation errors or warnings                                 | Done      | 2025-12-24 |
+| TASK-6000 | Run renderer from project root and verify window appears maximized                                      | Done      | 2025-12-24 |
+| TASK-6100 | Verify preset loads and animation displays (not just idle "M" logo)                                     | Done      | 2025-12-24 |
+| TASK-6200 | Resize window and verify visualization adjusts to new size                                              | Done      | 2025-12-24 |
+| TASK-6300 | Close window via window manager and verify clean exit (exit code 0)                                     | Done      | 2025-12-24 |
+| TASK-6400 | Test Ctrl+C (SIGINT) and verify clean exit (exit code 0)                                                | Done      | 2025-12-24 |
+| TASK-6500 | Test with missing preset file and verify warning printed, idle preset shown                             | Done      | 2025-12-24 |
 
 ## 3. Alternatives
 
