@@ -31,13 +31,14 @@ OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 # Target binary
 TARGET := $(BUILD_DIR)/platyplaty-renderer
 
-.PHONY: help renderer clean cppcheck-renderer
+.PHONY: help renderer clean cppcheck-renderer test-renderer
 
 help:
 	@echo "Available targets:"
 	@echo "  renderer          Build the platyplaty renderer"
 	@echo "  clean             Remove build artifacts"
 	@echo "  cppcheck-renderer Run cppcheck on renderer source"
+	@echo "  test-renderer     Run all renderer tests"
 
 renderer: $(TARGET)
 
@@ -55,3 +56,5 @@ clean:
 
 cppcheck-renderer:
 	cppcheck --enable=all --std=c++17 $(SRC_DIR)
+
+test-renderer: cppcheck-renderer
