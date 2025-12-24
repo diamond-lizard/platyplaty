@@ -20,6 +20,9 @@ SDL2_LIBS := $(shell pkg-config --libs sdl2)
 CFLAGS := $(CXXFLAGS) $(PROJECTM_CFLAGS) $(SDL2_CFLAGS)
 LDFLAGS := $(PROJECTM_LIBS) $(SDL2_LIBS)
 
+# cppcheck include paths for better type analysis
+CPPCHECK_INCLUDES := $(shell pkg-config --cflags-only-I sdl2 projectM-4)
+
 # Directories
 SRC_DIR := renderer
 BUILD_DIR := build
@@ -55,6 +58,6 @@ clean:
 	find $(BUILD_DIR) -type f ! -name '.keep' -delete
 
 cppcheck-renderer:
-	cppcheck --enable=all --std=c++17 --inline-suppr --suppress=missingIncludeSystem $(SRC_DIR)
+	cppcheck --enable=all --std=c++17 --inline-suppr --suppress=missingIncludeSystem $(CPPCHECK_INCLUDES) $(SRC_DIR)
 
 test-renderer: cppcheck-renderer
