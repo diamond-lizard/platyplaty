@@ -136,15 +136,15 @@ This plan covers the implementation of the Stage 1 C++ renderer for Platyplaty. 
 
 | Task       | Description                                                                                             | Completed | Date |
 | ---------- | ------------------------------------------------------------------------------------------------------- | --------- | ---- |
-| TASK-5000 | In main(), call signal setup function before any other initialization                                   |           |      |
-| TASK-5100 | Wrap initialization in try/catch block; create Window instance                                         |           |      |
-| TASK-5200 | Create Visualizer instance with drawable size from Window; exceptions propagate to catch block      |           |      |
-| TASK-5300 | Attempt to load hardcoded preset path `presets/test/101-per_frame.milk`                                 |           |      |
-| TASK-5400 | If preset load fails, print warning to stderr but continue with idle preset                             |           |      |
-| TASK-5500 | Query and set window size after window creation (handle maximize hint timing)                           |           |      |
-| TASK-5600 | Call run_event_loop() passing window and visualizer references                                          |           |      |
-| TASK-5700 | Return exit code 0 on clean shutdown                                                                    |           |      |
-| TASK-5800 | Catch block prints exception message to stderr and returns exit code 1                       |           |      |
+| TASK-5000 | In main(), call signal setup function before any other initialization                                   | Done      | 2025-12-24 |
+| TASK-5100 | Wrap initialization in try/catch block; create Window instance                                         | Done      | 2025-12-24 |
+| TASK-5200 | Create Visualizer instance with drawable size from Window; exceptions propagate to catch block      | Done      | 2025-12-24 |
+| TASK-5300 | Attempt to load hardcoded preset path `presets/test/101-per_frame.milk`                                 | Done      | 2025-12-24 |
+| TASK-5400 | If preset load fails, print warning to stderr but continue with idle preset                             | Done      | 2025-12-24 |
+| TASK-5500 | Query and set window size after window creation (handle maximize hint timing)                           | Done      | 2025-12-24 |
+| TASK-5600 | Call run_event_loop() passing window and visualizer references                                          | Done      | 2025-12-24 |
+| TASK-5700 | Return exit code 0 on clean shutdown                                                                    | Done      | 2025-12-24 |
+| TASK-5800 | Catch block prints exception message to stderr and returns exit code 1                       | Done      | 2025-12-24 |
 
 ### Implementation Phase 7: Testing and Validation
 
