@@ -58,6 +58,7 @@ This plan covers the implementation of the Stage 1 C++ renderer for Platyplaty. 
 | TASK-0500 | Configure Makefile to use pkg-config for projectM-4 and SDL2 flags                                      | Done      | 2025-12-24 |
 | TASK-0600 | Configure Makefile with C++17 standard and warning flags (-Wall -Wextra -Wpedantic)                     | Done      | 2025-12-24 |
 | TASK-0700 | Add `clean` target to Makefile                                                                          | Done      | 2025-12-24 |
+| TASK-0750 | Add README.md with build instructions and PKG_CONFIG_PATH docs                                  | Done      | 2025-12-24 |
 
 ### Implementation Phase 2: Core Application Entry Point
 
