@@ -13,7 +13,7 @@ namespace {
 
 void handle_window_event(
     const SDL_Event& event,
-    Window& window,
+    const Window& window,
     Visualizer& visualizer) {
     if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
         auto [width, height] = window.get_drawable_size();
