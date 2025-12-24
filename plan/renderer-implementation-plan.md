@@ -99,20 +99,20 @@ This plan covers the implementation of the Stage 1 C++ renderer for Platyplaty. 
 
 | Task       | Description                                                                                             | Completed | Date |
 | ---------- | ------------------------------------------------------------------------------------------------------- | --------- | ---- |
-| TASK-2700 | Create `renderer/visualizer.hpp` declaring Visualizer class wrapping projectM handle                    |           |      |
-| TASK-2800 | Create `renderer/visualizer.cpp` implementing Visualizer class                                          |           |      |
-| TASK-2900 | Visualizer constructor calls projectm_create() to create projectM instance                              |           |      |
-| TASK-3000 | Check for NULL return from projectm_create() and throw std::runtime_error on failure ("Failed to create projectM instance")                                |           |      |
-| TASK-3100 | Call projectm_set_window_size() with drawable dimensions immediately after creation                     |           |      |
-| TASK-3200 | Call projectm_set_preset_locked(true) to disable internal auto-advance                                  |           |      |
-| TASK-3300 | Visualizer destructor calls projectm_destroy() to clean up                                              |           |      |
-| TASK-3400 | Implement set_window_size() method wrapping projectm_set_window_size()                                  |           |      |
-| TASK-3500 | Implement render_frame() method calling projectm_opengl_render_frame()                                  |           |      |
-| TASK-3600 | Register projectm_preset_switch_failed_event callback at construction to capture parse errors |           |      |
-| TASK-3700 | Use fixed 32KB member buffer for error storage (callback uses user data pointer) (truncate if exceeded)                         |           |      |
-| TASK-3800 | Implement load_preset() method with filesystem existence check                                 |           |      |
-| TASK-3900 | Call projectm_load_preset_file() with smooth_transition=true                                   |           |      |
-| TASK-4000 | load_preset() returns success/failure status with error message string                         |           |      |
+| TASK-2700 | Create `renderer/visualizer.hpp` declaring Visualizer class wrapping projectM handle                    | Done      | 2025-12-24 |
+| TASK-2800 | Create `renderer/visualizer.cpp` implementing Visualizer class                                          | Done      | 2025-12-24 |
+| TASK-2900 | Visualizer constructor calls projectm_create() to create projectM instance                              | Done      | 2025-12-24 |
+| TASK-3000 | Check for NULL return from projectm_create() and throw std::runtime_error on failure ("Failed to create projectM instance")                                | Done      | 2025-12-24 |
+| TASK-3100 | Call projectm_set_window_size() with drawable dimensions immediately after creation                     | Done      | 2025-12-24 |
+| TASK-3200 | Call projectm_set_preset_locked(true) to disable internal auto-advance                                  | Done      | 2025-12-24 |
+| TASK-3300 | Visualizer destructor calls projectm_destroy() to clean up                                              | Done      | 2025-12-24 |
+| TASK-3400 | Implement set_window_size() method wrapping projectm_set_window_size()                                  | Done      | 2025-12-24 |
+| TASK-3500 | Implement render_frame() method calling projectm_opengl_render_frame()                                  | Done      | 2025-12-24 |
+| TASK-3600 | Register projectm_preset_switch_failed_event callback at construction to capture parse errors | Done      | 2025-12-24 |
+| TASK-3700 | Use fixed 32KB member buffer for error storage (callback uses user data pointer) (truncate if exceeded)                         | Done      | 2025-12-24 |
+| TASK-3800 | Implement load_preset() method with filesystem existence check                                 | Done      | 2025-12-24 |
+| TASK-3900 | Call projectm_load_preset_file() with smooth_transition=true                                   | Done      | 2025-12-24 |
+| TASK-4000 | load_preset() returns success/failure status with error message string                         | Done      | 2025-12-24 |
 
 ### Implementation Phase 5: Render Loop and Event Handling
 
