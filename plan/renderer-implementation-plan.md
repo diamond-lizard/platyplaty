@@ -66,11 +66,11 @@ This plan covers the implementation of the Stage 1 C++ renderer for Platyplaty. 
 
 | Task       | Description                                                                                             | Completed | Date |
 | ---------- | ------------------------------------------------------------------------------------------------------- | --------- | ---- |
-| TASK-0800 | Create `renderer/main.cpp` with main() function                                                         |           |      |
-| TASK-0900 | Implement SIGPIPE ignore at startup via signal(SIGPIPE, SIG_IGN)                                        |           |      |
-| TASK-1000 | Create `renderer/shutdown.hpp` declaring atomic shutdown flag and signal setup function                 |           |      |
-| TASK-1100 | Create `renderer/shutdown.cpp` implementing signal handlers for SIGINT, SIGTERM, SIGHUP                 |           |      |
-| TASK-1200 | Signal handlers must only set the atomic shutdown flag, no other operations                             |           |      |
+| TASK-0800 | Create `renderer/main.cpp` with main() function                                                         | Done      | 2025-12-24 |
+| TASK-0900 | Implement SIGPIPE ignore at startup via signal(SIGPIPE, SIG_IGN)                                        | Done      | 2025-12-24 |
+| TASK-1000 | Create `renderer/shutdown.hpp` declaring atomic shutdown flag and signal setup function                 | Done      | 2025-12-24 |
+| TASK-1100 | Create `renderer/shutdown.cpp` implementing signal handlers for SIGINT, SIGTERM, SIGHUP                 | Done      | 2025-12-24 |
+| TASK-1200 | Signal handlers must only set the atomic shutdown flag, no other operations                             | Done      | 2025-12-24 |
 
 ### Implementation Phase 3: SDL2 Window and OpenGL Context
 
