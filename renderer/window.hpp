@@ -30,7 +30,7 @@ public:
     // Get drawable size in pixels (for HiDPI support)
     std::pair<int, int> get_drawable_size() const;
 
-    // Get the raw SDL window pointer (unused in Stage 1; needed for Stage 2+ audio integration)
+    // cppcheck-suppress unusedFunction ; Stage 2+ scaffolding for audio integration
     SDL_Window* get_sdl_window() const { return window_; }
 
     // Swap OpenGL buffers

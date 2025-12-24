@@ -21,7 +21,7 @@ void handle_window_event(
     }
 }
 
-void process_events(Window& window, Visualizer& visualizer) {
+void process_events(const Window& window, Visualizer& visualizer) {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT) {
