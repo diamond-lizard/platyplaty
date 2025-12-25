@@ -37,6 +37,30 @@ const std::set<std::string>& allowed_fields(CommandType type) {
     }
 }
 
+std::string parse_audio_source(const nlohmann::json& j, Command& cmd) {
+    if (!j.contains("source") || !j["source"].is_string()) {
+        return "CHANGE AUDIO SOURCE requires 'source' string";
+    }
+    cmd.audio_source = j["source"].get<std::string>();
+    return "";
+}
+
+std::string parse_preset_path(const nlohmann::json& j, Command& cmd) {
+    if (!j.contains("path") || !j["path"].is_string()) {
+        return "LOAD PRESET requires 'path' string";
+    }
+    cmd.preset_path = j["path"].get<std::string>();
+    return "";
+}
+
+std::string parse_fullscreen(const nlohmann::json& j, Command& cmd) {
+    if (!j.contains("enabled") || !j["enabled"].is_boolean()) {
+        return "SET FULLSCREEN requires 'enabled' boolean";
+    }
+    cmd.fullscreen_enabled = j["enabled"].get<bool>();
+    return "";
+}
+
 }  // namespace
 
 CommandParseResult parse_command(const std::string& json_str) {
@@ -88,32 +112,23 @@ CommandParseResult parse_command(const std::string& json_str) {
     }
 
     // Parse command-specific fields
+    std::string field_error;
     switch (type) {
         case CommandType::CHANGE_AUDIO_SOURCE:
-            if (!j.contains("source") || !j["source"].is_string()) {
-                return {false, {}, "CHANGE AUDIO SOURCE requires 'source' string"};
-            }
-            cmd.audio_source = j["source"].get<std::string>();
+            field_error = parse_audio_source(j, cmd);
             break;
-
         case CommandType::LOAD_PRESET:
-            if (!j.contains("path") || !j["path"].is_string()) {
-                return {false, {}, "LOAD PRESET requires 'path' string"};
-            }
-            cmd.preset_path = j["path"].get<std::string>();
+            field_error = parse_preset_path(j, cmd);
             break;
-
         case CommandType::SET_FULLSCREEN:
-            if (!j.contains("enabled") || !j["enabled"].is_boolean()) {
-                return {false, {}, "SET FULLSCREEN requires 'enabled' boolean"};
-            }
-            cmd.fullscreen_enabled = j["enabled"].get<bool>();
+            field_error = parse_fullscreen(j, cmd);
             break;
-
         default:
             break;
     }
-
+    if (!field_error.empty()) {
+        return {false, {}, field_error};
+    }
     return {true, cmd, ""};
 }
 
