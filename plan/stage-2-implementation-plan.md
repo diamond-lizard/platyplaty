@@ -28,7 +28,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 - **REQ-0800**: Socket path resolution: `$XDG_RUNTIME_DIR/platyplaty.sock` > `$TEMPDIR/platyplaty-<uid>.sock` > `$TMPDIR/platyplaty-<uid>.sock` > `/tmp/platyplaty-<uid>.sock`
 - **REQ-0900**: `CHANGE AUDIO SOURCE` after `INIT` returns error response (rejected)
 - **REQ-1000**: Audio errors are fatal; audio thread sets shutdown flag and exits
-- **REQ-1100**: Socket errors (except clean EOF) are fatal; socket thread sets shutdown flag
+- **REQ-1100**: Socket errors and clean EOF both trigger shutdown; errors log to stderr, EOF exits silently
 - **REQ-1200**: Malformed netstrings cause client disconnect (fatal); malformed JSON returns error response (non-fatal)
 - **REQ-1300**: Missing `id` field or wrong parameter types cause client disconnect
 - **REQ-1400**: Unrecognized fields in commands cause client disconnect (catches typos)
@@ -40,7 +40,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 - **STY-0100**: Follow `reference/cppbestpractices-as-text.txt` for all C++ code
 - **STY-0200**: Follow `reference/generic-cpp-project-outline.org` for project structure
-- **STY-0300**: Files must be under 100 lines; split into focused modules if exceeded
+- **STY-0300**: Files should be under 100 lines; up to ~150 is acceptable for cohesive modules
 - **STY-0400**: Maximum 3 levels of indentation; use early returns and helper functions
 - **STY-0500**: Use RAII for all resource management
 - **STY-0600**: Use exceptions for initialization failures; constructors throw `std::runtime_error`
@@ -68,7 +68,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CRITICAL EDITING INSTRUCTIONS**: Before making ANY edits, read `.github/ed-non-interactive-guide.md` and follow it exactly. Make only ONE edit at a time. Edit files BOTTOM-UP (last line first). ALWAYS insert ALL leading whitespace programmatically using the documented techniques. Never type literal spaces or tabs for indentation.
 
-**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under 100 lines. Use RAII. Use `const` liberally. Prefer brace initialization.
+**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
 - GOAL-0100: Add JSON parsing capability and implement netstring framing
 
@@ -85,7 +85,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CRITICAL EDITING INSTRUCTIONS**: Before making ANY edits, read `.github/ed-non-interactive-guide.md` and follow it exactly. Make only ONE edit at a time. Edit files BOTTOM-UP (last line first). ALWAYS insert ALL leading whitespace programmatically using the documented techniques. Never type literal spaces or tabs for indentation.
 
-**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under 100 lines. Use RAII. Use `const` liberally. Prefer brace initialization.
+**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
 - GOAL-0200: Define command and response structures with JSON serialization
 
@@ -93,8 +93,8 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | ---- | ----------- | --------- | ---- |
 | TASK-0700 | Create `renderer/protocol.hpp`: define `enum class CommandType { CHANGE_AUDIO_SOURCE, INIT, LOAD_PRESET, SHOW_WINDOW, SET_FULLSCREEN, QUIT, UNKNOWN }` | | |
 | TASK-0800 | In `renderer/protocol.hpp`: define `struct Command { CommandType type; int id; std::string audio_source; std::string preset_path; bool fullscreen_enabled; }` with sensible defaults | | |
-| TASK-0900 | In `renderer/protocol.hpp`: define `struct Response { int id; bool success; std::string error; }` | | |
-| TASK-1000 | Create `renderer/protocol.cpp`: implement `ParseResult<Command> parse_command(const std::string& json)` using nlohmann/json; validate required fields, reject unknown fields | | |
+| TASK-0900 | In `renderer/protocol.hpp`: define `struct Response { int id; bool success; std::string error; }` and `struct CommandParseResult { bool success; Command command; std::string error; }` | | |
+| TASK-1000 | Create `renderer/protocol.cpp`: implement `CommandParseResult parse_command(const std::string& json)` using nlohmann/json; validate required fields, reject unknown fields | | |
 | TASK-1100 | In `renderer/protocol.cpp`: implement `std::string serialize_response(const Response& response)` | | |
 | TASK-1200 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
@@ -102,7 +102,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CRITICAL EDITING INSTRUCTIONS**: Before making ANY edits, read `.github/ed-non-interactive-guide.md` and follow it exactly. Make only ONE edit at a time. Edit files BOTTOM-UP (last line first). ALWAYS insert ALL leading whitespace programmatically using the documented techniques. Never type literal spaces or tabs for indentation.
 
-**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under 100 lines. Use RAII. Use `const` liberally. Prefer brace initialization.
+**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
 - GOAL-0300: Implement Unix domain socket server with RAII
 
@@ -113,14 +113,14 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | TASK-1500 | Create `renderer/server_socket.hpp`: declare RAII `ServerSocket` class with constructor taking path, `accept_client()` method, and `get_fd()` accessor | | |
 | TASK-1600 | Create `renderer/server_socket.cpp`: implement `ServerSocket` constructor (create, bind, listen); destructor (close, unlink); throw on failure | | |
 | TASK-1700 | Create `renderer/client_socket.hpp`: declare RAII `ClientSocket` class with `send()`, `recv()`, `get_fd()`, and `close()` methods | | |
-| TASK-1800 | Create `renderer/client_socket.cpp`: implement `ClientSocket` wrapping accepted fd; `send()` writes netstring; `recv()` reads with buffering | | |
+| TASK-1800 | Create `renderer/client_socket.cpp`: implement `ClientSocket` wrapping accepted fd; `send()` writes netstring; `recv()` buffers partial reads and returns complete netstring payloads | | |
 | TASK-1900 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 4: Create Command Slot for Thread Communication
 
 **CRITICAL EDITING INSTRUCTIONS**: Before making ANY edits, read `.github/ed-non-interactive-guide.md` and follow it exactly. Make only ONE edit at a time. Edit files BOTTOM-UP (last line first). ALWAYS insert ALL leading whitespace programmatically using the documented techniques. Never type literal spaces or tabs for indentation.
 
-**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under 100 lines. Use RAII. Use `const` liberally. Prefer brace initialization.
+**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
 - GOAL-0400: Implement single-slot command handoff between socket thread and main thread
 
@@ -137,7 +137,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CRITICAL EDITING INSTRUCTIONS**: Before making ANY edits, read `.github/ed-non-interactive-guide.md` and follow it exactly. Make only ONE edit at a time. Edit files BOTTOM-UP (last line first). ALWAYS insert ALL leading whitespace programmatically using the documented techniques. Never type literal spaces or tabs for indentation.
 
-**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under 100 lines. Use RAII. Use `const` liberally. Prefer brace initialization.
+**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
 - GOAL-0500: Implement socket thread that accepts one client and processes commands
 
@@ -155,26 +155,26 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CRITICAL EDITING INSTRUCTIONS**: Before making ANY edits, read `.github/ed-non-interactive-guide.md` and follow it exactly. Make only ONE edit at a time. Edit files BOTTOM-UP (last line first). ALWAYS insert ALL leading whitespace programmatically using the documented techniques. Never type literal spaces or tabs for indentation.
 
-**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under 100 lines. Use RAII. Use `const` liberally. Prefer brace initialization.
+**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
 - GOAL-0600: Implement PulseAudio capture with async API
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-3300 | Update Makefile: add `pkg-config --cflags --libs libpulse` to compiler/linker flags | | |
-| TASK-3400 | Create `renderer/audio_capture.hpp`: declare `AudioCapture` class with constructor taking source name and `projectm_handle`, `start()`/`stop()`/`join()` methods | | |
+| TASK-3400 | Create `renderer/audio_capture.hpp`: declare `AudioCapture` class with constructor taking source name and `Visualizer&`, `start()`/`stop()`/`join()` methods | | |
 | TASK-3500 | Create `renderer/audio_capture.cpp`: implement constructor - create PulseAudio mainloop, context; set up state callback | | |
 | TASK-3600 | In `renderer/audio_capture.cpp`: implement `start()` - connect context, create recording stream with 44100Hz stereo float32, ~735 sample buffer; spawn capture thread | | |
-| TASK-3700 | In `renderer/audio_capture.cpp`: implement capture thread - poll with ~100ms timeout, read samples, call `projectm_pcm_add_float()`, check shutdown flag | | |
+| TASK-3700 | In `renderer/audio_capture.cpp`: implement capture thread - poll with ~100ms timeout, read samples, call `Visualizer::add_audio_samples()`, check shutdown flag | | |
 | TASK-3800 | In `renderer/audio_capture.cpp`: implement `stop()` - set shutdown flag; `join()` - wait for thread; destructor - cleanup PulseAudio resources in reverse order | | |
-| TASK-3900 | In `renderer/audio_capture.cpp`: implement error handling - any PulseAudio error sets shutdown flag (fatal per REQ-1000) | | |
+| TASK-3900 | In `renderer/audio_capture.cpp`: implement error handling - any PulseAudio error sets global `g_shutdown_requested` flag (fatal per REQ-1000) | | |
 | TASK-4000 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 7: Refactor Main for Two-Phase Initialization
 
 **CRITICAL EDITING INSTRUCTIONS**: Before making ANY edits, read `.github/ed-non-interactive-guide.md` and follow it exactly. Make only ONE edit at a time. Edit files BOTTOM-UP (last line first). ALWAYS insert ALL leading whitespace programmatically using the documented techniques. Never type literal spaces or tabs for indentation.
 
-**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under 100 lines. Use RAII. Use `const` liberally. Prefer brace initialization.
+**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
 - GOAL-0700: Restructure main() for two-phase initialization and command processing
 
@@ -186,9 +186,9 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | TASK-4400 | In `main.cpp`: on `INIT` command - verify audio source was set (fatal if not), create Window, create Visualizer, create AudioCapture with stored source, respond success | | |
 | TASK-4500 | In `main.cpp`: modify event loop to check `CommandSlot` each frame; dispatch to command handler | | |
 | TASK-4600 | Create `renderer/command_handler.hpp`: declare `Response handle_command(const Command& cmd, Visualizer& viz, Window& win, bool& running)` | | |
-| TASK-4700 | Create `renderer/command_handler.cpp`: implement command dispatch - `LOAD_PRESET`, `SHOW_WINDOW`, `SET_FULLSCREEN`, `QUIT`; return appropriate responses | | |
+| TASK-4700 | Create `renderer/command_handler.cpp`: implement command dispatch - `LOAD_PRESET`, `SHOW_WINDOW`, `SET_FULLSCREEN`, `QUIT`; return error for `CHANGE_AUDIO_SOURCE` and `INIT` and `UNKNOWN` (invalid after initialization); return appropriate responses | | |
 | TASK-4800 | In `command_handler.cpp`: implement `LOAD_PRESET` - validate absolute path (disconnect if relative), delegate to `Visualizer::load_preset()` | | |
-| TASK-4900 | In `command_handler.cpp`: implement `SHOW_WINDOW` - call `SDL_ShowWindow()`, idempotent; `SET_FULLSCREEN` - error if window not visible, otherwise toggle | | |
+| TASK-4900 | In `command_handler.cpp`: implement `SHOW_WINDOW` - call `SDL_ShowWindow()`, idempotent; `SET_FULLSCREEN` - error if window not visible, otherwise set fullscreen state (idempotent) | | |
 | TASK-5000 | In `command_handler.cpp`: implement `QUIT` - set running=false, return success | | |
 | TASK-5100 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
@@ -196,7 +196,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CRITICAL EDITING INSTRUCTIONS**: Before making ANY edits, read `.github/ed-non-interactive-guide.md` and follow it exactly. Make only ONE edit at a time. Edit files BOTTOM-UP (last line first). ALWAYS insert ALL leading whitespace programmatically using the documented techniques. Never type literal spaces or tabs for indentation.
 
-**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under 100 lines. Use RAII. Use `const` liberally. Prefer brace initialization.
+**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
 - GOAL-0800: Ensure clean shutdown from all trigger sources
 
@@ -214,7 +214,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CRITICAL EDITING INSTRUCTIONS**: Before making ANY edits, read `.github/ed-non-interactive-guide.md` and follow it exactly. Make only ONE edit at a time. Edit files BOTTOM-UP (last line first). ALWAYS insert ALL leading whitespace programmatically using the documented techniques. Never type literal spaces or tabs for indentation.
 
-**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under 100 lines. Use RAII. Use `const` liberally. Prefer brace initialization.
+**CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
 - GOAL-0900: Verify complete Stage 2 functionality
 
@@ -223,7 +223,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | TASK-5900 | Create `bin/test-stage2.py`: simple Python script that connects to socket, sends CHANGE AUDIO SOURCE, INIT, LOAD PRESET, SHOW WINDOW, waits, sends QUIT | | |
 | TASK-6000 | Test error paths: missing CHANGE AUDIO SOURCE before INIT, unknown command, malformed JSON, invalid netstring | | |
 | TASK-6100 | Test audio: verify visualization responds to audio input from default sink monitor | | |
-| TASK-6200 | Verify all files are under 100 lines; split any that exceed | | |
+| TASK-6200 | Verify all files are under ~150 lines; split any that exceed unless cohesive | | |
 | TASK-6300 | Verify no more than 3 levels of indentation in any file | | |
 | TASK-6400 | Review all headers for proper include guards and minimal includes | | |
 | TASK-6500 | Run `make test-renderer` and fix any remaining issues | | |
@@ -270,9 +270,9 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 ### Modified Files
 
 - **FILE-2200**: `renderer/main.cpp` - Refactored for two-phase initialization
-- **FILE-2300**: `renderer/window.hpp` - Add `show()` and `set_fullscreen()` methods
-- **FILE-2400**: `renderer/window.cpp` - Implement new window control methods
-- **FILE-2500**: `renderer/visualizer.hpp` - Add projectm_handle accessor for audio thread
+- **FILE-2300**: `renderer/window.hpp` - Add `show()`, `set_fullscreen()`, and `is_visible()` methods with visibility tracking
+- **FILE-2400**: `renderer/window.cpp` - Implement new window control methods; add SDL_WINDOW_HIDDEN to initial flags
+- **FILE-2500**: `renderer/visualizer.hpp` - Add inline add_audio_samples() method for audio thread
 - **FILE-2600**: `Makefile` - Add libpulse to pkg-config flags
 
 ## 6. Testing
