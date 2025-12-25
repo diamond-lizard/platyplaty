@@ -55,6 +55,8 @@ private:
     projectm_handle handle_{nullptr};
     static constexpr std::size_t ERROR_BUFFER_SIZE = 32768;
     char error_buffer_[ERROR_BUFFER_SIZE]{};
+    std::size_t width_{0};
+    std::size_t height_{0};
 };
 
 } // namespace platyplaty

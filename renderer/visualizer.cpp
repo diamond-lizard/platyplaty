@@ -8,7 +8,9 @@
 namespace platyplaty {
 
 Visualizer::Visualizer(std::size_t width, std::size_t height)
-    : handle_(create_projectm_instance()) {
+    : handle_(create_projectm_instance()),
+      width_(width),
+      height_(height) {
 
     projectm_set_window_size(handle_, width, height);
     projectm_set_preset_locked(handle_, true);
@@ -24,6 +26,11 @@ Visualizer::~Visualizer() {
 }
 
 void Visualizer::set_window_size(std::size_t width, std::size_t height) {
+    if (width == width_ && height == height_) {
+        return;
+    }
+    width_ = width;
+    height_ = height;
     projectm_set_window_size(handle_, width, height);
 }
 
