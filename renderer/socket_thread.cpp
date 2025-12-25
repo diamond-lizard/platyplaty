@@ -14,6 +14,8 @@ namespace platyplaty {
 
 namespace {
 
+constexpr int kPollTimeoutMs = 100;
+
 // Reject a pending connection on the server socket (defensive).
 void reject_second_client(ServerSocket& server) {
     int second_fd = server.accept_client();
@@ -60,7 +62,7 @@ void SocketThread::thread_main() {
         pfd.fd = m_server.get_fd();
         pfd.events = POLLIN;
 
-        int ret = poll(&pfd, 1, 100);
+        int ret = poll(&pfd, 1, kPollTimeoutMs);
         if (ret < 0 && errno != EINTR) {
             break;
         }
@@ -92,7 +94,7 @@ bool SocketThread::process_message(ClientSocket& client) {
     m_slot.put_command(std::move(result.command));
 
     Response resp;
-    if (!m_slot.wait_for_response(resp, std::chrono::milliseconds(100))) {
+    if (!m_slot.wait_for_response(resp, std::chrono::milliseconds(kPollTimeoutMs))) {
         return true;
     }
     if (!client.send(serialize_response(resp))) {
@@ -110,7 +112,7 @@ bool SocketThread::poll_and_process(ClientSocket& client) {
     pfds[1].fd = client.get_fd();
     pfds[1].events = POLLIN;
 
-    int ret = poll(pfds, 2, 100);
+    int ret = poll(pfds, 2, kPollTimeoutMs);
     if (ret < 0 && errno != EINTR) {
         return false;
     }
