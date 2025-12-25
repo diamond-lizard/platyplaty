@@ -35,7 +35,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 - **REQ-1400**: Unrecognized fields in commands return error response (catches typos; no disconnect)
 - **REQ-1500**: Zero-length netstrings rejected with error response before JSON parsing
 - **REQ-1600**: Relative paths in `LOAD PRESET` return error response (no disconnect)
-- **REQ-1700**: nlohmann/json library vendored at `renderer/vendor/nlohmann/json.hpp`
+- **REQ-1700**: nlohmann/json library installed via system package (e.g., `json-c++` on Void Linux)
 
 ### Code Style Requirements
 
@@ -99,7 +99,7 @@ On failure, `data` is omitted and `error` contains the error message string.
 
 ## 2. Implementation Steps
 
-### Implementation Phase 1: Vendor nlohmann/json and Create Netstring Module
+### Implementation Phase 1: Install nlohmann/json and Create Netstring Module
 
 **CRITICAL EDITING INSTRUCTIONS**: Before making ANY edits, read `.github/ed-non-interactive-guide.md` and follow it exactly. Make only ONE edit at a time. Edit files BOTTOM-UP (last line first). ALWAYS insert ALL leading whitespace programmatically using the documented techniques. Never type literal spaces or tabs for indentation.
 
@@ -109,7 +109,7 @@ On failure, `data` is omitted and `error` contains the error message string.
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-0100 | Download nlohmann/json single-header (v3.11.3) to `renderer/vendor/nlohmann/json.hpp`; add version comment at top of file | | |
+| TASK-0100 | Install system package `json-c++` (Void Linux) or equivalent nlohmann/json package for your distribution | | |
 | TASK-0200 | Create `renderer/netstring.hpp`: declare `struct NetstringParseResult { bool success; std::string payload; std::string error; }` and parsing/serialization function signatures | | |
 | TASK-0300 | Create `renderer/netstring.cpp`: implement `NetstringParseResult parse_netstring(const std::string& input, std::size_t& bytes_consumed)` with validation (max 5 digits, no leading zeros, max 64KB payload) | | |
 | TASK-0400 | Implement `std::string serialize_netstring(const std::string& payload)` in `renderer/netstring.cpp` | | |
@@ -277,8 +277,7 @@ On failure, `data` is omitted and `error` contains the error message string.
 - **ALT-400**: Using CMake instead of Makefile - deferred; current Makefile is simple and sufficient for MVP
 
 ## 4. Dependencies
-
-- **DEP-100**: nlohmann/json (v3.11.3) - vendored single header at `renderer/vendor/nlohmann/json.hpp`
+- **DEP-100**: nlohmann/json (v3.11.3) - system package `json-c++` (Void Linux), include via `<nlohmann/json.hpp>`
 - **DEP-200**: libpulse (PulseAudio client library) - system package, linked via pkg-config
 - **DEP-300**: Stage 1 components (Window, Visualizer, shutdown, event_loop) - must remain functional
 
@@ -286,7 +285,6 @@ On failure, `data` is omitted and `error` contains the error message string.
 
 ### New Files
 
-- **FILE-0100**: `renderer/vendor/nlohmann/json.hpp` - Vendored JSON library
 - **FILE-0200**: `renderer/netstring.hpp` - Netstring parsing/serialization declarations
 - **FILE-0300**: `renderer/netstring.cpp` - Netstring implementation
 - **FILE-0400**: `renderer/protocol.hpp` - Command/Response type declarations
