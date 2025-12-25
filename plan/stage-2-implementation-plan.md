@@ -160,12 +160,12 @@ On failure, `data` is omitted and `error` contains the error message string.
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-1800 | Create `renderer/command_slot.hpp`: declare `CommandSlot` class with `std::mutex`, `std::condition_variable`, `std::optional<Command>`, and `std::optional<Response>` | | |
-| TASK-1900 | In `renderer/command_slot.hpp`: declare methods `void put_command(Command cmd)`, `std::optional<Command> try_get_command()`, `void put_response(Response resp)`, `bool wait_for_response(Response& out, std::chrono::milliseconds timeout)` | | |
-| TASK-2000 | Create `renderer/command_slot.cpp`: implement `put_command()` - sets command, notifies CV; blocks until response arrives or shutdown | | |
-| TASK-2100 | In `renderer/command_slot.cpp`: implement `try_get_command()` - non-blocking check for pending command | | |
-| TASK-2200 | In `renderer/command_slot.cpp`: implement `put_response()` and `wait_for_response()` with ~100ms timeout for shutdown responsiveness | | |
-| TASK-2300 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-1800 | Create `renderer/command_slot.hpp`: declare `CommandSlot` class with `std::mutex`, `std::condition_variable`, `std::optional<Command>`, and `std::optional<Response>` | Yes | 2025-12-25 |
+| TASK-1900 | In `renderer/command_slot.hpp`: declare methods `void put_command(Command cmd)`, `std::optional<Command> try_get_command()`, `void put_response(Response resp)`, `bool wait_for_response(Response& out, std::chrono::milliseconds timeout)` | Yes | 2025-12-25 |
+| TASK-2000 | Create `renderer/command_slot.cpp`: implement `put_command()` - sets command, notifies CV; blocks until response arrives or shutdown | Yes | 2025-12-25 |
+| TASK-2100 | In `renderer/command_slot.cpp`: implement `try_get_command()` - non-blocking check for pending command | Yes | 2025-12-25 |
+| TASK-2200 | In `renderer/command_slot.cpp`: implement `put_response()` and `wait_for_response()` with ~100ms timeout for shutdown responsiveness | Yes | 2025-12-25 |
+| TASK-2300 | Run `make test-renderer` and fix any issues revealed by cppcheck | Yes | 2025-12-25 |
 
 ### Implementation Phase 5: Create Socket Thread
 
