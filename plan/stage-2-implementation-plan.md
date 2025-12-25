@@ -51,16 +51,16 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 ### Constraints
 
-- **CON-0100**: Must use installed libprojectM from `/usr/local/apps/libprojectm/` via pkg-config
-- **CON-0200**: Must not include or build against reference source tree
-- **CON-0300**: Stage 1 functionality must continue to work during development
-- **CON-0400**: Renderer stdout reserved for protocol messages (`SOCKET READY`); diagnostics go to stderr
+- **CON-100**: Must use installed libprojectM from `/usr/local/apps/libprojectm/` via pkg-config
+- **CON-200**: Must not include or build against reference source tree
+- **CON-300**: Stage 1 functionality must continue to work during development
+- **CON-400**: Renderer stdout reserved for protocol messages (`SOCKET READY`); diagnostics go to stderr
 
 ### Guidelines
 
-- **GUD-0100**: Test incrementally after each component
-- **GUD-0200**: Keep socket thread and audio thread logic minimal; delegate to main thread
-- **GUD-0300**: Use atomic shutdown flag pattern established in Stage 1
+- **GUD-100**: Test incrementally after each component
+- **GUD-200**: Keep socket thread and audio thread logic minimal; delegate to main thread
+- **GUD-300**: Use atomic shutdown flag pattern established in Stage 1
 
 ## 2. Implementation Steps
 
@@ -70,7 +70,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
-- GOAL-0100: Add JSON parsing capability and implement netstring framing
+- GOAL-100: Add JSON parsing capability and implement netstring framing
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
@@ -87,7 +87,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
-- GOAL-0200: Define command and response structures with JSON serialization
+- GOAL-200: Define command and response structures with JSON serialization
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
@@ -104,7 +104,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
-- GOAL-0300: Implement Unix domain socket server with RAII
+- GOAL-300: Implement Unix domain socket server with RAII
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
@@ -122,7 +122,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
-- GOAL-0400: Implement single-slot command handoff between socket thread and main thread
+- GOAL-400: Implement single-slot command handoff between socket thread and main thread
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
@@ -139,7 +139,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
-- GOAL-0500: Implement socket thread that accepts one client and processes commands
+- GOAL-500: Implement socket thread that accepts one client and processes commands
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
@@ -157,7 +157,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
-- GOAL-0600: Implement PulseAudio capture with async API
+- GOAL-600: Implement PulseAudio capture with async API
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
@@ -176,7 +176,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
-- GOAL-0700: Restructure main() for two-phase initialization and command processing
+- GOAL-700: Restructure main() for two-phase initialization and command processing
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
@@ -198,7 +198,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
-- GOAL-0800: Ensure clean shutdown from all trigger sources
+- GOAL-800: Ensure clean shutdown from all trigger sources
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
@@ -216,7 +216,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 **CODE STYLE**: Follow `reference/cppbestpractices-as-text.txt` and `reference/generic-cpp-project-outline.org` strictly. Keep files under ~150 lines (100 preferred). Use RAII. Use `const` liberally. Prefer brace initialization.
 
-- GOAL-0900: Verify complete Stage 2 functionality
+- GOAL-900: Verify complete Stage 2 functionality
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
@@ -230,16 +230,16 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 ## 3. Alternatives
 
-- **ALT-0100**: Using a command queue instead of single slot - rejected because the synchronous protocol guarantees at most one pending command; a queue adds unnecessary complexity
-- **ALT-0200**: Using synchronous PulseAudio API - rejected because it blocks and doesn't integrate well with the threaded architecture
-- **ALT-0300**: Using ZeroMQ or other message library for IPC - rejected to minimize dependencies; Unix domain sockets with netstrings are simple and sufficient
-- **ALT-0400**: Using CMake instead of Makefile - deferred; current Makefile is simple and sufficient for MVP
+- **ALT-100**: Using a command queue instead of single slot - rejected because the synchronous protocol guarantees at most one pending command; a queue adds unnecessary complexity
+- **ALT-200**: Using synchronous PulseAudio API - rejected because it blocks and doesn't integrate well with the threaded architecture
+- **ALT-300**: Using ZeroMQ or other message library for IPC - rejected to minimize dependencies; Unix domain sockets with netstrings are simple and sufficient
+- **ALT-400**: Using CMake instead of Makefile - deferred; current Makefile is simple and sufficient for MVP
 
 ## 4. Dependencies
 
-- **DEP-0100**: nlohmann/json (v3.11.3) - vendored single header at `renderer/vendor/nlohmann/json.hpp`
-- **DEP-0200**: libpulse (PulseAudio client library) - system package, linked via pkg-config
-- **DEP-0300**: Stage 1 components (Window, Visualizer, shutdown, event_loop) - must remain functional
+- **DEP-100**: nlohmann/json (v3.11.3) - vendored single header at `renderer/vendor/nlohmann/json.hpp`
+- **DEP-200**: libpulse (PulseAudio client library) - system package, linked via pkg-config
+- **DEP-300**: Stage 1 components (Window, Visualizer, shutdown, event_loop) - must remain functional
 
 ## 5. Files
 
@@ -277,29 +277,29 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 ## 6. Testing
 
-- **TEST-0100**: Netstring parsing: valid netstrings, max length, leading zeros, missing delimiters
-- **TEST-0200**: JSON command parsing: valid commands, missing id, unknown fields, wrong types
-- **TEST-0300**: Socket connection: successful connect, second client rejection, clean disconnect
-- **TEST-0400**: Command sequence: CHANGE AUDIO SOURCE then INIT succeeds; INIT without audio source fails
-- **TEST-0500**: Audio capture: stream connects, samples flow to projectM, graceful shutdown
-- **TEST-0600**: Command handling: LOAD PRESET (success/failure), SHOW WINDOW, SET FULLSCREEN, QUIT
-- **TEST-0700**: Shutdown paths: signal, window close, QUIT command, client disconnect, audio failure
-- **TEST-0800**: cppcheck passes with `--enable=all` and no warnings
+- **TEST-100**: Netstring parsing: valid netstrings, max length, leading zeros, missing delimiters
+- **TEST-200**: JSON command parsing: valid commands, missing id, unknown fields, wrong types
+- **TEST-300**: Socket connection: successful connect, second client rejection, clean disconnect
+- **TEST-400**: Command sequence: CHANGE AUDIO SOURCE then INIT succeeds; INIT without audio source fails
+- **TEST-500**: Audio capture: stream connects, samples flow to projectM, graceful shutdown
+- **TEST-600**: Command handling: LOAD PRESET (success/failure), SHOW WINDOW, SET FULLSCREEN, QUIT
+- **TEST-700**: Shutdown paths: signal, window close, QUIT command, client disconnect, audio failure
+- **TEST-800**: cppcheck passes with `--enable=all` and no warnings
 
 ## 7. Risks & Assumptions
 
 ### Risks
 
-- **RISK-0100**: PulseAudio async API complexity may require iteration; mitigate with careful study of examples
-- **RISK-0200**: Thread coordination bugs; mitigate with careful mutex/CV usage and testing all paths
-- **RISK-0300**: Socket cleanup on abnormal exit; mitigate with atexit handler and stale socket detection in client
+- **RISK-100**: PulseAudio async API complexity may require iteration; mitigate with careful study of examples
+- **RISK-200**: Thread coordination bugs; mitigate with careful mutex/CV usage and testing all paths
+- **RISK-300**: Socket cleanup on abnormal exit; mitigate with atexit handler and stale socket detection in client
 
 ### Assumptions
 
-- **ASSUMPTION-0100**: PulseAudio is available on the target system
-- **ASSUMPTION-0200**: Default audio source (`@DEFAULT_SINK@.monitor`) exists and is accessible
-- **ASSUMPTION-0300**: XDG_RUNTIME_DIR or /tmp is writable for socket creation
-- **ASSUMPTION-0400**: Single-threaded command processing is sufficient for MVP performance
+- **ASSUMPTION-100**: PulseAudio is available on the target system
+- **ASSUMPTION-200**: Default audio source (`@DEFAULT_SINK@.monitor`) exists and is accessible
+- **ASSUMPTION-300**: XDG_RUNTIME_DIR or /tmp is writable for socket creation
+- **ASSUMPTION-400**: Single-threaded command processing is sufficient for MVP performance
 
 ## 8. Related Specifications / Further Reading
 
