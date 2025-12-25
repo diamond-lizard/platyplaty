@@ -8,39 +8,39 @@
 namespace platyplaty {
 
 Visualizer::Visualizer(std::size_t width, std::size_t height)
-    : handle_(create_projectm_instance()),
-      width_(width),
-      height_(height) {
+    : m_handle(create_projectm_instance()),
+      m_width(width),
+      m_height(height) {
 
-    projectm_set_window_size(handle_, width, height);
-    projectm_set_preset_locked(handle_, true);
+    projectm_set_window_size(m_handle, width, height);
+    projectm_set_preset_locked(m_handle, true);
 
     projectm_set_preset_switch_failed_event_callback(
-        handle_, preset_switch_failed_callback, this);
+        m_handle, preset_switch_failed_callback, this);
 }
 
 Visualizer::~Visualizer() {
-    if (handle_ != nullptr) {
-        projectm_destroy(handle_);
+    if (m_handle != nullptr) {
+        projectm_destroy(m_handle);
     }
 }
 
 void Visualizer::set_window_size(std::size_t width, std::size_t height) {
-    if (width == width_ && height == height_) {
+    if (width == m_width && height == m_height) {
         return;
     }
-    width_ = width;
-    height_ = height;
-    projectm_set_window_size(handle_, width, height);
+    m_width = width;
+    m_height = height;
+    projectm_set_window_size(m_handle, width, height);
 }
 
 void Visualizer::render_frame() {
-    projectm_opengl_render_frame(handle_);
+    projectm_opengl_render_frame(m_handle);
 }
 
 PresetLoadResult Visualizer::load_preset(const std::string& path) {
     // Clear error buffer before attempting load
-    error_buffer_[0] = '\0';
+    m_error_buffer[0] = '\0';
 
     // Check if file exists and is readable
     std::ifstream file(path);
@@ -50,11 +50,11 @@ PresetLoadResult Visualizer::load_preset(const std::string& path) {
     file.close();
 
     // Attempt to load the preset with smooth transition
-    projectm_load_preset_file(handle_, path.c_str(), true);
+    projectm_load_preset_file(m_handle, path.c_str(), true);
 
     // Check if callback captured an error
-    if (error_buffer_[0] != '\0') {
-        return {false, std::string(error_buffer_)};
+    if (m_error_buffer[0] != '\0') {
+        return {false, std::string(m_error_buffer)};
     }
 
     return {true, ""};
@@ -65,8 +65,8 @@ void Visualizer::preset_switch_failed_callback(
         const char* message,
         void* user_data) {
     auto* self = static_cast<Visualizer*>(user_data);
-    std::strncpy(self->error_buffer_, message, ERROR_BUFFER_SIZE - 1);
-    self->error_buffer_[ERROR_BUFFER_SIZE - 1] = '\0';
+    std::strncpy(self->m_error_buffer, message, ERROR_BUFFER_SIZE - 1);
+    self->m_error_buffer[ERROR_BUFFER_SIZE - 1] = '\0';
     (void)preset_filename; // Unused parameter
 }
 

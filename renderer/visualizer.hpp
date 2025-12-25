@@ -52,11 +52,11 @@ private:
     // Helper to create projectM instance; throws on failure.
     static projectm_handle create_projectm_instance();
 
-    projectm_handle handle_{nullptr};
+    projectm_handle m_handle{nullptr};
     static constexpr std::size_t ERROR_BUFFER_SIZE = 32768;
-    char error_buffer_[ERROR_BUFFER_SIZE]{};
-    std::size_t width_{0};
-    std::size_t height_{0};
+    char m_error_buffer[ERROR_BUFFER_SIZE]{};
+    std::size_t m_width{0};
+    std::size_t m_height{0};
 };
 
 } // namespace platyplaty
