@@ -7,6 +7,7 @@
 #include "shutdown.hpp"
 #include "stderr_event.hpp"
 
+#include <array>
 #include <poll.h>
 #include <unistd.h>
 
@@ -106,13 +107,13 @@ bool SocketThread::process_message(ClientSocket& client) {
 
 // Returns true to continue loop, false to break.
 bool SocketThread::poll_and_process(ClientSocket& client) {
-    pollfd pfds[2]{};
+    std::array<pollfd, 2> pfds{};
     pfds[0].fd = m_server.get_fd();
     pfds[0].events = POLLIN;
     pfds[1].fd = client.get_fd();
     pfds[1].events = POLLIN;
 
-    int ret = poll(pfds, 2, kPollTimeoutMs);
+    int ret = poll(pfds.data(), 2, kPollTimeoutMs);
     if (ret < 0 && errno != EINTR) {
         return false;
     }
