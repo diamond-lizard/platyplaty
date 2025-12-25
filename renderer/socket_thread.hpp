@@ -13,6 +13,8 @@
 
 namespace platyplaty {
 
+class ClientSocket;  // Forward declaration
+
 // Thread that manages the server socket and client communication.
 // Accepts one client at a time, rejects additional connections.
 class SocketThread {
@@ -43,6 +45,8 @@ public:
 private:
     void thread_main();
     void handle_client();
+    bool process_message(ClientSocket& client);
+    bool poll_and_process(ClientSocket& client);
 
     ServerSocket m_server;
     CommandSlot& m_slot;
