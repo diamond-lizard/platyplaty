@@ -7,4 +7,5 @@ dependencies = []
 [dependency-groups]
 dev = [
     "ewmh>=0.1.6",
+    "pytest>=9.0.2",
 ]
