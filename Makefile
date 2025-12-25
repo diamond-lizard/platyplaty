@@ -61,3 +61,4 @@ cppcheck-renderer:
 	cppcheck --enable=all --std=c++17 --inline-suppr --suppress=missingIncludeSystem $(SRC_DIR)
 
 test-renderer: cppcheck-renderer
+	uv run pytest tests/renderer/

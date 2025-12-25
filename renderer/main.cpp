@@ -117,6 +117,7 @@ int main(int argc, const char* argv[]) {
         // Create audio capture with the configured source
         platyplaty::AudioCapture audio_capture{audio_source, visualizer};
         audio_capture.start();
+        socket_thread.set_initialized(true);
 
         auto result = visualizer.load_preset(PRESET_PATH);
         if (!result.success) {

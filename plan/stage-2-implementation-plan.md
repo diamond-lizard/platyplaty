@@ -272,17 +272,26 @@ These fixes align the implementation with the intended synchronous protocol desi
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-6100 | Create `tests/renderer/test_stage2.py`: simple Python script that connects to socket, sends CHANGE AUDIO SOURCE, INIT, LOAD PRESET, SHOW WINDOW, waits, sends QUIT | | |
-| TASK-6200 | Run `uv add --dev pytest` to add pytest as development dependency | | |
-| TASK-6300 | Create `tests/renderer/conftest.py`: shared fixtures for socket path computation and renderer process management | | |
-| TASK-6400 | Update Makefile `test-renderer` target to also run `uv run pytest tests/renderer/` after cppcheck | | |
-| TASK-6500 | Test error paths: missing CHANGE AUDIO SOURCE before INIT, unknown command, malformed JSON, invalid netstring | | |
+| TASK-6100 | Create `tests/renderer/test_stage2.py`: simple Python script that connects to socket, sends CHANGE AUDIO SOURCE, INIT, LOAD PRESET, SHOW WINDOW, waits, sends QUIT | Yes | 2025-12-25 |
+| TASK-6200 | Run `uv add --dev pytest` to add pytest as development dependency | Yes | 2025-12-25 |
+| TASK-6300 | Create `tests/renderer/conftest.py`: shared fixtures for socket path computation and renderer process management | Yes | 2025-12-25 |
+| TASK-6400 | Update Makefile `test-renderer` target to also run `uv run pytest tests/renderer/` after cppcheck | Yes | 2025-12-25 |
+| TASK-6500 | Test error paths: missing CHANGE AUDIO SOURCE before INIT, unknown command, malformed JSON, invalid netstring | Yes | 2025-12-25 |
 | TASK-6600 | Test audio: verify visualization responds to audio input from default sink monitor | | |
 | TASK-6700 | Verify all files are under ~150 lines; split any that exceed unless cohesive | | |
 | TASK-6800 | Verify no more than 3 levels of indentation in any file | | |
 | TASK-6950 | Verify all files modified/created in Phase 9 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | | |
 | TASK-6900 | Review all headers for proper include guards and minimal includes | | |
 | TASK-7000 | Run `make test-renderer` and fix any remaining issues | | |
+
+**Bug Fixes During Phase 9 Testing (2025-12-25):**
+
+During TASK-6600 testing, two bugs were discovered and fixed:
+
+1. **main.cpp**: `socket_thread.set_initialized(true)` was never called after INIT succeeded. This caused the socket thread to emit "client disconnected before INIT" even after successful initialization. **Fix**: Added `socket_thread.set_initialized(true);` after `audio_capture.start()` (line 120).
+
+2. **socket_thread.cpp**: QUIT response was not sent because the shutdown flag check in `process_message()` happened before sending the response. When the command handler set `g_shutdown_requested`, the response loop would exit without sending. **Fix**: Changed to use a `got_response` flag pattern - loop until response arrives, then send response regardless of shutdown state.
+
 
 ## 3. Alternatives
 
