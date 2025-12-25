@@ -25,7 +25,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 - **REQ-0500**: Socket thread uses single command slot (not queue); blocks until main thread processes command
 - **REQ-0600**: Audio uses PulseAudio async API with 44100 Hz, stereo, float32 format
 - **REQ-0700**: Audio buffer size ~735 samples (~16.7ms) for low-latency synchronization
-- **REQ-0800**: Socket path resolution: `$XDG_RUNTIME_DIR/platyplaty.sock` > `$TEMPDIR/platyplaty-<uid>.sock` > `$TMPDIR/platyplaty-<uid>.sock` > `/tmp/platyplaty-<uid>.sock`
+- **REQ-0800**: Socket path passed to renderer via `--socket-path` CLI argument (computed by client per architecture doc)
 - **REQ-0900**: `CHANGE AUDIO SOURCE` after `INIT` returns error response (rejected)
 - **REQ-1000**: Audio errors are fatal; audio thread sets shutdown flag and exits
 - **REQ-1100**: Socket errors and clean EOF both trigger shutdown; errors log to stderr, EOF exits silently
@@ -58,7 +58,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 ### Guidelines
 
-- **GUD-100**: Test incrementally after each component
+- **GUD-100**: Test incrementally after each component (cppcheck for Phases 1-8; full integration testing in Phase 9)
 - **GUD-200**: Keep socket thread and audio thread logic minimal; delegate to main thread
 - **GUD-300**: Use atomic shutdown flag pattern established in Stage 1
 
@@ -108,13 +108,11 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-1300 | Create `renderer/socket_path.hpp`: declare `std::string get_socket_path()` function | | |
-| TASK-1400 | Create `renderer/socket_path.cpp`: implement socket path resolution per REQ-0800 (XDG_RUNTIME_DIR > TEMPDIR > TMPDIR > /tmp) with uid suffix where needed | | |
-| TASK-1500 | Create `renderer/server_socket.hpp`: declare RAII `ServerSocket` class with constructor taking path, `accept_client()` method, and `get_fd()` accessor | | |
-| TASK-1600 | Create `renderer/server_socket.cpp`: implement `ServerSocket` constructor (create, bind, listen); destructor (close, unlink); throw on failure | | |
-| TASK-1700 | Create `renderer/client_socket.hpp`: declare RAII `ClientSocket` class with `send()`, `recv()`, `get_fd()`, and `close()` methods | | |
-| TASK-1800 | Create `renderer/client_socket.cpp`: implement `ClientSocket` wrapping accepted fd; `send()` writes netstring; `recv()` buffers partial reads and returns complete netstring payloads | | |
-| TASK-1900 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-1300 | Create `renderer/server_socket.hpp`: declare RAII `ServerSocket` class with constructor taking path, `accept_client()` method, and `get_fd()` accessor | | |
+| TASK-1400 | Create `renderer/server_socket.cpp`: implement `ServerSocket` constructor (create, bind, listen); destructor (close, unlink); throw on failure | | |
+| TASK-1500 | Create `renderer/client_socket.hpp`: declare RAII `ClientSocket` class with `send()`, `recv()`, `get_fd()`, and `close()` methods | | |
+| TASK-1600 | Create `renderer/client_socket.cpp`: implement `ClientSocket` wrapping accepted fd; `send()` writes netstring; `recv()` buffers partial reads and returns complete netstring payloads | | |
+| TASK-1700 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 4: Create Command Slot for Thread Communication
 
@@ -126,12 +124,12 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-2000 | Create `renderer/command_slot.hpp`: declare `CommandSlot` class with `std::mutex`, `std::condition_variable`, `std::optional<Command>`, and `std::optional<Response>` | | |
-| TASK-2100 | In `renderer/command_slot.hpp`: declare methods `void put_command(Command cmd)`, `std::optional<Command> try_get_command()`, `void put_response(Response resp)`, `bool wait_for_response(Response& out, std::chrono::milliseconds timeout)` | | |
-| TASK-2200 | Create `renderer/command_slot.cpp`: implement `put_command()` - sets command, notifies CV; blocks until response arrives or shutdown | | |
-| TASK-2300 | In `renderer/command_slot.cpp`: implement `try_get_command()` - non-blocking check for pending command | | |
-| TASK-2400 | In `renderer/command_slot.cpp`: implement `put_response()` and `wait_for_response()` with ~100ms timeout for shutdown responsiveness | | |
-| TASK-2500 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-1800 | Create `renderer/command_slot.hpp`: declare `CommandSlot` class with `std::mutex`, `std::condition_variable`, `std::optional<Command>`, and `std::optional<Response>` | | |
+| TASK-1900 | In `renderer/command_slot.hpp`: declare methods `void put_command(Command cmd)`, `std::optional<Command> try_get_command()`, `void put_response(Response resp)`, `bool wait_for_response(Response& out, std::chrono::milliseconds timeout)` | | |
+| TASK-2000 | Create `renderer/command_slot.cpp`: implement `put_command()` - sets command, notifies CV; blocks until response arrives or shutdown | | |
+| TASK-2100 | In `renderer/command_slot.cpp`: implement `try_get_command()` - non-blocking check for pending command | | |
+| TASK-2200 | In `renderer/command_slot.cpp`: implement `put_response()` and `wait_for_response()` with ~100ms timeout for shutdown responsiveness | | |
+| TASK-2300 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 5: Create Socket Thread
 
@@ -143,13 +141,13 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-2600 | Create `renderer/socket_thread.hpp`: declare `SocketThread` class with `std::thread`, reference to `CommandSlot`, socket path, and `start()`/`join()` methods | | |
-| TASK-2700 | Create `renderer/socket_thread.cpp`: implement constructor that creates `ServerSocket` and stores path for later cleanup | | |
-| TASK-2800 | In `renderer/socket_thread.cpp`: implement `start()` that spawns thread running `thread_main()` | | |
-| TASK-2900 | In `renderer/socket_thread.cpp`: implement `thread_main()` state machine: wait for client, poll both sockets, read messages, parse netstrings, validate JSON, put commands in slot, send responses | | |
-| TASK-3000 | In `renderer/socket_thread.cpp`: implement defensive rejection of second client connections (accept and immediately close) | | |
-| TASK-3100 | In `renderer/socket_thread.cpp`: implement protocol error handling - disconnect on malformed netstring, missing id, unknown fields; error response on malformed JSON | | |
-| TASK-3200 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-2400 | Create `renderer/socket_thread.hpp`: declare `SocketThread` class with `std::thread`, reference to `CommandSlot`, socket path, and `start()`/`join()` methods | | |
+| TASK-2500 | Create `renderer/socket_thread.cpp`: implement constructor that creates `ServerSocket` and stores path for later cleanup | | |
+| TASK-2600 | In `renderer/socket_thread.cpp`: implement `start()` that spawns thread running `thread_main()` | | |
+| TASK-2700 | In `renderer/socket_thread.cpp`: implement `thread_main()` state machine: wait for client, poll both sockets, read messages, parse netstrings, validate JSON, put commands in slot, send responses | | |
+| TASK-2800 | In `renderer/socket_thread.cpp`: implement defensive rejection of second client connections (accept and immediately close) | | |
+| TASK-2900 | In `renderer/socket_thread.cpp`: implement protocol error handling - disconnect on malformed netstring, missing id, unknown fields; error response on malformed JSON | | |
+| TASK-3000 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 6: Create Audio Capture Module
 
@@ -161,14 +159,15 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-3300 | Update Makefile: add `pkg-config --cflags --libs libpulse` to compiler/linker flags | | |
-| TASK-3400 | Create `renderer/audio_capture.hpp`: declare `AudioCapture` class with constructor taking source name and `Visualizer&`, `start()`/`stop()`/`join()` methods | | |
-| TASK-3500 | Create `renderer/audio_capture.cpp`: implement constructor - create PulseAudio mainloop, context; set up state callback | | |
-| TASK-3600 | In `renderer/audio_capture.cpp`: implement `start()` - connect context, create recording stream with 44100Hz stereo float32, ~735 sample buffer; spawn capture thread | | |
-| TASK-3700 | In `renderer/audio_capture.cpp`: implement capture thread - poll with ~100ms timeout, read samples, call `Visualizer::add_audio_samples()`, check shutdown flag | | |
-| TASK-3800 | In `renderer/audio_capture.cpp`: implement `stop()` - set shutdown flag; `join()` - wait for thread; destructor - cleanup PulseAudio resources in reverse order | | |
-| TASK-3900 | In `renderer/audio_capture.cpp`: implement error handling - any PulseAudio error sets global `g_shutdown_requested` flag (fatal per REQ-1000) | | |
-| TASK-4000 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-3100 | Update Makefile: add `pkg-config --cflags --libs libpulse` to compiler/linker flags | | |
+| TASK-3200 | Add inline `add_audio_samples(const float* samples, unsigned int count)` method to `Visualizer` class that calls `projectm_pcm_add_float()` | | |
+| TASK-3300 | Create `renderer/audio_capture.hpp`: declare `AudioCapture` class with constructor taking source name and `Visualizer&`, `start()`/`stop()`/`join()` methods | | |
+| TASK-3400 | Create `renderer/audio_capture.cpp`: implement constructor - create PulseAudio mainloop, context; set up state callback | | |
+| TASK-3500 | In `renderer/audio_capture.cpp`: implement `start()` - connect context, create recording stream with 44100Hz stereo float32, ~735 sample buffer; spawn capture thread | | |
+| TASK-3600 | In `renderer/audio_capture.cpp`: implement capture thread - poll with ~100ms timeout, read samples, call `Visualizer::add_audio_samples()`, check shutdown flag | | |
+| TASK-3700 | In `renderer/audio_capture.cpp`: implement `stop()` - set shutdown flag; `join()` - wait for thread; destructor - cleanup PulseAudio resources in reverse order | | |
+| TASK-3800 | In `renderer/audio_capture.cpp`: implement error handling - any PulseAudio error sets global `g_shutdown_requested` flag (fatal per REQ-1000) | | |
+| TASK-3900 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 7: Refactor Main for Two-Phase Initialization
 
@@ -180,17 +179,20 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-4100 | Create `renderer/renderer_state.hpp`: declare enum `RendererPhase { WAITING_FOR_CONFIG, WAITING_FOR_INIT, RUNNING }` and state tracking struct | | |
-| TASK-4200 | Refactor `main.cpp`: Phase 1 - setup signal handlers, create `CommandSlot`, create and start `SocketThread`, print `SOCKET READY\n` to stdout, flush | | |
+| TASK-4000 | Create `renderer/renderer_state.hpp`: declare enum `RendererPhase { WAITING_FOR_CONFIG, WAITING_FOR_INIT, RUNNING }` and state tracking struct | | |
+| TASK-4100 | Add `--socket-path <path>` required CLI argument parsing to `main.cpp`; exit with usage error if missing or invalid | | |
+| TASK-4200 | Refactor `main.cpp`: Phase 1 - setup signal handlers, create `CommandSlot`, create and start `SocketThread` (passing socket path from CLI), print `SOCKET READY\n` to stdout, flush | | |
 | TASK-4300 | In `main.cpp`: implement pre-init command loop - poll `CommandSlot`, handle `CHANGE AUDIO SOURCE` (store source, respond success), reject other commands except `INIT` | | |
 | TASK-4400 | In `main.cpp`: on `INIT` command - verify audio source was set (fatal if not), create Window, create Visualizer, create AudioCapture with stored source, respond success | | |
 | TASK-4500 | In `main.cpp`: modify event loop to check `CommandSlot` each frame; dispatch to command handler | | |
 | TASK-4600 | Create `renderer/command_handler.hpp`: declare `Response handle_command(const Command& cmd, Visualizer& viz, Window& win, bool& running)` | | |
-| TASK-4700 | Create `renderer/command_handler.cpp`: implement command dispatch - `LOAD_PRESET`, `SHOW_WINDOW`, `SET_FULLSCREEN`, `QUIT`; return error for `CHANGE_AUDIO_SOURCE` and `INIT` and `UNKNOWN` (invalid after initialization); return appropriate responses | | |
-| TASK-4800 | In `command_handler.cpp`: implement `LOAD_PRESET` - validate absolute path (disconnect if relative), delegate to `Visualizer::load_preset()` | | |
-| TASK-4900 | In `command_handler.cpp`: implement `SHOW_WINDOW` - call `SDL_ShowWindow()`, idempotent; `SET_FULLSCREEN` - error if window not visible, otherwise set fullscreen state (idempotent) | | |
-| TASK-5000 | In `command_handler.cpp`: implement `QUIT` - set running=false, return success | | |
-| TASK-5100 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-4700 | Create `renderer/command_handler.cpp`: implement command dispatch - `LOAD_PRESET`, `SHOW_WINDOW`, `SET_FULLSCREEN`, `QUIT`; return error for `CHANGE_AUDIO_SOURCE` (per REQ-0900); disconnect client for `INIT` or `UNKNOWN` (protocol violation) | | |
+| TASK-4800 | In `renderer/window.cpp`: add `SDL_WINDOW_HIDDEN` to constructor flags so window starts hidden | | |
+| TASK-4900 | In `renderer/window.hpp/cpp`: add `show()`, `set_fullscreen(bool)`, and `is_visible()` methods with visibility tracking | | |
+| TASK-5000 | In `command_handler.cpp`: implement `LOAD_PRESET` - validate absolute path (disconnect if relative), delegate to `Visualizer::load_preset()` | | |
+| TASK-5100 | In `command_handler.cpp`: implement `SHOW_WINDOW` - call `Window::show()`, idempotent; `SET_FULLSCREEN` - error if window not visible, otherwise call `Window::set_fullscreen()` (idempotent) | | |
+| TASK-5200 | In `command_handler.cpp`: implement `QUIT` - set running=false, return success | | |
+| TASK-5300 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 8: Update Shutdown Coordination
 
@@ -202,13 +204,13 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-5200 | Review shutdown flag usage: main loop, socket thread, audio thread all check `g_shutdown_requested` | | |
-| TASK-5300 | Update `main.cpp` shutdown sequence: set flag, join audio thread, join socket thread, close sockets, destroy projectM, destroy SDL | | |
-| TASK-5400 | Ensure socket thread exits cleanly on EOF (client disconnect) - set shutdown flag, exit thread | | |
-| TASK-5500 | Ensure audio thread exits cleanly on PulseAudio error - set shutdown flag, exit thread | | |
-| TASK-5600 | Add `atexit()` handler to unlink socket file (store path in static variable per architecture doc) | | |
-| TASK-5700 | Test shutdown paths: QUIT command, window close, SIGINT, SIGTERM, client disconnect | | |
-| TASK-5800 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-5400 | Review shutdown flag usage: main loop, socket thread, audio thread all check `g_shutdown_requested` | | |
+| TASK-5500 | Update `main.cpp` shutdown sequence: set flag, join audio thread, join socket thread, close sockets, destroy projectM, destroy SDL | | |
+| TASK-5600 | Ensure socket thread exits cleanly on EOF (client disconnect) - set shutdown flag, exit thread | | |
+| TASK-5700 | Ensure audio thread exits cleanly on PulseAudio error - set shutdown flag, exit thread | | |
+| TASK-5800 | Add `atexit()` handler to unlink socket file (store path in static variable per architecture doc) | | |
+| TASK-5900 | Test shutdown paths: QUIT command, window close, SIGINT, SIGTERM, client disconnect | | |
+| TASK-6000 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 9: Integration Testing and Cleanup
 
@@ -220,13 +222,16 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-5900 | Create `bin/test-stage2.py`: simple Python script that connects to socket, sends CHANGE AUDIO SOURCE, INIT, LOAD PRESET, SHOW WINDOW, waits, sends QUIT | | |
-| TASK-6000 | Test error paths: missing CHANGE AUDIO SOURCE before INIT, unknown command, malformed JSON, invalid netstring | | |
-| TASK-6100 | Test audio: verify visualization responds to audio input from default sink monitor | | |
-| TASK-6200 | Verify all files are under ~150 lines; split any that exceed unless cohesive | | |
-| TASK-6300 | Verify no more than 3 levels of indentation in any file | | |
-| TASK-6400 | Review all headers for proper include guards and minimal includes | | |
-| TASK-6500 | Run `make test-renderer` and fix any remaining issues | | |
+| TASK-6100 | Create `tests/renderer/test_stage2.py`: simple Python script that connects to socket, sends CHANGE AUDIO SOURCE, INIT, LOAD PRESET, SHOW WINDOW, waits, sends QUIT | | |
+| TASK-6200 | Run `uv add --dev pytest` to add pytest as development dependency | | |
+| TASK-6300 | Create `tests/renderer/conftest.py`: shared fixtures for socket path computation and renderer process management | | |
+| TASK-6400 | Update Makefile `test-renderer` target to also run `uv run pytest tests/renderer/` after cppcheck | | |
+| TASK-6500 | Test error paths: missing CHANGE AUDIO SOURCE before INIT, unknown command, malformed JSON, invalid netstring | | |
+| TASK-6600 | Test audio: verify visualization responds to audio input from default sink monitor | | |
+| TASK-6700 | Verify all files are under ~150 lines; split any that exceed unless cohesive | | |
+| TASK-6800 | Verify no more than 3 levels of indentation in any file | | |
+| TASK-6900 | Review all headers for proper include guards and minimal includes | | |
+| TASK-7000 | Run `make test-renderer` and fix any remaining issues | | |
 
 ## 3. Alternatives
 
@@ -250,30 +255,29 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 - **FILE-0300**: `renderer/netstring.cpp` - Netstring implementation
 - **FILE-0400**: `renderer/protocol.hpp` - Command/Response type declarations
 - **FILE-0500**: `renderer/protocol.cpp` - JSON parsing/serialization implementation
-- **FILE-0600**: `renderer/socket_path.hpp` - Socket path resolution declaration
-- **FILE-0700**: `renderer/socket_path.cpp` - Socket path resolution implementation
-- **FILE-0800**: `renderer/server_socket.hpp` - Server socket RAII wrapper declaration
-- **FILE-0900**: `renderer/server_socket.cpp` - Server socket implementation
-- **FILE-1000**: `renderer/client_socket.hpp` - Client socket RAII wrapper declaration
-- **FILE-1100**: `renderer/client_socket.cpp` - Client socket implementation
-- **FILE-1200**: `renderer/command_slot.hpp` - Thread-safe command handoff declaration
-- **FILE-1300**: `renderer/command_slot.cpp` - Command slot implementation
-- **FILE-1400**: `renderer/socket_thread.hpp` - Socket thread declaration
-- **FILE-1500**: `renderer/socket_thread.cpp` - Socket thread implementation
-- **FILE-1600**: `renderer/audio_capture.hpp` - PulseAudio capture declaration
-- **FILE-1700**: `renderer/audio_capture.cpp` - PulseAudio capture implementation
-- **FILE-1800**: `renderer/renderer_state.hpp` - Renderer state enum and tracking
-- **FILE-1900**: `renderer/command_handler.hpp` - Command handling declaration
-- **FILE-2000**: `renderer/command_handler.cpp` - Command handling implementation
-- **FILE-2100**: `bin/test-stage2.py` - Integration test script
+- **FILE-0600**: `renderer/server_socket.hpp` - Server socket RAII wrapper declaration
+- **FILE-0700**: `renderer/server_socket.cpp` - Server socket implementation
+- **FILE-0800**: `renderer/client_socket.hpp` - Client socket RAII wrapper declaration
+- **FILE-0900**: `renderer/client_socket.cpp` - Client socket implementation
+- **FILE-1000**: `renderer/command_slot.hpp` - Thread-safe command handoff declaration
+- **FILE-1100**: `renderer/command_slot.cpp` - Command slot implementation
+- **FILE-1200**: `renderer/socket_thread.hpp` - Socket thread declaration
+- **FILE-1300**: `renderer/socket_thread.cpp` - Socket thread implementation
+- **FILE-1400**: `renderer/audio_capture.hpp` - PulseAudio capture declaration
+- **FILE-1500**: `renderer/audio_capture.cpp` - PulseAudio capture implementation
+- **FILE-1600**: `renderer/renderer_state.hpp` - Renderer state enum and tracking
+- **FILE-1700**: `renderer/command_handler.hpp` - Command handling declaration
+- **FILE-1800**: `renderer/command_handler.cpp` - Command handling implementation
+- **FILE-1900**: `tests/renderer/conftest.py` - Shared pytest fixtures for renderer tests
+- **FILE-2000**: `tests/renderer/test_stage2.py` - Integration test script
 
 ### Modified Files
 
-- **FILE-2200**: `renderer/main.cpp` - Refactored for two-phase initialization
-- **FILE-2300**: `renderer/window.hpp` - Add `show()`, `set_fullscreen()`, and `is_visible()` methods with visibility tracking
-- **FILE-2400**: `renderer/window.cpp` - Implement new window control methods; add SDL_WINDOW_HIDDEN to initial flags
-- **FILE-2500**: `renderer/visualizer.hpp` - Add inline add_audio_samples() method for audio thread
-- **FILE-2600**: `Makefile` - Add libpulse to pkg-config flags
+- **FILE-2100**: `renderer/main.cpp` - Refactored for two-phase initialization
+- **FILE-2200**: `renderer/window.hpp` - Add `show()`, `set_fullscreen()`, and `is_visible()` methods with visibility tracking
+- **FILE-2300**: `renderer/window.cpp` - Implement new window control methods; add SDL_WINDOW_HIDDEN to initial flags
+- **FILE-2400**: `renderer/visualizer.hpp` - Add inline add_audio_samples() method for audio thread
+- **FILE-2500**: `Makefile` - Add libpulse to pkg-config flags
 
 ## 6. Testing
 
