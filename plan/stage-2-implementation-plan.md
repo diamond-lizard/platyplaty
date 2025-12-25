@@ -144,11 +144,11 @@ On failure, `data` is omitted and `error` contains the error message string.
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-1300 | Create `renderer/server_socket.hpp`: declare RAII `ServerSocket` class with constructor taking path, `accept_client()` method, and `get_fd()` accessor | | |
-| TASK-1400 | Create `renderer/server_socket.cpp`: implement `ServerSocket` constructor (create, bind, listen); destructor (close, unlink); throw on failure | | |
-| TASK-1500 | Create `renderer/client_socket.hpp`: declare RAII `ClientSocket` class with `send()`, `recv()`, `get_fd()`, and `close()` methods | | |
-| TASK-1600 | Create `renderer/client_socket.cpp`: implement `ClientSocket` wrapping accepted fd; `send()` writes netstring; `recv()` buffers partial reads and returns complete netstring payloads | | |
-| TASK-1700 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-1300 | Create `renderer/server_socket.hpp`: declare RAII `ServerSocket` class with constructor taking path, `accept_client()` method, and `get_fd()` accessor | Yes | 2025-12-25 |
+| TASK-1400 | Create `renderer/server_socket.cpp`: implement `ServerSocket` constructor (create, bind, listen); destructor (close, unlink); throw on failure | Yes | 2025-12-25 |
+| TASK-1500 | Create `renderer/client_socket.hpp`: declare RAII `ClientSocket` class with `send()`, `recv()`, `get_fd()`, and `close()` methods | Yes | 2025-12-25 |
+| TASK-1600 | Create `renderer/client_socket.cpp`: implement `ClientSocket` wrapping accepted fd; `send()` writes netstring; `recv()` buffers partial reads and returns complete netstring payloads | Yes | 2025-12-25 |
+| TASK-1700 | Run `make test-renderer` and fix any issues revealed by cppcheck | Yes | 2025-12-25 |
 
 ### Implementation Phase 4: Create Command Slot for Thread Communication
 
