@@ -242,14 +242,25 @@ On failure, `data` is omitted and `error` contains the error message string.
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-5400 | Review shutdown flag usage: main loop, socket thread, audio thread all check `g_shutdown_requested` | | |
-| TASK-5500 | Update `main.cpp` shutdown sequence: set flag, join audio thread, join socket thread, close sockets, destroy projectM, destroy SDL | | |
-| TASK-5600 | On client EOF: emit stderr DISCONNECT event, close client socket, wait for new client connection (renderer stays alive per "Robustness Philosophy"); use `emit_stderr_event()` from TASK-1050; if pre-INIT, retain pending audio source configuration for next client | | |
-| TASK-5700 | On PulseAudio error: emit stderr AUDIO_ERROR event, continue with silent visualization (renderer stays alive per "Robustness Philosophy"); use `emit_stderr_event()` from TASK-1050 | | |
-| TASK-5800 | Verify `atexit()` handler properly unlinks socket file on all exit paths (handler setup is in TASK-4200) | | |
-| TASK-5950 | Verify all files modified/created in Phase 8 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | | |
-| TASK-5900 | Test shutdown paths: QUIT command, window close, SIGINT, SIGTERM, client disconnect (verify renderer stays alive and accepts new client) | | |
-| TASK-6000 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-5400 | Review shutdown flag usage: main loop, socket thread, audio thread all check `g_shutdown_requested` | Yes | 2025-12-25 |
+| TASK-5500 | Update `main.cpp` shutdown sequence: set flag, join audio thread, join socket thread, close sockets, destroy projectM, destroy SDL | Yes | 2025-12-25 |
+| TASK-5600 | On client EOF: emit stderr DISCONNECT event, close client socket, wait for new client connection (renderer stays alive per "Robustness Philosophy"); use `emit_stderr_event()` from TASK-1050; if pre-INIT, retain pending audio source configuration for next client | Yes | 2025-12-25 |
+| TASK-5700 | On PulseAudio error: emit stderr AUDIO_ERROR event, continue with silent visualization (renderer stays alive per "Robustness Philosophy"); use `emit_stderr_event()` from TASK-1050 | Yes | 2025-12-25 |
+| TASK-5800 | Verify `atexit()` handler properly unlinks socket file on all exit paths (handler setup is in TASK-4200) | Yes | 2025-12-25 |
+| TASK-5950 | Verify all files modified/created in Phase 8 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | Yes | 2025-12-25 |
+| TASK-5900 | Test shutdown paths: QUIT command, window close, SIGINT, SIGTERM, client disconnect (verify renderer stays alive and accepts new client) | Yes | 2025-12-25 |
+| TASK-6000 | Run `make test-renderer` and fix any issues revealed by cppcheck | Yes | 2025-12-25 |
+
+
+**Bug Fixes During Phase 8 Testing (2025-12-25):**
+
+During TASK-5900 testing, two bugs were discovered and fixed:
+
+1. **command_slot.cpp**: `put_command()` was blocking and consuming the response internally, but `socket_thread.cpp` expected to retrieve the response separately via `wait_for_response()`. This caused all commands to timeout. **Fix**: Changed `put_command()` to store the command, notify, and return immediately (non-blocking). The socket thread now handles all response waiting.
+
+2. **socket_thread.cpp**: `process_message()` called `wait_for_response()` with only 100ms timeout, returning without sending the response if timeout expired. This caused commands taking longer than 100ms to fail silently. **Fix**: Changed to loop calling `wait_for_response()` until response arrives or shutdown is requested.
+
+These fixes align the implementation with the intended synchronous protocol design where the socket thread waits for each command to complete before accepting the next.
 
 ### Implementation Phase 9: Integration Testing and Cleanup
 

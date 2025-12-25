@@ -124,6 +124,11 @@ int main(int argc, const char* argv[]) {
         }
 
         platyplaty::run_event_loop(window, visualizer, command_slot);
+
+        // Shutdown sequence: audio thread, then socket thread
+        audio_capture.stop();
+        audio_capture.join();
+        socket_thread.join();
         return EXIT_SUCCESS;
 
     } catch (const std::exception& e) {

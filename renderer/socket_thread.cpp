@@ -95,8 +95,13 @@ bool SocketThread::process_message(ClientSocket& client) {
     m_slot.put_command(std::move(result.command));
 
     Response resp;
-    if (!m_slot.wait_for_response(resp, std::chrono::milliseconds(kPollTimeoutMs))) {
-        return true;
+    while (!g_shutdown_requested.load()) {
+        if (m_slot.wait_for_response(resp, std::chrono::milliseconds(kPollTimeoutMs))) {
+            break;
+        }
+    }
+    if (g_shutdown_requested.load()) {
+        return false;
     }
     if (!client.send(serialize_response(resp))) {
         emit_stderr_event("DISCONNECT", "write failed");
@@ -147,8 +152,14 @@ void SocketThread::handle_client() {
         }
     }
 
-    if (!m_initialized.load()) {
-        emit_stderr_event("DISCONNECT", "client disconnected before INIT");
+    // Emit DISCONNECT event for clean EOF (framing errors already emitted above).
+    // Different message for pre-INIT vs post-INIT per architecture doc.
+    if (!client.has_framing_error()) {
+        if (m_initialized.load()) {
+            emit_stderr_event("DISCONNECT", "client disconnected");
+        } else {
+            emit_stderr_event("DISCONNECT", "client disconnected before INIT");
+        }
     }
 }
 

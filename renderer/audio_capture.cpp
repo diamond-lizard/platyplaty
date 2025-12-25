@@ -26,6 +26,8 @@ AudioCapture::AudioCapture(const std::string& source, Visualizer& visualizer)
 }
 
 AudioCapture::~AudioCapture() {
+    stop();
+    join();
     if (m_stream) {
         pa_stream_disconnect(m_stream);
         pa_stream_unref(m_stream);
@@ -40,11 +42,23 @@ AudioCapture::~AudioCapture() {
 }
 
 void AudioCapture::context_state_callback(pa_context* ctx, void* userdata) {
+    // The 'ctx' parameter is required by PulseAudio's callback signature
+    // (pa_context_set_state_callback), but we don't need it here since we
+    // access m_context through the userdata pointer. Without (void)ctx,
+    // -Wunused-parameter warns. This silencing is safe because the parameter
+    // is genuinely unused by design, not accidentally forgotten.
+    (void)ctx;
     auto* self = static_cast<AudioCapture*>(userdata);
     pa_threaded_mainloop_signal(self->m_mainloop, 0);
 }
 
 void AudioCapture::stream_read_callback(pa_stream* stream, std::size_t, void* userdata) {
+    // The 'stream' parameter is required by PulseAudio's callback signature
+    // (pa_stream_set_read_callback), but we don't need it here since we
+    // access m_stream through the userdata pointer. Without (void)stream,
+    // -Wunused-parameter warns. This silencing is safe because the parameter
+    // is genuinely unused by design, not accidentally forgotten.
+    (void)stream;
     auto* self = static_cast<AudioCapture*>(userdata);
     pa_threaded_mainloop_signal(self->m_mainloop, 0);
 }

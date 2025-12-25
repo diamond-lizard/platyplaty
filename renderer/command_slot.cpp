@@ -1,7 +1,6 @@
 // Command slot implementation.
 
 #include "command_slot.hpp"
-#include "shutdown.hpp"
 
 namespace platyplaty {
 
@@ -12,15 +11,7 @@ bool CommandSlot::put_command(Command cmd) {
         m_response.reset();
     }
     m_cv.notify_one();
-
-    // Wait for response or shutdown.
-    Response resp;
-    while (!g_shutdown_requested.load()) {
-        if (wait_for_response(resp, std::chrono::milliseconds(100))) {
-            return true;
-        }
-    }
-    return false;
+    return true;
 }
 
 std::optional<Command> CommandSlot::try_get_command() {
