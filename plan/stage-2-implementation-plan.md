@@ -19,7 +19,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 ### Architectural Requirements (from platyplaty-architecture-discussion.md)
 
 - **REQ-0100**: Renderer initializes in two phases: Phase 1 creates socket and prints `SOCKET READY\n`; Phase 2 (triggered by `INIT` command) creates window, projectM, and audio thread
-- **REQ-0200**: Client must send `CHANGE AUDIO SOURCE` before `INIT`; sending `INIT` without prior `CHANGE AUDIO SOURCE` is fatal
+- **REQ-0200**: Client must send `CHANGE AUDIO SOURCE` before `INIT`; sending `INIT` without prior `CHANGE AUDIO SOURCE` returns error response; renderer does not exit
 - **REQ-0300**: Commands use netstring framing: `<length>:<json>,` with 64KB max payload
 - **REQ-0400**: Responses use same netstring framing; format is `{"id": N, "success": true/false, "data": {}/"error": "msg"}`
 - **REQ-0500**: Socket thread uses single command slot (not queue); blocks until main thread processes command
@@ -27,13 +27,14 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 - **REQ-0700**: Audio buffer size ~735 samples (~16.7ms) for low-latency synchronization
 - **REQ-0800**: Socket path passed to renderer via `--socket-path` CLI argument (computed by client per architecture doc)
 - **REQ-0900**: `CHANGE AUDIO SOURCE` after `INIT` returns error response (rejected)
-- **REQ-1000**: Audio errors are fatal; audio thread sets shutdown flag and exits
-- **REQ-1100**: Socket errors and clean EOF both trigger shutdown; errors log to stderr, EOF exits silently
-- **REQ-1200**: Malformed netstrings cause client disconnect (fatal); malformed JSON returns error response (non-fatal)
-- **REQ-1300**: Missing `id` field or wrong parameter types cause client disconnect
-- **REQ-1400**: Unrecognized fields in commands cause client disconnect (catches typos)
+- **REQ-1000**: Audio errors are non-fatal; renderer emits stderr event, continues with silent visualization (see architecture doc "Robustness Philosophy")
+- **REQ-1100**: Socket errors and clean EOF disconnect client; renderer stays alive and waits for new connection (emits stderr DISCONNECT event per "Robustness Philosophy")
+- **REQ-1150**: Stderr events use netstring-framed JSON format: `{"source": "PLATYPLATY", "event": "<TYPE>", "reason": "<details>"}` (see architecture doc "Robustness Philosophy")
+- **REQ-1200**: Malformed netstrings cause client disconnect (renderer stays alive); malformed JSON returns error response (non-fatal)
+- **REQ-1300**: Missing `id` field or wrong parameter types return error response (no disconnect)
+- **REQ-1400**: Unrecognized fields in commands return error response (catches typos; no disconnect)
 - **REQ-1500**: Zero-length netstrings rejected with error response before JSON parsing
-- **REQ-1600**: Relative paths in `LOAD PRESET` cause client disconnect
+- **REQ-1600**: Relative paths in `LOAD PRESET` return error response (no disconnect)
 - **REQ-1700**: nlohmann/json library vendored at `renderer/vendor/nlohmann/json.hpp`
 
 ### Code Style Requirements
@@ -92,9 +93,9 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-0700 | Create `renderer/protocol.hpp`: define `enum class CommandType { CHANGE_AUDIO_SOURCE, INIT, LOAD_PRESET, SHOW_WINDOW, SET_FULLSCREEN, QUIT, UNKNOWN }` | | |
-| TASK-0800 | In `renderer/protocol.hpp`: define `struct Command { CommandType type; int id; std::string audio_source; std::string preset_path; bool fullscreen_enabled; }` with sensible defaults | | |
-| TASK-0900 | In `renderer/protocol.hpp`: define `struct Response { int id; bool success; std::string error; }` and `struct CommandParseResult { bool success; Command command; std::string error; }` | | |
-| TASK-1000 | Create `renderer/protocol.cpp`: implement `CommandParseResult parse_command(const std::string& json)` using nlohmann/json; validate required fields, reject unknown fields | | |
+| TASK-0800 | In `renderer/protocol.hpp`: define `struct Command { CommandType type; std::optional<int> id; std::string audio_source; std::string preset_path; bool fullscreen_enabled; }` with sensible defaults; unused fields for a given command type are left at defaults (parser validates allowed fields per command) | | |
+| TASK-0900 | In `renderer/protocol.hpp`: define `struct Response { std::optional<int> id; bool success; nlohmann::json data; std::string error; }` and `struct CommandParseResult { bool success; Command command; std::string error; }` | | |
+| TASK-1000 | Create `renderer/protocol.cpp`: implement `CommandParseResult parse_command(const std::string& json)` using nlohmann/json; validate required fields per command type (e.g., LOAD_PRESET requires `path`, QUIT requires no extra fields), return error for fields not valid for that command type | | |
 | TASK-1100 | In `renderer/protocol.cpp`: implement `std::string serialize_response(const Response& response)` | | |
 | TASK-1200 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
@@ -144,9 +145,9 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | TASK-2400 | Create `renderer/socket_thread.hpp`: declare `SocketThread` class with `std::thread`, reference to `CommandSlot`, socket path, and `start()`/`join()` methods | | |
 | TASK-2500 | Create `renderer/socket_thread.cpp`: implement constructor that creates `ServerSocket` and stores path for later cleanup | | |
 | TASK-2600 | In `renderer/socket_thread.cpp`: implement `start()` that spawns thread running `thread_main()` | | |
-| TASK-2700 | In `renderer/socket_thread.cpp`: implement `thread_main()` state machine: wait for client, poll both sockets, read messages, parse netstrings, validate JSON, put commands in slot, send responses | | |
+| TASK-2700 | In `renderer/socket_thread.cpp`: implement `thread_main()` state machine: wait for client, poll both sockets, read messages, parse netstrings, validate JSON, put commands in slot, send responses; return error response if second command arrives before response sent (no disconnect) | | |
 | TASK-2800 | In `renderer/socket_thread.cpp`: implement defensive rejection of second client connections (accept and immediately close) | | |
-| TASK-2900 | In `renderer/socket_thread.cpp`: implement protocol error handling - disconnect on malformed netstring, missing id, unknown fields; error response on malformed JSON | | |
+| TASK-2900 | In `renderer/socket_thread.cpp`: implement protocol error handling - disconnect client (renderer stays alive) on malformed netstring; error response on malformed JSON, missing id, unknown fields (per "Robustness Philosophy") | | |
 | TASK-3000 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 6: Create Audio Capture Module
@@ -164,9 +165,9 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | TASK-3300 | Create `renderer/audio_capture.hpp`: declare `AudioCapture` class with constructor taking source name and `Visualizer&`, `start()`/`stop()`/`join()` methods | | |
 | TASK-3400 | Create `renderer/audio_capture.cpp`: implement constructor - create PulseAudio mainloop, context; set up state callback | | |
 | TASK-3500 | In `renderer/audio_capture.cpp`: implement `start()` - connect context, create recording stream with 44100Hz stereo float32, ~735 sample buffer; spawn capture thread | | |
-| TASK-3600 | In `renderer/audio_capture.cpp`: implement capture thread - poll with ~100ms timeout, read samples, call `Visualizer::add_audio_samples()`, check shutdown flag | | |
-| TASK-3700 | In `renderer/audio_capture.cpp`: implement `stop()` - set shutdown flag; `join()` - wait for thread; destructor - cleanup PulseAudio resources in reverse order | | |
-| TASK-3800 | In `renderer/audio_capture.cpp`: implement error handling - any PulseAudio error sets global `g_shutdown_requested` flag (fatal per REQ-1000) | | |
+| TASK-3600 | In `renderer/audio_capture.cpp`: implement capture thread - poll with ~100ms timeout, read samples, call `Visualizer::add_audio_samples()`, check both `m_stop_requested` (internal) and `g_shutdown_requested` (global) | | |
+| TASK-3700 | In `renderer/audio_capture.cpp`: implement `stop()` - set internal `m_stop_requested` flag; `join()` - wait for thread; destructor - cleanup PulseAudio resources in reverse order | | |
+| TASK-3800 | In `renderer/audio_capture.cpp`: implement error handling - any PulseAudio error emits stderr AUDIO_ERROR event and continues with silent visualization (non-fatal per REQ-1000) | | |
 | TASK-3900 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 7: Refactor Main for Two-Phase Initialization
@@ -181,15 +182,15 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | ---- | ----------- | --------- | ---- |
 | TASK-4000 | Create `renderer/renderer_state.hpp`: declare enum `RendererPhase { WAITING_FOR_CONFIG, WAITING_FOR_INIT, RUNNING }` and state tracking struct | | |
 | TASK-4100 | Add `--socket-path <path>` required CLI argument parsing to `main.cpp`; exit with usage error if missing or invalid | | |
-| TASK-4200 | Refactor `main.cpp`: Phase 1 - setup signal handlers, create `CommandSlot`, create and start `SocketThread` (passing socket path from CLI), print `SOCKET READY\n` to stdout, flush | | |
-| TASK-4300 | In `main.cpp`: implement pre-init command loop - poll `CommandSlot`, handle `CHANGE AUDIO SOURCE` (store source, respond success), reject other commands except `INIT` | | |
-| TASK-4400 | In `main.cpp`: on `INIT` command - verify audio source was set (fatal if not), create Window, create Visualizer, create AudioCapture with stored source, respond success | | |
+| TASK-4200 | Refactor `main.cpp`: Phase 1 - setup signal handlers, create `CommandSlot`, create and start `SocketThread` (passing socket path from CLI), store socket path in static variable, register `atexit()` handler to unlink socket, print `SOCKET READY\n` to stdout, flush | | |
+| TASK-4300 | In `main.cpp`: implement pre-init command loop - poll `CommandSlot`, handle `CHANGE AUDIO SOURCE` (store source, respond success), return error response for other commands except `INIT` (renderer stays alive) | | |
+| TASK-4400 | In `main.cpp`: on `INIT` command - verify audio source was set (return error response if not set), create Window, create Visualizer, create AudioCapture with stored source, respond success | | |
 | TASK-4500 | In `main.cpp`: modify event loop to check `CommandSlot` each frame; dispatch to command handler | | |
 | TASK-4600 | Create `renderer/command_handler.hpp`: declare `Response handle_command(const Command& cmd, Visualizer& viz, Window& win, bool& running)` | | |
-| TASK-4700 | Create `renderer/command_handler.cpp`: implement command dispatch - `LOAD_PRESET`, `SHOW_WINDOW`, `SET_FULLSCREEN`, `QUIT`; return error for `CHANGE_AUDIO_SOURCE` (per REQ-0900); disconnect client for `INIT` or `UNKNOWN` (protocol violation) | | |
+| TASK-4700 | Create `renderer/command_handler.cpp`: implement command dispatch - `LOAD_PRESET`, `SHOW_WINDOW`, `SET_FULLSCREEN`, `QUIT`; return error for `CHANGE_AUDIO_SOURCE` (per REQ-0900); return error for `INIT` (already initialized); return error for `UNKNOWN` | | |
 | TASK-4800 | In `renderer/window.cpp`: add `SDL_WINDOW_HIDDEN` to constructor flags so window starts hidden | | |
-| TASK-4900 | In `renderer/window.hpp/cpp`: add `show()`, `set_fullscreen(bool)`, and `is_visible()` methods with visibility tracking | | |
-| TASK-5000 | In `command_handler.cpp`: implement `LOAD_PRESET` - validate absolute path (disconnect if relative), delegate to `Visualizer::load_preset()` | | |
+| TASK-4900 | In `renderer/window.hpp/cpp`: add `show()`, `set_fullscreen(bool)`, and `is_visible()` methods with visibility tracking; `set_fullscreen(true)` stores current window state, `set_fullscreen(false)` restores it | | |
+| TASK-5000 | In `command_handler.cpp`: implement `LOAD_PRESET` - validate absolute path (return error response if relative), delegate to `Visualizer::load_preset()` | | |
 | TASK-5100 | In `command_handler.cpp`: implement `SHOW_WINDOW` - call `Window::show()`, idempotent; `SET_FULLSCREEN` - error if window not visible, otherwise call `Window::set_fullscreen()` (idempotent) | | |
 | TASK-5200 | In `command_handler.cpp`: implement `QUIT` - set running=false, return success | | |
 | TASK-5300 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
@@ -206,10 +207,10 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | ---- | ----------- | --------- | ---- |
 | TASK-5400 | Review shutdown flag usage: main loop, socket thread, audio thread all check `g_shutdown_requested` | | |
 | TASK-5500 | Update `main.cpp` shutdown sequence: set flag, join audio thread, join socket thread, close sockets, destroy projectM, destroy SDL | | |
-| TASK-5600 | Ensure socket thread exits cleanly on EOF (client disconnect) - set shutdown flag, exit thread | | |
-| TASK-5700 | Ensure audio thread exits cleanly on PulseAudio error - set shutdown flag, exit thread | | |
-| TASK-5800 | Add `atexit()` handler to unlink socket file (store path in static variable per architecture doc) | | |
-| TASK-5900 | Test shutdown paths: QUIT command, window close, SIGINT, SIGTERM, client disconnect | | |
+| TASK-5600 | On client EOF: emit stderr DISCONNECT event, close client socket, wait for new client connection (renderer stays alive per "Robustness Philosophy") | | |
+| TASK-5700 | On PulseAudio error: emit stderr AUDIO_ERROR event, continue with silent visualization (renderer stays alive per "Robustness Philosophy") | | |
+| TASK-5800 | Verify `atexit()` handler properly unlinks socket file on all exit paths (handler setup is in TASK-4200) | | |
+| TASK-5900 | Test shutdown paths: QUIT command, window close, SIGINT, SIGTERM, client disconnect (verify renderer stays alive and accepts new client) | | |
 | TASK-6000 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 9: Integration Testing and Cleanup
@@ -284,10 +285,10 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 - **TEST-100**: Netstring parsing: valid netstrings, max length, leading zeros, missing delimiters
 - **TEST-200**: JSON command parsing: valid commands, missing id, unknown fields, wrong types
 - **TEST-300**: Socket connection: successful connect, second client rejection, clean disconnect
-- **TEST-400**: Command sequence: CHANGE AUDIO SOURCE then INIT succeeds; INIT without audio source fails
+- **TEST-400**: Command sequence: CHANGE AUDIO SOURCE then INIT succeeds; INIT without audio source returns error (renderer stays alive)
 - **TEST-500**: Audio capture: stream connects, samples flow to projectM, graceful shutdown
 - **TEST-600**: Command handling: LOAD PRESET (success/failure), SHOW WINDOW, SET FULLSCREEN, QUIT
-- **TEST-700**: Shutdown paths: signal, window close, QUIT command, client disconnect, audio failure
+- **TEST-700**: Shutdown paths: signal, window close, QUIT command, client disconnect (renderer stays alive), audio failure (renderer stays alive with silent viz)
 - **TEST-800**: cppcheck passes with `--enable=all` and no warnings
 
 ## 7. Risks & Assumptions
