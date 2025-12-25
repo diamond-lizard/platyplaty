@@ -277,12 +277,12 @@ These fixes align the implementation with the intended synchronous protocol desi
 | TASK-6300 | Create `tests/renderer/conftest.py`: shared fixtures for socket path computation and renderer process management | Yes | 2025-12-25 |
 | TASK-6400 | Update Makefile `test-renderer` target to also run `uv run pytest tests/renderer/` after cppcheck | Yes | 2025-12-25 |
 | TASK-6500 | Test error paths: missing CHANGE AUDIO SOURCE before INIT, unknown command, malformed JSON, invalid netstring | Yes | 2025-12-25 |
-| TASK-6600 | Test audio: verify visualization responds to audio input from default sink monitor | | |
-| TASK-6700 | Verify all files are under ~150 lines; split any that exceed unless cohesive | | |
-| TASK-6800 | Verify no more than 3 levels of indentation in any file | | |
-| TASK-6950 | Verify all files modified/created in Phase 9 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | | |
-| TASK-6900 | Review all headers for proper include guards and minimal includes | | |
-| TASK-7000 | Run `make test-renderer` and fix any remaining issues | | |
+| TASK-6600 | Test audio: verify visualization responds to audio input from default sink monitor | Yes | 2025-12-25 |
+| TASK-6700 | Verify all files are under ~150 lines; split any that exceed unless cohesive | Yes | 2025-12-25 |
+| TASK-6800 | Verify no more than 3 levels of indentation in any file | Yes | 2025-12-25 |
+| TASK-6950 | Verify all files modified/created in Phase 9 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | Yes | 2025-12-25 |
+| TASK-6900 | Review all headers for proper include guards and minimal includes | Yes | 2025-12-25 |
+| TASK-7000 | Run `make test-renderer` and fix any remaining issues | Yes | 2025-12-25 |
 
 **Bug Fixes During Phase 9 Testing (2025-12-25):**
 
