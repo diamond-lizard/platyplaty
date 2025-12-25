@@ -195,16 +195,16 @@ On failure, `data` is omitted and `error` contains the error message string.
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-3100 | Update Makefile: add `pkg-config --cflags --libs libpulse` to compiler/linker flags | | |
-| TASK-3200 | Add inline `add_audio_samples(const float* samples, unsigned int count)` method to `Visualizer` class that calls `projectm_pcm_add_float()` | | |
-| TASK-3300 | Create `renderer/audio_capture.hpp`: declare `AudioCapture` class with constructor taking source name and `Visualizer&`, `start()`/`stop()`/`join()` methods | | |
-| TASK-3400 | Create `renderer/audio_capture.cpp`: implement constructor - create PulseAudio mainloop, context; set up state callback | | |
-| TASK-3500 | In `renderer/audio_capture.cpp`: implement `start()` - connect context, create recording stream with 44100Hz stereo float32, ~735 sample buffer; spawn capture thread; pass source string directly to `pa_stream_connect_record()` as `dev` parameter (supports PulseAudio special strings like `@DEFAULT_SINK@.monitor`) | | |
-| TASK-3600 | In `renderer/audio_capture.cpp`: implement capture thread - poll with ~100ms timeout, read samples, call `Visualizer::add_audio_samples()`, check both `m_stop_requested` (internal) and `g_shutdown_requested` (global) | | |
-| TASK-3700 | In `renderer/audio_capture.cpp`: implement `stop()` - set internal `m_stop_requested` flag; `join()` - wait for thread; destructor - cleanup PulseAudio resources in reverse order | | |
-| TASK-3850 | Verify all files modified/created in Phase 6 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | | |
-| TASK-3800 | In `renderer/audio_capture.cpp`: implement error handling - any PulseAudio error emits stderr AUDIO_ERROR event and continues with silent visualization (non-fatal per REQ-1000); use `emit_stderr_event()` from TASK-1050 | | |
-| TASK-3900 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-3100 | Update Makefile: add `pkg-config --cflags --libs libpulse` to compiler/linker flags | Yes | 2025-12-25 |
+| TASK-3200 | Add inline `add_audio_samples(const float* samples, unsigned int count)` method to `Visualizer` class that calls `projectm_pcm_add_float()` | Yes | 2025-12-25 |
+| TASK-3300 | Create `renderer/audio_capture.hpp`: declare `AudioCapture` class with constructor taking source name and `Visualizer&`, `start()`/`stop()`/`join()` methods | Yes | 2025-12-25 |
+| TASK-3400 | Create `renderer/audio_capture.cpp`: implement constructor - create PulseAudio mainloop, context; set up state callback | Yes | 2025-12-25 |
+| TASK-3500 | In `renderer/audio_capture.cpp`: implement `start()` - connect context, create recording stream with 44100Hz stereo float32, ~735 sample buffer; spawn capture thread; pass source string directly to `pa_stream_connect_record()` as `dev` parameter (supports PulseAudio special strings like `@DEFAULT_SINK@.monitor`) | Yes | 2025-12-25 |
+| TASK-3600 | In `renderer/audio_capture.cpp`: implement capture thread - poll with ~100ms timeout, read samples, call `Visualizer::add_audio_samples()`, check both `m_stop_requested` (internal) and `g_shutdown_requested` (global) | Yes | 2025-12-25 |
+| TASK-3700 | In `renderer/audio_capture.cpp`: implement `stop()` - set internal `m_stop_requested` flag; `join()` - wait for thread; destructor - cleanup PulseAudio resources in reverse order | Yes | 2025-12-25 |
+| TASK-3850 | Verify all files modified/created in Phase 6 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | Yes | 2025-12-25 |
+| TASK-3800 | In `renderer/audio_capture.cpp`: implement error handling - any PulseAudio error emits stderr AUDIO_ERROR event and continues with silent visualization (non-fatal per REQ-1000); use `emit_stderr_event()` from TASK-1050 | Yes | 2025-12-25 |
+| TASK-3900 | Run `make test-renderer` and fix any issues revealed by cppcheck | Yes | 2025-12-25 |
 
 ### Implementation Phase 7: Refactor Main for Two-Phase Initialization
 

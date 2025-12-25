@@ -16,9 +16,11 @@ PROJECTM_CFLAGS := $(shell pkg-config --cflags projectM-4)
 PROJECTM_LIBS := $(shell pkg-config --libs projectM-4 | sed 's/-l:/-l/g')
 SDL2_CFLAGS := $(shell pkg-config --cflags sdl2)
 SDL2_LIBS := $(shell pkg-config --libs sdl2)
+PULSE_CFLAGS := $(shell pkg-config --cflags libpulse)
+PULSE_LIBS := $(shell pkg-config --libs libpulse)
 
-CFLAGS := $(CXXFLAGS) $(PROJECTM_CFLAGS) $(SDL2_CFLAGS)
-LDFLAGS := $(PROJECTM_LIBS) $(SDL2_LIBS)
+CFLAGS := $(CXXFLAGS) $(PROJECTM_CFLAGS) $(SDL2_CFLAGS) $(PULSE_CFLAGS)
+LDFLAGS := $(PROJECTM_LIBS) $(SDL2_LIBS) $(PULSE_LIBS)
 
 
 # Directories

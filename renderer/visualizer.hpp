@@ -43,6 +43,12 @@ public:
     // Load preset from file path. Returns success/failure with error.
     PresetLoadResult load_preset(const std::string& path);
 
+    // Add audio samples for visualization. Samples must be
+    // interleaved stereo float32. Count is samples per channel.
+    void add_audio_samples(const float* samples, unsigned int count) {
+        projectm_pcm_add_float(m_handle, samples, count, PROJECTM_STEREO);
+    }
+
 private:
     static void preset_switch_failed_callback(
         const char* preset_filename,
