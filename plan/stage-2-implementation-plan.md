@@ -202,6 +202,7 @@ On failure, `data` is omitted and `error` contains the error message string.
 | TASK-3500 | In `renderer/audio_capture.cpp`: implement `start()` - connect context, create recording stream with 44100Hz stereo float32, ~735 sample buffer; spawn capture thread; pass source string directly to `pa_stream_connect_record()` as `dev` parameter (supports PulseAudio special strings like `@DEFAULT_SINK@.monitor`) | | |
 | TASK-3600 | In `renderer/audio_capture.cpp`: implement capture thread - poll with ~100ms timeout, read samples, call `Visualizer::add_audio_samples()`, check both `m_stop_requested` (internal) and `g_shutdown_requested` (global) | | |
 | TASK-3700 | In `renderer/audio_capture.cpp`: implement `stop()` - set internal `m_stop_requested` flag; `join()` - wait for thread; destructor - cleanup PulseAudio resources in reverse order | | |
+| TASK-3850 | Verify all files modified/created in Phase 6 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | | |
 | TASK-3800 | In `renderer/audio_capture.cpp`: implement error handling - any PulseAudio error emits stderr AUDIO_ERROR event and continues with silent visualization (non-fatal per REQ-1000); use `emit_stderr_event()` from TASK-1050 | | |
 | TASK-3900 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
@@ -227,6 +228,7 @@ On failure, `data` is omitted and `error` contains the error message string.
 | TASK-4900 | In `renderer/window.hpp/cpp`: add `show()`, `set_fullscreen(bool)`, and `is_visible()` methods with visibility tracking; `set_fullscreen(true)` stores current window state, `set_fullscreen(false)` restores it; store position (SDL_GetWindowPosition) and size (SDL_GetWindowSize) before entering fullscreen, restore with SDL_SetWindowPosition and SDL_SetWindowSize after exiting | | |
 | TASK-5000 | In `command_handler.cpp`: implement `LOAD_PRESET` - validate absolute path (return error response if relative), delegate to `Visualizer::load_preset()` | | |
 | TASK-5100 | In `command_handler.cpp`: implement `SHOW_WINDOW` - call `Window::show()`, idempotent; `SET_FULLSCREEN` - error if window not visible, otherwise call `Window::set_fullscreen()` (idempotent) | | |
+| TASK-5250 | Verify all files modified/created in Phase 7 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | | |
 | TASK-5200 | In `command_handler.cpp`: implement `QUIT` - set running=false, return success | | |
 | TASK-5300 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
@@ -245,6 +247,7 @@ On failure, `data` is omitted and `error` contains the error message string.
 | TASK-5600 | On client EOF: emit stderr DISCONNECT event, close client socket, wait for new client connection (renderer stays alive per "Robustness Philosophy"); use `emit_stderr_event()` from TASK-1050; if pre-INIT, retain pending audio source configuration for next client | | |
 | TASK-5700 | On PulseAudio error: emit stderr AUDIO_ERROR event, continue with silent visualization (renderer stays alive per "Robustness Philosophy"); use `emit_stderr_event()` from TASK-1050 | | |
 | TASK-5800 | Verify `atexit()` handler properly unlinks socket file on all exit paths (handler setup is in TASK-4200) | | |
+| TASK-5950 | Verify all files modified/created in Phase 8 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | | |
 | TASK-5900 | Test shutdown paths: QUIT command, window close, SIGINT, SIGTERM, client disconnect (verify renderer stays alive and accepts new client) | | |
 | TASK-6000 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
@@ -266,6 +269,7 @@ On failure, `data` is omitted and `error` contains the error message string.
 | TASK-6600 | Test audio: verify visualization responds to audio input from default sink monitor | | |
 | TASK-6700 | Verify all files are under ~150 lines; split any that exceed unless cohesive | | |
 | TASK-6800 | Verify no more than 3 levels of indentation in any file | | |
+| TASK-6950 | Verify all files modified/created in Phase 9 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | | |
 | TASK-6900 | Review all headers for proper include guards and minimal includes | | |
 | TASK-7000 | Run `make test-renderer` and fix any remaining issues | | |
 
