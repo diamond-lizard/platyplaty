@@ -63,6 +63,40 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 - **GUD-200**: Keep socket thread and audio thread logic minimal; delegate to main thread
 - **GUD-300**: Use atomic shutdown flag pattern established in Stage 1
 
+
+### Protocol Field Definitions
+
+This table defines the exact JSON field names and requirements for each command type. Implementers MUST use these exact field names to ensure renderer/client compatibility.
+
+| Command | JSON `command` value | Required Fields | Optional Fields | Notes |
+|---------|---------------------|-----------------|-----------------|-------|
+| CHANGE_AUDIO_SOURCE | `"CHANGE AUDIO SOURCE"` | `id` (int), `source` (string) | none | `source` is PulseAudio source name (e.g., `"@DEFAULT_SINK@.monitor"`) |
+| INIT | `"INIT"` | `id` (int) | none | Triggers Phase 2 initialization |
+| LOAD_PRESET | `"LOAD PRESET"` | `id` (int), `path` (string) | none | `path` must be absolute |
+| SHOW_WINDOW | `"SHOW WINDOW"` | `id` (int) | none | Idempotent |
+| SET_FULLSCREEN | `"SET FULLSCREEN"` | `id` (int), `enabled` (bool) | none | Window must be visible first |
+| QUIT | `"QUIT"` | `id` (int) | none | Triggers graceful shutdown |
+
+**Response format:** `{"id": N, "success": true/false, "data": {...}, "error": "..."}` where `data` is present on success (may be empty object `{}`), and `error` is present on failure.
+
+**Validation rules:**
+- Any field not listed as required or optional for a command type causes an error response
+- Missing required fields cause an error response
+- Wrong types (e.g., string instead of int for `id`) cause an error response
+
+**Response data by command:**
+
+| Command | Success `data` | Notes |
+|---------|---------------|-------|
+| CHANGE_AUDIO_SOURCE | `{}` | Empty object |
+| INIT | `{}` | Empty object |
+| LOAD_PRESET | `{}` | Empty object; preset errors return `success: false` with error message |
+| SHOW_WINDOW | `{}` | Empty object |
+| SET_FULLSCREEN | `{}` | Empty object |
+| QUIT | `{}` | Empty object; response sent before shutdown begins |
+
+On failure, `data` is omitted and `error` contains the error message string.
+
 ## 2. Implementation Steps
 
 ### Implementation Phase 1: Vendor nlohmann/json and Create Netstring Module
@@ -93,10 +127,11 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-0700 | Create `renderer/protocol.hpp`: define `enum class CommandType { CHANGE_AUDIO_SOURCE, INIT, LOAD_PRESET, SHOW_WINDOW, SET_FULLSCREEN, QUIT, UNKNOWN }` | | |
-| TASK-0800 | In `renderer/protocol.hpp`: define `struct Command { CommandType type; std::optional<int> id; std::string audio_source; std::string preset_path; bool fullscreen_enabled; }` with sensible defaults; unused fields for a given command type are left at defaults (parser validates allowed fields per command) | | |
+| TASK-0800 | In `renderer/protocol.hpp`: define `struct Command { CommandType type; std::optional<int> id; std::string audio_source; std::string preset_path; bool fullscreen_enabled; }` with sensible defaults; unused fields for a given command type are left at defaults (parser validates allowed fields per command); struct fields map to JSON fields per "Protocol Field Definitions" table (audio_source ↔ source, preset_path ↔ path, fullscreen_enabled ↔ enabled | | |
 | TASK-0900 | In `renderer/protocol.hpp`: define `struct Response { std::optional<int> id; bool success; nlohmann::json data; std::string error; }` and `struct CommandParseResult { bool success; Command command; std::string error; }` | | |
-| TASK-1000 | Create `renderer/protocol.cpp`: implement `CommandParseResult parse_command(const std::string& json)` using nlohmann/json; validate required fields per command type (e.g., LOAD_PRESET requires `path`, QUIT requires no extra fields), return error for fields not valid for that command type | | |
-| TASK-1100 | In `renderer/protocol.cpp`: implement `std::string serialize_response(const Response& response)` | | |
+| TASK-1000 | Create `renderer/protocol.cpp`: implement `CommandParseResult parse_command(const std::string& json)` using nlohmann/json; validate required fields per command type (e.g., LOAD_PRESET requires `path`, QUIT requires no extra fields), return error for fields not valid for that command type; see "Protocol Field Definitions" table for exact field names and requirements | | |
+| TASK-1100 | In `renderer/protocol.cpp`: implement `std::string serialize_response(const Response& response)`; include `data` on success, `error` on failure per "Response data by command" table | | |
+| TASK-1050 | Create `renderer/stderr_event.hpp`: declare `void emit_stderr_event(const std::string& event_type, const std::string& reason)` that writes netstring-framed JSON `{"source": "PLATYPLATY", "event": "<TYPE>", "reason": "<details>"}` to stderr; event types are `DISCONNECT`, `AUDIO_ERROR`, `QUIT` | | |
 | TASK-1200 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 3: Create Socket Module
@@ -145,7 +180,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | TASK-2400 | Create `renderer/socket_thread.hpp`: declare `SocketThread` class with `std::thread`, reference to `CommandSlot`, socket path, and `start()`/`join()` methods | | |
 | TASK-2500 | Create `renderer/socket_thread.cpp`: implement constructor that creates `ServerSocket` and stores path for later cleanup | | |
 | TASK-2600 | In `renderer/socket_thread.cpp`: implement `start()` that spawns thread running `thread_main()` | | |
-| TASK-2700 | In `renderer/socket_thread.cpp`: implement `thread_main()` state machine: wait for client, poll both sockets, read messages, parse netstrings, validate JSON, put commands in slot, send responses; return error response if second command arrives before response sent (no disconnect) | | |
+| TASK-2700 | In `renderer/socket_thread.cpp`: implement `thread_main()` state machine with 3 states: (1) WAITING_FOR_CLIENT - poll only listening socket, (2) CLIENT_CONNECTED - poll both listening socket (to reject second clients) and client socket, (3) on client disconnect: if already initialized return to state 1, else stay in state 1 waiting; in state 2: read messages, poll both sockets, read messages, parse netstrings, validate JSON, put commands in slot, send responses; return error response if second command arrives before response sent (no disconnect) | | |
 | TASK-2800 | In `renderer/socket_thread.cpp`: implement defensive rejection of second client connections (accept and immediately close) | | |
 | TASK-2900 | In `renderer/socket_thread.cpp`: implement protocol error handling - disconnect client (renderer stays alive) on malformed netstring; error response on malformed JSON, missing id, unknown fields (per "Robustness Philosophy") | | |
 | TASK-3000 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
@@ -164,10 +199,10 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | TASK-3200 | Add inline `add_audio_samples(const float* samples, unsigned int count)` method to `Visualizer` class that calls `projectm_pcm_add_float()` | | |
 | TASK-3300 | Create `renderer/audio_capture.hpp`: declare `AudioCapture` class with constructor taking source name and `Visualizer&`, `start()`/`stop()`/`join()` methods | | |
 | TASK-3400 | Create `renderer/audio_capture.cpp`: implement constructor - create PulseAudio mainloop, context; set up state callback | | |
-| TASK-3500 | In `renderer/audio_capture.cpp`: implement `start()` - connect context, create recording stream with 44100Hz stereo float32, ~735 sample buffer; spawn capture thread | | |
+| TASK-3500 | In `renderer/audio_capture.cpp`: implement `start()` - connect context, create recording stream with 44100Hz stereo float32, ~735 sample buffer; spawn capture thread; pass source string directly to `pa_stream_connect_record()` as `dev` parameter (supports PulseAudio special strings like `@DEFAULT_SINK@.monitor`) | | |
 | TASK-3600 | In `renderer/audio_capture.cpp`: implement capture thread - poll with ~100ms timeout, read samples, call `Visualizer::add_audio_samples()`, check both `m_stop_requested` (internal) and `g_shutdown_requested` (global) | | |
 | TASK-3700 | In `renderer/audio_capture.cpp`: implement `stop()` - set internal `m_stop_requested` flag; `join()` - wait for thread; destructor - cleanup PulseAudio resources in reverse order | | |
-| TASK-3800 | In `renderer/audio_capture.cpp`: implement error handling - any PulseAudio error emits stderr AUDIO_ERROR event and continues with silent visualization (non-fatal per REQ-1000) | | |
+| TASK-3800 | In `renderer/audio_capture.cpp`: implement error handling - any PulseAudio error emits stderr AUDIO_ERROR event and continues with silent visualization (non-fatal per REQ-1000); use `emit_stderr_event()` from TASK-1050 | | |
 | TASK-3900 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
 
 ### Implementation Phase 7: Refactor Main for Two-Phase Initialization
@@ -189,7 +224,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | TASK-4600 | Create `renderer/command_handler.hpp`: declare `Response handle_command(const Command& cmd, Visualizer& viz, Window& win, bool& running)` | | |
 | TASK-4700 | Create `renderer/command_handler.cpp`: implement command dispatch - `LOAD_PRESET`, `SHOW_WINDOW`, `SET_FULLSCREEN`, `QUIT`; return error for `CHANGE_AUDIO_SOURCE` (per REQ-0900); return error for `INIT` (already initialized); return error for `UNKNOWN` | | |
 | TASK-4800 | In `renderer/window.cpp`: add `SDL_WINDOW_HIDDEN` to constructor flags so window starts hidden | | |
-| TASK-4900 | In `renderer/window.hpp/cpp`: add `show()`, `set_fullscreen(bool)`, and `is_visible()` methods with visibility tracking; `set_fullscreen(true)` stores current window state, `set_fullscreen(false)` restores it | | |
+| TASK-4900 | In `renderer/window.hpp/cpp`: add `show()`, `set_fullscreen(bool)`, and `is_visible()` methods with visibility tracking; `set_fullscreen(true)` stores current window state, `set_fullscreen(false)` restores it; store position (SDL_GetWindowPosition) and size (SDL_GetWindowSize) before entering fullscreen, restore with SDL_SetWindowPosition and SDL_SetWindowSize after exiting | | |
 | TASK-5000 | In `command_handler.cpp`: implement `LOAD_PRESET` - validate absolute path (return error response if relative), delegate to `Visualizer::load_preset()` | | |
 | TASK-5100 | In `command_handler.cpp`: implement `SHOW_WINDOW` - call `Window::show()`, idempotent; `SET_FULLSCREEN` - error if window not visible, otherwise call `Window::set_fullscreen()` (idempotent) | | |
 | TASK-5200 | In `command_handler.cpp`: implement `QUIT` - set running=false, return success | | |
@@ -207,8 +242,8 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 | ---- | ----------- | --------- | ---- |
 | TASK-5400 | Review shutdown flag usage: main loop, socket thread, audio thread all check `g_shutdown_requested` | | |
 | TASK-5500 | Update `main.cpp` shutdown sequence: set flag, join audio thread, join socket thread, close sockets, destroy projectM, destroy SDL | | |
-| TASK-5600 | On client EOF: emit stderr DISCONNECT event, close client socket, wait for new client connection (renderer stays alive per "Robustness Philosophy") | | |
-| TASK-5700 | On PulseAudio error: emit stderr AUDIO_ERROR event, continue with silent visualization (renderer stays alive per "Robustness Philosophy") | | |
+| TASK-5600 | On client EOF: emit stderr DISCONNECT event, close client socket, wait for new client connection (renderer stays alive per "Robustness Philosophy"); use `emit_stderr_event()` from TASK-1050; if pre-INIT, retain pending audio source configuration for next client | | |
+| TASK-5700 | On PulseAudio error: emit stderr AUDIO_ERROR event, continue with silent visualization (renderer stays alive per "Robustness Philosophy"); use `emit_stderr_event()` from TASK-1050 | | |
 | TASK-5800 | Verify `atexit()` handler properly unlinks socket file on all exit paths (handler setup is in TASK-4200) | | |
 | TASK-5900 | Test shutdown paths: QUIT command, window close, SIGINT, SIGTERM, client disconnect (verify renderer stays alive and accepts new client) | | |
 | TASK-6000 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
@@ -256,6 +291,7 @@ This plan implements Stage 2 of the Platyplaty renderer, adding Unix domain sock
 - **FILE-0300**: `renderer/netstring.cpp` - Netstring implementation
 - **FILE-0400**: `renderer/protocol.hpp` - Command/Response type declarations
 - **FILE-0500**: `renderer/protocol.cpp` - JSON parsing/serialization implementation
+- **FILE-0450**: `renderer/stderr_event.hpp` - Stderr event emission helper (netstring-framed JSON events)
 - **FILE-0600**: `renderer/server_socket.hpp` - Server socket RAII wrapper declaration
 - **FILE-0700**: `renderer/server_socket.cpp` - Server socket implementation
 - **FILE-0800**: `renderer/client_socket.hpp` - Client socket RAII wrapper declaration
