@@ -177,13 +177,13 @@ On failure, `data` is omitted and `error` contains the error message string.
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-2400 | Create `renderer/socket_thread.hpp`: declare `SocketThread` class with `std::thread`, reference to `CommandSlot`, socket path, and `start()`/`join()` methods | | |
-| TASK-2500 | Create `renderer/socket_thread.cpp`: implement constructor that creates `ServerSocket` and stores path for later cleanup | | |
-| TASK-2600 | In `renderer/socket_thread.cpp`: implement `start()` that spawns thread running `thread_main()` | | |
-| TASK-2700 | In `renderer/socket_thread.cpp`: implement `thread_main()` state machine with 3 states: (1) WAITING_FOR_CLIENT - poll only listening socket, (2) CLIENT_CONNECTED - poll both listening socket (to reject second clients) and client socket, (3) on client disconnect: if already initialized return to state 1, else stay in state 1 waiting; in state 2: read messages, poll both sockets, read messages, parse netstrings, validate JSON, put commands in slot, send responses; return error response if second command arrives before response sent (no disconnect) | | |
-| TASK-2800 | In `renderer/socket_thread.cpp`: implement defensive rejection of second client connections (accept and immediately close) | | |
-| TASK-2900 | In `renderer/socket_thread.cpp`: implement protocol error handling - disconnect client (renderer stays alive) on malformed netstring; error response on malformed JSON, missing id, unknown fields (per "Robustness Philosophy") | | |
-| TASK-3000 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-2400 | Create `renderer/socket_thread.hpp`: declare `SocketThread` class with `std::thread`, reference to `CommandSlot`, socket path, and `start()`/`join()` methods | Yes | 2025-12-25 |
+| TASK-2500 | Create `renderer/socket_thread.cpp`: implement constructor that creates `ServerSocket` and stores path for later cleanup | Yes | 2025-12-25 |
+| TASK-2600 | In `renderer/socket_thread.cpp`: implement `start()` that spawns thread running `thread_main()` | Yes | 2025-12-25 |
+| TASK-2700 | In `renderer/socket_thread.cpp`: implement `thread_main()` state machine with 3 states: (1) WAITING_FOR_CLIENT - poll only listening socket, (2) CLIENT_CONNECTED - poll both listening socket (to reject second clients) and client socket, (3) on client disconnect: if already initialized return to state 1, else stay in state 1 waiting; in state 2: read messages, poll both sockets, read messages, parse netstrings, validate JSON, put commands in slot, send responses; return error response if second command arrives before response sent (no disconnect) | Yes | 2025-12-25 |
+| TASK-2800 | In `renderer/socket_thread.cpp`: implement defensive rejection of second client connections (accept and immediately close) | Yes | 2025-12-25 |
+| TASK-2900 | In `renderer/socket_thread.cpp`: implement protocol error handling - disconnect client (renderer stays alive) on malformed netstring; error response on malformed JSON, missing id, unknown fields (per "Robustness Philosophy") | Yes | 2025-12-25 |
+| TASK-3000 | Run `make test-renderer` and fix any issues revealed by cppcheck | Yes | 2025-12-25 |
 
 ### Implementation Phase 6: Create Audio Capture Module
 
