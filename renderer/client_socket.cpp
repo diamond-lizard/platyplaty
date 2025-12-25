@@ -2,6 +2,7 @@
 
 #include "client_socket.hpp"
 #include "netstring.hpp"
+#include <array>
 #include <unistd.h>
 
 namespace platyplaty {
@@ -73,12 +74,12 @@ std::optional<std::string> ClientSocket::recv() {
     }
 
     // Need more data
-    char buf[RECV_BUFFER_SIZE];
-    const ssize_t n = ::read(m_fd, buf, sizeof(buf));
+    std::array<char, RECV_BUFFER_SIZE> buf;
+    const ssize_t n = ::read(m_fd, buf.data(), buf.size());
 
     if (n <= 0) return std::nullopt;  // EOF or error
 
-    m_buffer.append(buf, static_cast<std::size_t>(n));
+    m_buffer.append(buf.data(), static_cast<std::size_t>(n));
 
     // Try parsing again
     consumed = 0;
