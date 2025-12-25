@@ -21,10 +21,7 @@ CFLAGS := $(CXXFLAGS) $(PROJECTM_CFLAGS) $(SDL2_CFLAGS)
 LDFLAGS := $(PROJECTM_LIBS) $(SDL2_LIBS)
 
 # cppcheck include paths for better type analysis
-CPPCHECK_PKG_INCLUDES := $(shell pkg-config --cflags-only-I sdl2 projectM-4)
-CPPCHECK_STD_INCLUDES := $(shell $(CXX) -E -x c++ - -v < /dev/null 2>&1 | \
-    sed -n '/#include <...>/,/End of search list/{ /^ /s/^ /-I/p }')
-CPPCHECK_INCLUDES := $(CPPCHECK_PKG_INCLUDES) $(CPPCHECK_STD_INCLUDES)
+CPPCHECK_INCLUDES := $(shell pkg-config --cflags-only-I sdl2 projectM-4)
 
 # Directories
 SRC_DIR := renderer
