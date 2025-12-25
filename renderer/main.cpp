@@ -12,6 +12,7 @@ namespace {
 constexpr char const* PRESET_PATH = "presets/test/101-per_frame.milk";
 } // anonymous namespace
 
+// cppcheck-suppress unusedFunction ; SDL_main macro redefinition
 int main() {
     platyplaty::setup_signal_handlers();
 
