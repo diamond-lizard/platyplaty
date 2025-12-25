@@ -31,15 +31,15 @@ public:
     std::pair<int, int> get_drawable_size() const;
 
     // cppcheck-suppress unusedFunction ; Stage 2+ scaffolding for audio integration
-    SDL_Window* get_sdl_window() const { return window_; }
+    SDL_Window* get_sdl_window() const { return m_window; }
 
     // Swap OpenGL buffers
     void swap_buffers();
 
 private:
-    SDL_Window* window_ = nullptr;
-    SDL_GLContext gl_context_ = nullptr;
-    bool sdl_initialized_ = false;
+    SDL_Window* m_window = nullptr;
+    SDL_GLContext m_gl_context = nullptr;
+    bool m_sdl_initialized = false;
 };
 
 } // namespace platyplaty

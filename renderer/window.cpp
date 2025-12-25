@@ -35,23 +35,23 @@ Window::Window() {
         throw std::runtime_error(
             std::string("SDL_Init failed: ") + SDL_GetError());
     }
-    sdl_initialized_ = true;
+    m_sdl_initialized = true;
 
     set_gl_attributes();
 
     constexpr Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
                              SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI;
 
-    window_ = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED,
+    m_window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED,
                                SDL_WINDOWPOS_CENTERED, INITIAL_WIDTH,
                                INITIAL_HEIGHT, flags);
-    if (window_ == nullptr) {
+    if (m_window == nullptr) {
         throw std::runtime_error(
             std::string("SDL_CreateWindow failed: ") + SDL_GetError());
     }
 
-    gl_context_ = SDL_GL_CreateContext(window_);
-    if (gl_context_ == nullptr) {
+    m_gl_context = SDL_GL_CreateContext(m_window);
+    if (m_gl_context == nullptr) {
         throw std::runtime_error(
             std::string("SDL_GL_CreateContext failed: ") + SDL_GetError());
     }
@@ -61,13 +61,13 @@ Window::Window() {
 }
 
 Window::~Window() {
-    if (gl_context_ != nullptr) {
-        SDL_GL_DeleteContext(gl_context_);
+    if (m_gl_context != nullptr) {
+        SDL_GL_DeleteContext(m_gl_context);
     }
-    if (window_ != nullptr) {
-        SDL_DestroyWindow(window_);
+    if (m_window != nullptr) {
+        SDL_DestroyWindow(m_window);
     }
-    if (sdl_initialized_) {
+    if (m_sdl_initialized) {
         SDL_Quit();
     }
 }
@@ -75,12 +75,12 @@ Window::~Window() {
 std::pair<int, int> Window::get_drawable_size() const {
     int width = 0;
     int height = 0;
-    SDL_GL_GetDrawableSize(window_, &width, &height);
+    SDL_GL_GetDrawableSize(m_window, &width, &height);
     return {width, height};
 }
 
 void Window::swap_buffers() {
-    SDL_GL_SwapWindow(window_);
+    SDL_GL_SwapWindow(m_window);
 }
 
 } // namespace platyplaty
