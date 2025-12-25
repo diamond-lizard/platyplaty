@@ -4,6 +4,8 @@
 #include "shutdown.hpp"
 #include "visualizer.hpp"
 #include "window.hpp"
+#include "command_slot.hpp"
+#include "command_handler.hpp"
 #include <SDL.h>
 #include <SDL_opengl.h>
 
@@ -40,9 +42,16 @@ void render_frame(Window& window, Visualizer& visualizer) {
 
 } // anonymous namespace
 
-void run_event_loop(Window& window, Visualizer& visualizer) {
-    while (!g_shutdown_requested.load(std::memory_order_relaxed)) {
+void run_event_loop(Window& window, Visualizer& visualizer, CommandSlot& command_slot) {
+    bool running = true;
+    while (running && !g_shutdown_requested.load(std::memory_order_relaxed)) {
         process_events(window, visualizer);
+
+        // Process any pending command from socket thread
+        if (auto cmd_opt = command_slot.try_get_command()) {
+            auto resp = handle_command(*cmd_opt, visualizer, window, running);
+            command_slot.put_response(resp);
+        }
         render_frame(window, visualizer);
     }
 }

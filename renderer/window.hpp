@@ -36,10 +36,20 @@ public:
     // Swap OpenGL buffers
     void swap_buffers();
 
+    // Show the window (initially hidden)
+    void show();
+
+    // Set fullscreen mode
+    void set_fullscreen(bool enabled);
+
+    // Check if window is visible
+    bool is_visible() const { return m_visible; }
+
 private:
     SDL_Window* m_window = nullptr;
     SDL_GLContext m_gl_context = nullptr;
     bool m_sdl_initialized = false;
+    bool m_visible = false;
 };
 
 } // namespace platyplaty

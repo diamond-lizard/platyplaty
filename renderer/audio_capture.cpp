@@ -50,14 +50,7 @@ void AudioCapture::stream_read_callback(pa_stream* stream, std::size_t, void* us
 }
 
 void AudioCapture::wait_with_timeout() {
-    struct timespec timeout{};
-    clock_gettime(CLOCK_REALTIME, &timeout);
-    timeout.tv_nsec += 100000000;  // 100ms
-    if (timeout.tv_nsec >= 1000000000) {
-        timeout.tv_sec += 1;
-        timeout.tv_nsec -= 1000000000;
-    }
-    pa_threaded_mainloop_timed_wait(m_mainloop, &timeout);
+    pa_threaded_mainloop_wait(m_mainloop);
 }
 
 bool AudioCapture::read_and_submit_samples() {

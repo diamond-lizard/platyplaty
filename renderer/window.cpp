@@ -40,7 +40,7 @@ Window::Window() {
     set_gl_attributes();
 
     constexpr Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
-                             SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI;
+                             SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_HIDDEN;
 
     m_window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED,
                                SDL_WINDOWPOS_CENTERED, INITIAL_WIDTH,
@@ -81,6 +81,16 @@ std::pair<int, int> Window::get_drawable_size() const {
 
 void Window::swap_buffers() {
     SDL_GL_SwapWindow(m_window);
+}
+
+void Window::show() {
+    SDL_ShowWindow(m_window);
+    m_visible = true;
+}
+
+void Window::set_fullscreen(bool enabled) {
+    Uint32 flag = enabled ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0;
+    SDL_SetWindowFullscreen(m_window, flag);
 }
 
 } // namespace platyplaty

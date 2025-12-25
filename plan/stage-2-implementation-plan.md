@@ -216,21 +216,21 @@ On failure, `data` is omitted and `error` contains the error message string.
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-4000 | Create `renderer/renderer_state.hpp`: declare enum `RendererPhase { WAITING_FOR_CONFIG, WAITING_FOR_INIT, RUNNING }` and state tracking struct | | |
-| TASK-4100 | Add `--socket-path <path>` required CLI argument parsing to `main.cpp`; exit with usage error if missing or invalid | | |
-| TASK-4200 | Refactor `main.cpp`: Phase 1 - setup signal handlers, create `CommandSlot`, create and start `SocketThread` (passing socket path from CLI), store socket path in static variable, register `atexit()` handler to unlink socket, print `SOCKET READY\n` to stdout, flush | | |
-| TASK-4300 | In `main.cpp`: implement pre-init command loop - poll `CommandSlot`, handle `CHANGE AUDIO SOURCE` (store source, respond success), return error response for other commands except `INIT` (renderer stays alive) | | |
-| TASK-4400 | In `main.cpp`: on `INIT` command - verify audio source was set (return error response if not set), create Window, create Visualizer, create AudioCapture with stored source, respond success | | |
-| TASK-4500 | In `main.cpp`: modify event loop to check `CommandSlot` each frame; dispatch to command handler | | |
-| TASK-4600 | Create `renderer/command_handler.hpp`: declare `Response handle_command(const Command& cmd, Visualizer& viz, Window& win, bool& running)` | | |
-| TASK-4700 | Create `renderer/command_handler.cpp`: implement command dispatch - `LOAD_PRESET`, `SHOW_WINDOW`, `SET_FULLSCREEN`, `QUIT`; return error for `CHANGE_AUDIO_SOURCE` (per REQ-0900); return error for `INIT` (already initialized); return error for `UNKNOWN` | | |
-| TASK-4800 | In `renderer/window.cpp`: add `SDL_WINDOW_HIDDEN` to constructor flags so window starts hidden | | |
-| TASK-4900 | In `renderer/window.hpp/cpp`: add `show()`, `set_fullscreen(bool)`, and `is_visible()` methods with visibility tracking; `set_fullscreen(true)` stores current window state, `set_fullscreen(false)` restores it; store position (SDL_GetWindowPosition) and size (SDL_GetWindowSize) before entering fullscreen, restore with SDL_SetWindowPosition and SDL_SetWindowSize after exiting | | |
-| TASK-5000 | In `command_handler.cpp`: implement `LOAD_PRESET` - validate absolute path (return error response if relative), delegate to `Visualizer::load_preset()` | | |
-| TASK-5100 | In `command_handler.cpp`: implement `SHOW_WINDOW` - call `Window::show()`, idempotent; `SET_FULLSCREEN` - error if window not visible, otherwise call `Window::set_fullscreen()` (idempotent) | | |
-| TASK-5250 | Verify all files modified/created in Phase 7 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | | |
-| TASK-5200 | In `command_handler.cpp`: implement `QUIT` - set running=false, return success | | |
-| TASK-5300 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-4000 | Create `renderer/renderer_state.hpp`: declare enum `RendererPhase { WAITING_FOR_CONFIG, WAITING_FOR_INIT, RUNNING }` and state tracking struct | Yes | 2025-12-25 |
+| TASK-4100 | Add `--socket-path <path>` required CLI argument parsing to `main.cpp`; exit with usage error if missing or invalid | Yes | 2025-12-25 |
+| TASK-4200 | Refactor `main.cpp`: Phase 1 - setup signal handlers, create `CommandSlot`, create and start `SocketThread` (passing socket path from CLI), store socket path in static variable, register `atexit()` handler to unlink socket, print `SOCKET READY\n` to stdout, flush | Yes | 2025-12-25 |
+| TASK-4300 | In `main.cpp`: implement pre-init command loop - poll `CommandSlot`, handle `CHANGE AUDIO SOURCE` (store source, respond success), return error response for other commands except `INIT` (renderer stays alive) | Yes | 2025-12-25 |
+| TASK-4400 | In `main.cpp`: on `INIT` command - verify audio source was set (return error response if not set), create Window, create Visualizer, create AudioCapture with stored source, respond success | Yes | 2025-12-25 |
+| TASK-4500 | In `main.cpp`: modify event loop to check `CommandSlot` each frame; dispatch to command handler | Yes | 2025-12-25 |
+| TASK-4600 | Create `renderer/command_handler.hpp`: declare `Response handle_command(const Command& cmd, Visualizer& viz, Window& win, bool& running)` | Yes | 2025-12-25 |
+| TASK-4700 | Create `renderer/command_handler.cpp`: implement command dispatch - `LOAD_PRESET`, `SHOW_WINDOW`, `SET_FULLSCREEN`, `QUIT`; return error for `CHANGE_AUDIO_SOURCE` (per REQ-0900); return error for `INIT` (already initialized); return error for `UNKNOWN` | Yes | 2025-12-25 |
+| TASK-4800 | In `renderer/window.cpp`: add `SDL_WINDOW_HIDDEN` to constructor flags so window starts hidden | Yes | 2025-12-25 |
+| TASK-4900 | In `renderer/window.hpp/cpp`: add `show()`, `set_fullscreen(bool)`, and `is_visible()` methods with visibility tracking; `set_fullscreen(true)` stores current window state, `set_fullscreen(false)` restores it; store position (SDL_GetWindowPosition) and size (SDL_GetWindowSize) before entering fullscreen, restore with SDL_SetWindowPosition and SDL_SetWindowSize after exiting | Yes | 2025-12-25 |
+| TASK-5000 | In `command_handler.cpp`: implement `LOAD_PRESET` - validate absolute path (return error response if relative), delegate to `Visualizer::load_preset()` | Yes | 2025-12-25 |
+| TASK-5100 | In `command_handler.cpp`: implement `SHOW_WINDOW` - call `Window::show()`, idempotent; `SET_FULLSCREEN` - error if window not visible, otherwise call `Window::set_fullscreen()` (idempotent) | Yes | 2025-12-25 |
+| TASK-5250 | Verify all files modified/created in Phase 7 comply with `reference/cppbestpractices-as-text.txt` (read guide in full first: measure lines with `wc -l`, read all sections); ask user about each issue one at a time | Yes | 2025-12-25 |
+| TASK-5200 | In `command_handler.cpp`: implement `QUIT` - set running=false, return success | Yes | 2025-12-25 |
+| TASK-5300 | Run `make test-renderer` and fix any issues revealed by cppcheck | Yes | 2025-12-25 |
 
 ### Implementation Phase 8: Update Shutdown Coordination
 
