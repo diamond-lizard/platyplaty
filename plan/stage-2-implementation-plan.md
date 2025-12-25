@@ -126,13 +126,13 @@ On failure, `data` is omitted and `error` contains the error message string.
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-0700 | Create `renderer/protocol.hpp`: define `enum class CommandType { CHANGE_AUDIO_SOURCE, INIT, LOAD_PRESET, SHOW_WINDOW, SET_FULLSCREEN, QUIT, UNKNOWN }` | | |
-| TASK-0800 | In `renderer/protocol.hpp`: define `struct Command { CommandType type; std::optional<int> id; std::string audio_source; std::string preset_path; bool fullscreen_enabled; }` with sensible defaults; unused fields for a given command type are left at defaults (parser validates allowed fields per command); struct fields map to JSON fields per "Protocol Field Definitions" table (audio_source ↔ source, preset_path ↔ path, fullscreen_enabled ↔ enabled | | |
-| TASK-0900 | In `renderer/protocol.hpp`: define `struct Response { std::optional<int> id; bool success; nlohmann::json data; std::string error; }` and `struct CommandParseResult { bool success; Command command; std::string error; }` | | |
-| TASK-1000 | Create `renderer/protocol.cpp`: implement `CommandParseResult parse_command(const std::string& json)` using nlohmann/json; validate required fields per command type (e.g., LOAD_PRESET requires `path`, QUIT requires no extra fields), return error for fields not valid for that command type; see "Protocol Field Definitions" table for exact field names and requirements | | |
-| TASK-1100 | In `renderer/protocol.cpp`: implement `std::string serialize_response(const Response& response)`; include `data` on success, `error` on failure per "Response data by command" table | | |
-| TASK-1050 | Create `renderer/stderr_event.hpp`: declare `void emit_stderr_event(const std::string& event_type, const std::string& reason)` that writes netstring-framed JSON `{"source": "PLATYPLATY", "event": "<TYPE>", "reason": "<details>"}` to stderr; event types are `DISCONNECT`, `AUDIO_ERROR`, `QUIT` | | |
-| TASK-1200 | Run `make test-renderer` and fix any issues revealed by cppcheck | | |
+| TASK-0700 | Create `renderer/protocol.hpp`: define `enum class CommandType { CHANGE_AUDIO_SOURCE, INIT, LOAD_PRESET, SHOW_WINDOW, SET_FULLSCREEN, QUIT, UNKNOWN }` | Yes | 2025-12-25 |
+| TASK-0800 | In `renderer/protocol.hpp`: define `struct Command { CommandType type; std::optional<int> id; std::string audio_source; std::string preset_path; bool fullscreen_enabled; }` with sensible defaults; unused fields for a given command type are left at defaults (parser validates allowed fields per command); struct fields map to JSON fields per "Protocol Field Definitions" table (audio_source ↔ source, preset_path ↔ path, fullscreen_enabled ↔ enabled | Yes | 2025-12-25 |
+| TASK-0900 | In `renderer/protocol.hpp`: define `struct Response { std::optional<int> id; bool success; nlohmann::json data; std::string error; }` and `struct CommandParseResult { bool success; Command command; std::string error; }` | Yes | 2025-12-25 |
+| TASK-1000 | Create `renderer/protocol.cpp`: implement `CommandParseResult parse_command(const std::string& json)` using nlohmann/json; validate required fields per command type (e.g., LOAD_PRESET requires `path`, QUIT requires no extra fields), return error for fields not valid for that command type; see "Protocol Field Definitions" table for exact field names and requirements | Yes | 2025-12-25 |
+| TASK-1100 | In `renderer/protocol.cpp`: implement `std::string serialize_response(const Response& response)`; include `data` on success, `error` on failure per "Response data by command" table | Yes | 2025-12-25 |
+| TASK-1050 | Create `renderer/stderr_event.hpp`: declare `void emit_stderr_event(const std::string& event_type, const std::string& reason)` that writes netstring-framed JSON `{"source": "PLATYPLATY", "event": "<TYPE>", "reason": "<details>"}` to stderr; event types are `DISCONNECT`, `AUDIO_ERROR`, `QUIT` | Yes | 2025-12-25 |
+| TASK-1200 | Run `make test-renderer` and fix any issues revealed by cppcheck | Yes | 2025-12-25 |
 
 ### Implementation Phase 3: Create Socket Module
 
