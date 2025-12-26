@@ -25,7 +25,7 @@ This plan implements Stage 3 of Platyplaty: the Python client application. The c
 - **REQ-0300**: Socket path resolution order: (1) `$XDG_RUNTIME_DIR/platyplaty.sock`, (2) `$TEMPDIR/platyplaty-<uid>.sock`, (3) `$TMPDIR/platyplaty-<uid>.sock`, (4) `/tmp/platyplaty-<uid>.sock`; undefined env vars are skipped (not fatal)
 - **REQ-0400**: Client handles stale socket detection: ENOENT = proceed normally, ECONNREFUSED = unlink and proceed, connection succeeds = exit with "already running" error, other errors = fatal
 - **REQ-0500**: Client reads configuration from TOML file using Python's `tomllib`
-- **REQ-0600**: Config options: `preset-dirs` (required list), `audio-source` (optional, default `@DEFAULT_SINK@.monitor`), `preset-duration` (optional integer >= 1, default 30), `shuffle` (optional bool, default false), `loop` (optional bool, default true)
+- **REQ-0600**: Config options: `preset-dirs` (required list), `audio-source` (optional, default `@DEFAULT_SINK@.monitor`), `preset-duration` (optional integer >= 1, default 30), `shuffle` (optional bool, default false), `loop` (optional bool, default true), `fullscreen` (optional bool, default false)
 - **REQ-0700**: Unknown config keys are fatal errors (catches typos)
 - **REQ-0800**: `preset-duration` must be strictly integer type; float values (even 30.0) are rejected
 - **REQ-0900**: Client expands `~` and environment variables in config file paths; undefined env vars in paths are fatal errors
@@ -74,7 +74,7 @@ This plan implements Stage 3 of Platyplaty: the Python client application. The c
 - **STY-0300**: Invoked via `python -m platyplaty` from shell wrapper
 - **STY-0400**: Files under 100 lines preferred; up to ~150 acceptable for cohesive modules
 - **STY-0500**: Maximum 3 levels of indentation; use early returns and helper functions
-- **STY-0600**: Comprehensive docstrings and type annotations (Python 3.10+ syntax)
+- **STY-0600**: Comprehensive docstrings and type annotations (Python 3.12+ syntax)
 - **STY-0700**: Short single-purpose functions with functional style
 - **STY-0800**: Lazy imports for fast `--help` response; heavy imports inside functions after argument validation
 - **STY-0900**: Thin `__main__.py` that imports and calls main function
@@ -170,11 +170,11 @@ This plan implements Stage 3 of Platyplaty: the Python client application. The c
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-02500 | Create `src/platyplaty/config.py` module |  |  |
-| TASK-02600 | Define config dataclass/TypedDict with all options: `preset_dirs` (list[str]), `audio_source` (str), `preset_duration` (int), `shuffle` (bool), `loop` (bool) |  |  |
+| TASK-02600 | Define config dataclass/TypedDict with all options: `preset_dirs` (list[str]), `audio_source` (str), `preset_duration` (int), `shuffle` (bool), `loop` (bool), `fullscreen` (bool) |  |  |
 | TASK-02700 | Implement `load_config(path: str)` using `tomllib`; validate required `preset-dirs` key |  |  |
-| TASK-02800 | Implement strict type validation: `preset-duration` must be `int` (reject float even if whole number); `shuffle` and `loop` must be bool |  |  |
+| TASK-02800 | Implement strict type validation: `preset-duration` must be `int` (reject float even if whole number); `shuffle`, `loop`, and `fullscreen` must be bool |  |  |
 | TASK-02900 | Implement unknown key detection: any unrecognized top-level key is fatal error |  |  |
-| TASK-03000 | Implement default values: `audio-source` = `@DEFAULT_SINK@.monitor`, `preset-duration` = 30, `shuffle` = false, `loop` = true |  |  |
+| TASK-03000 | Implement default values: `audio-source` = `@DEFAULT_SINK@.monitor`, `preset-duration` = 30, `shuffle` = false, `loop` = true, `fullscreen` = false |  |  |
 | TASK-03100 | Implement `preset-duration` minimum validation: must be >= 1 |  |  |
 | TASK-03200 | Create `src/platyplaty/paths.py` module for path expansion |  |  |
 | TASK-03300 | Implement `expand_path(path: str)` that expands `~` and environment variables; fatal error if referenced env var is undefined |  |  |
@@ -195,7 +195,7 @@ This plan implements Stage 3 of Platyplaty: the Python client application. The c
 | TASK-03700 | Implement example config content with `presets/test` as directory example |  |  |
 | TASK-03800 | Add comment explaining relative paths are resolved from current working directory |  |  |
 | TASK-03900 | Show all config options with defaults in comments |  |  |
-| TASK-04000 | Implement `generate_config(path: str | None)`: if path is `-` or None, write to stdout; otherwise write to file |  |  |
+| TASK-04000 | Implement `generate_config(path: str)`: if path is `-`, write to stdout; otherwise write to file |  |  |
 | TASK-04100 | Implement overwrite protection: if path is existing file, error and exit |  |  |
 | TASK-04200 | Integrate with main CLI |  |  |
 | TASK-04300 | Test `--generate-config -` outputs to stdout |  |  |
@@ -381,9 +381,10 @@ This plan implements Stage 3 of Platyplaty: the Python client application. The c
 | TASK-11300 | Start renderer subprocess; wait for `SOCKET READY` |  |  |
 | TASK-11400 | Connect to socket |  |  |
 | TASK-11500 | Send `CHANGE AUDIO SOURCE` command with audio source from config |  |  |
-| TASK-11600 | Send `INIT` command; handle error response (retry possible per architecture) |  |  |
+| TASK-11600 | Send `INIT` command; handle error response; on error, exit with message (MVP does not retry) |  |  |
 | TASK-11700 | Attempt to load first preset via `LOAD PRESET`; if fails, try next; if all fail, warn user on stderr |  |  |
 | TASK-11800 | Send `SHOW WINDOW` command |  |  |
+| TASK-11850 | If `fullscreen` config is true, send `SET FULLSCREEN` command with `enabled: true` |  |  |
 | TASK-11900 | Enter main event loop |  |  |
 | TASK-12000 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
 
