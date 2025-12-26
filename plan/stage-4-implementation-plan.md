@@ -134,13 +134,13 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-01000 | Create `bin/platyplaty` shell script with shebang and purpose comment |  |  |
-| TASK-01100 | Implement symlink resolution using `realpath` to find project root |  |  |
-| TASK-01200 | Implement venv activation (source `.venv/bin/activate`) |  |  |
-| TASK-01300 | Preserve user's working directory context |  |  |
-| TASK-01400 | Invoke Python code via `python -m platyplaty "$@"` |  |  |
-| TASK-01500 | Make script executable (`chmod +x bin/platyplaty`) |  |  |
-| TASK-01600 | Test wrapper with `--help` flag |  |  |
+| TASK-01000 | Create `bin/platyplaty` shell script with shebang and purpose comment | x | 2025-12-26 |
+| TASK-01100 | Implement symlink resolution using `realpath` to find project root | x | 2025-12-26 |
+| TASK-01200 | Implement venv activation (source `.venv/bin/activate`) | x | 2025-12-26 |
+| TASK-01300 | Preserve user's working directory context | x | 2025-12-26 |
+| TASK-01400 | Invoke Python code via `python -m platyplaty "$@"` | x | 2025-12-26 |
+| TASK-01500 | Make script executable (`chmod +x bin/platyplaty`) | x | 2025-12-26 |
+| TASK-01600 | Test wrapper with `--help` flag | x | 2025-12-26 |
 
 ### Implementation Phase 3: CLI Framework with Click
 

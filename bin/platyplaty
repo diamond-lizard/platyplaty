@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# platyplaty - Shell wrapper for the Platyplaty visualizer
+#
+# This script handles virtual environment activation and symlink resolution
+# to allow the platyplaty Python client to be invoked from anywhere.
+# It preserves the user's working directory for resolving relative paths.
+
+# Resolve symlinks to find the actual script location and project root
+SCRIPT_PATH="$(realpath "${BASH_SOURCE[0]}")"
+PROJECT_ROOT="$(dirname "$(dirname "$SCRIPT_PATH")")"
+
+# Activate the virtual environment
+source "$PROJECT_ROOT/.venv/bin/activate"
+
+# Working directory is preserved - we do not cd anywhere
+# This allows users to specify relative paths in config files
+
+# Invoke the Python module, passing all arguments
+exec python -m platyplaty "$@"
