@@ -232,7 +232,7 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-05200 | Create `src/platyplaty/playlist.py` module |  |  |
-| TASK-05300 | Implement `scan_preset_dirs(dirs: list[str])` using `pathlib.Path.iterdir()` to scan directories flat (non-recursive) |  |  |
+| TASK-05300 | Implement `scan_preset_dirs(dirs: list[str])` using `itertools.chain` and `pathlib.Path.iterdir()` to combine and scan directories flat (non-recursive) |  |  |
 | TASK-05400 | Implement case-insensitive `.milk` extension matching using `pathlib.Path.suffix` |  |  |
 | TASK-05500 | Implement deduplication by full absolute path |  |  |
 | TASK-05600 | Error if no `.milk` files found; print to `sys.stderr` message listing scanned directories |  |  |
@@ -463,6 +463,7 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
   - `sys` - stdout/stderr access for config generation output
   - `re` - Regex pattern matching for stderr event detection
   - `errno` - Error code constants for socket error handling
+  - `itertools` - Iterator utilities for combining results from multiple preset directories (`chain`)
 
 ## 5. Files
 
