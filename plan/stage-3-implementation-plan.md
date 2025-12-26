@@ -1,5 +1,5 @@
 ---
-goal: Implement Stage 3 - Python Client Application with CLI, Config, and Playlist Management
+goal: Implement Stage 4 - Python Client Application with CLI, Config, and Playlist Management
 version: 1.0
 date_created: 2025-12-25
 last_updated: 2025-12-25
@@ -12,7 +12,7 @@ tags: [feature, python, cli, config, playlist]
 
 ![Status: Planned](https://img.shields.io/badge/status-Planned-blue)
 
-This plan implements Stage 3 of Platyplaty: the Python client application. The client is the main user entry point, starting the C++ renderer as a subprocess, managing the playlist, handling configuration via TOML files, and providing the command-line interface. The client controls all preset timing and playlist navigation while the renderer handles visualization.
+This plan implements Stage 4 of Platyplaty: the Python client application. The client is the main user entry point, starting the C++ renderer as a subprocess, managing the playlist, handling configuration via TOML files, and providing the command-line interface. The client controls all preset timing and playlist navigation while the renderer handles visualization.
 
 **Important:** This implementation must adhere to `reference/generic-python-project-outline.org` for Python project structure and style, though the architecture document (`reference/platyplaty-architecture-discussion.md`) takes precedence when there is a conflict between them.
 
@@ -254,6 +254,8 @@ This plan implements Stage 3 of Platyplaty: the Python client application. The c
 | TASK-06300 | Implement `encode_netstring(payload: str) -> bytes` that produces `<length>:<payload>,` format |  |  |
 | TASK-06400 | Implement `decode_netstring(data: bytes) -> tuple[str, bytes]` that returns (payload, remaining_data) |  |  |
 | TASK-06500 | Handle partial reads by buffering until complete netstring received |  |  |
+| TASK-06550 | Implement 64KB (65536 bytes) maximum payload size validation; reject oversized messages |  |  |
+| TASK-06560 | Follow "be liberal in what we accept, strict in what we send": encode_netstring must never produce leading zeros; decode_netstring should accept them |  |  |
 | TASK-06600 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
 
 ### Implementation Phase 9: Socket Client Module
@@ -384,6 +386,7 @@ This plan implements Stage 3 of Platyplaty: the Python client application. The c
 | TASK-11600 | Send `INIT` command; handle error response; on error, exit with message (MVP does not retry) |  |  |
 | TASK-11700 | Attempt to load first preset via `LOAD PRESET`; if fails, try next; if all fail, warn user on stderr |  |  |
 | TASK-11800 | Send `SHOW WINDOW` command |  |  |
+| TASK-11810 | Track window visibility state locally; update after successful `SHOW WINDOW` |  |  |
 | TASK-11850 | If `fullscreen` config is true, send `SET FULLSCREEN` command with `enabled: true` |  |  |
 | TASK-11900 | Enter main event loop |  |  |
 | TASK-12000 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
@@ -408,7 +411,7 @@ This plan implements Stage 3 of Platyplaty: the Python client application. The c
 
 **CODE STYLE**: Follow `reference/generic-python-project-outline.org` and `reference/python-style.org` strictly. The architecture document takes precedence on any conflicts.
 
-- GOAL-1700: Verify complete Stage 3 functionality
+- GOAL-1700: Verify complete Stage 4 functionality
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
