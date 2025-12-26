@@ -115,14 +115,13 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-00100 | Update `pyproject.toml`: add `click` as runtime dependency |  |  |
-| TASK-00200 | Update `pyproject.toml`: add `mypy` and `ruff` as dev dependencies |  |  |
 | TASK-00300 | Configure mypy in `pyproject.toml` with strict settings |  |  |
 | TASK-00400 | Configure ruff in `pyproject.toml` with appropriate rule sets |  |  |
 | TASK-00500 | Create `src/platyplaty/` directory structure |  |  |
 | TASK-00600 | Create `src/platyplaty/__init__.py` with version string |  |  |
 | TASK-00700 | Create `src/platyplaty/__main__.py` as thin entry point |  |  |
-| TASK-00800 | Run `uv add click` and `uv add --dev mypy ruff` to install dependencies |  |  |
+| TASK-00800 | Run `uv add click pydantic` to add runtime dependencies (updates pyproject.toml and installs) |  |  |
+| TASK-00850 | Run `uv add --dev mypy ruff` to add dev dependencies (updates pyproject.toml and installs) |  |  |
 | TASK-00900 | Run `uv pip install -e .` for editable installation |  |  |
 
 ### Implementation Phase 2: Shell Wrapper
