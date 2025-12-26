@@ -41,8 +41,8 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 - **REQ-1900**: After `SOCKET READY`, client sends `CHANGE AUDIO SOURCE` then `INIT` to complete initialization
 - **REQ-2000**: Client uses netstring framing for all socket messages; format `<length>:<json>,`
 - **REQ-2100**: Client increments command ID for each command sent; verifies response ID matches
-- **REQ-2200**: Client uses single-threaded `select()`/`poll()` with calculated timeouts for auto-advance timer
-- **REQ-2300**: Socket fd always in poll set to detect renderer crashes (EOF) immediately
+- **REQ-2200**: Client uses `asyncio` event loop with calculated timeouts for auto-advance timer
+- **REQ-2300**: Socket stream monitored to detect renderer crashes (EOF) immediately
 - **REQ-2400**: When auto-advance timer expires, client sends `LOAD PRESET` for next preset
 - **REQ-2500**: When loop=false and playlist reaches end, auto-advancing stops; visualizer stays on last preset
 - **REQ-2600**: Client attempts preset loads before `SHOW WINDOW`; if all fail, warns user and shows window with idle preset
@@ -170,15 +170,15 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-02500 | Create `src/platyplaty/config.py` module |  |  |
-| TASK-02600 | Define config dataclass/TypedDict with all options: `preset_dirs` (list[str]), `audio_source` (str), `preset_duration` (int), `shuffle` (bool), `loop` (bool), `fullscreen` (bool) |  |  |
+| TASK-02600 | Define config using `pydantic.BaseModel` with all options: `preset_dirs` (list[str]), `audio_source` (str), `preset_duration` (int), `shuffle` (bool), `loop` (bool), `fullscreen` (bool) |  |  |
 | TASK-02700 | Implement `load_config(path: str)` using `tomllib`; validate required `preset-dirs` key |  |  |
-| TASK-02800 | Implement strict type validation: `preset-duration` must be `int` (reject float even if whole number); `shuffle`, `loop`, and `fullscreen` must be bool |  |  |
-| TASK-02900 | Implement unknown key detection: any unrecognized top-level key is fatal error |  |  |
-| TASK-03000 | Implement default values: `audio-source` = `@DEFAULT_SINK@.monitor`, `preset-duration` = 30, `shuffle` = false, `loop` = true, `fullscreen` = false |  |  |
-| TASK-03100 | Implement `preset-duration` minimum validation: must be >= 1 |  |  |
+| TASK-02800 | Pydantic handles type validation automatically: `preset-duration` must be `int` (reject float even if whole number); `shuffle`, `loop`, and `fullscreen` must be bool |  |  |
+| TASK-02900 | Configure `pydantic.ConfigDict(extra='forbid')` for unknown key detection: any unrecognized top-level key is fatal error |  |  |
+| TASK-03000 | Define pydantic field defaults: `audio-source` = `@DEFAULT_SINK@.monitor`, `preset-duration` = 30, `shuffle` = false, `loop` = true, `fullscreen` = false |  |  |
+| TASK-03100 | Use `pydantic.Field(ge=1)` for `preset-duration` validation: must be >= 1 |  |  |
 | TASK-03200 | Create `src/platyplaty/paths.py` module for path expansion |  |  |
-| TASK-03300 | Implement `expand_path(path: str)` that expands `~` and environment variables; fatal error if referenced env var is undefined |  |  |
-| TASK-03400 | Implement resolution of relative paths to absolute from current working directory |  |  |
+| TASK-03300 | Implement `expand_path(path: str)` using `os.path.expanduser()` and `os.path.expandvars()`; fatal error if referenced env var is undefined |  |  |
+| TASK-03400 | Implement resolution of relative paths to absolute using `pathlib.Path.resolve()` from current working directory |  |  |
 | TASK-03500 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
 
 ### Implementation Phase 5: Generate Config
@@ -195,8 +195,8 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | TASK-03700 | Implement example config content with `presets/test` as directory example |  |  |
 | TASK-03800 | Add comment explaining relative paths are resolved from current working directory |  |  |
 | TASK-03900 | Show all config options with defaults in comments |  |  |
-| TASK-04000 | Implement `generate_config(path: str)`: if path is `-`, write to stdout; otherwise write to file |  |  |
-| TASK-04100 | Implement overwrite protection: if path is existing file, error and exit |  |  |
+| TASK-04000 | Implement `generate_config(path: str)`: if path is `-`, write to `sys.stdout`; otherwise write to file using `pathlib.Path.write_text()` |  |  |
+| TASK-04100 | Implement overwrite protection using `pathlib.Path.exists()`: if path is existing file, error and exit |  |  |
 | TASK-04200 | Integrate with main CLI |  |  |
 | TASK-04300 | Test `--generate-config -` outputs to stdout |  |  |
 | TASK-04400 | Test `--generate-config path` creates file |  |  |
@@ -213,10 +213,10 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-04600 | Create `src/platyplaty/socket_path.py` module |  |  |
-| TASK-04700 | Implement `compute_socket_path()` that tries paths in order: (1) `$XDG_RUNTIME_DIR/platyplaty.sock`, (2) `$TEMPDIR/platyplaty-<uid>.sock`, (3) `$TMPDIR/platyplaty-<uid>.sock`, (4) `/tmp/platyplaty-<uid>.sock` |  |  |
-| TASK-04800 | Skip undefined environment variables (not fatal) when computing socket path |  |  |
-| TASK-04900 | Verify socket directory exists; error if no valid directory found |  |  |
-| TASK-05000 | Implement `check_stale_socket(path: str)` that attempts connection: ENOENT = proceed, ECONNREFUSED = unlink and proceed, success = exit with "already running" error, other = fatal |  |  |
+| TASK-04700 | Implement `compute_socket_path()` using `os` module that tries paths in order: (1) `$XDG_RUNTIME_DIR/platyplaty.sock`, (2) `$TEMPDIR/platyplaty-<uid>.sock`, (3) `$TMPDIR/platyplaty-<uid>.sock`, (4) `/tmp/platyplaty-<uid>.sock` |  |  |
+| TASK-04800 | Skip undefined environment variables using `os.environ.get()` (not fatal) when computing socket path |  |  |
+| TASK-04900 | Verify socket directory exists using `pathlib.Path.is_dir()`; error if no valid directory found |  |  |
+| TASK-05000 | Implement `check_stale_socket(path: str)` using `socket` and `errno` modules to attempt connection: ENOENT = proceed, ECONNREFUSED = `os.unlink()` and proceed, success = exit with "already running" error, other = fatal |  |  |
 | TASK-05100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
 
 ### Implementation Phase 7: Playlist Module
@@ -230,12 +230,12 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-05200 | Create `src/platyplaty/playlist.py` module |  |  |
-| TASK-05300 | Implement `scan_preset_dirs(dirs: list[str])` that scans directories flat (non-recursive) |  |  |
-| TASK-05400 | Implement case-insensitive `.milk` extension matching |  |  |
+| TASK-05300 | Implement `scan_preset_dirs(dirs: list[str])` using `pathlib.Path.iterdir()` to scan directories flat (non-recursive) |  |  |
+| TASK-05400 | Implement case-insensitive `.milk` extension matching using `pathlib.Path.suffix` |  |  |
 | TASK-05500 | Implement deduplication by full absolute path |  |  |
-| TASK-05600 | Error if no `.milk` files found; message lists scanned directories |  |  |
+| TASK-05600 | Error if no `.milk` files found; print to `sys.stderr` message listing scanned directories |  |  |
 | TASK-05700 | Implement case-insensitive lexicographic sort by full absolute path |  |  |
-| TASK-05800 | Implement shuffle mode: randomize order once when enabled |  |  |
+| TASK-05800 | Implement shuffle mode using `random.shuffle()`: randomize order once when enabled |  |  |
 | TASK-05900 | Create `Playlist` class with `current()`, `next()`, `previous()`, `at_end()` methods |  |  |
 | TASK-06000 | Implement loop behavior: when loop=true, wrap around; when loop=false, stop at end |  |  |
 | TASK-06100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
@@ -269,11 +269,11 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-06700 | Create `src/platyplaty/socket_client.py` module |  |  |
-| TASK-06800 | Implement `SocketClient` class with Unix domain socket connection |  |  |
-| TASK-06900 | Implement `send_command(command: dict) -> dict` that sends netstring-framed JSON and waits for response |  |  |
+| TASK-06800 | Implement `SocketClient` class with Unix domain socket connection (using `socket` module) |  |  |
+| TASK-06900 | Implement `send_command(command: dict) -> dict` that sends netstring-framed JSON (using `json` module) and waits for response |  |  |
 | TASK-07000 | Track command ID; increment for each command; verify response ID matches |  |  |
 | TASK-07100 | Implement `recv_response()` with buffering for partial reads |  |  |
-| TASK-07200 | Expose socket file descriptor for use in `select()`/`poll()` |  |  |
+| TASK-07200 | Wrap socket connection with `asyncio` streams for async I/O |  |  |
 | TASK-07300 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
 
 ### Implementation Phase 10: Renderer Process Management
@@ -287,12 +287,12 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-07400 | Create `src/platyplaty/renderer.py` module |  |  |
-| TASK-07500 | Implement `find_renderer_binary()` that locates `build/platyplaty-renderer` relative to project root (resolved via shell wrapper); error if not found with message suggesting `make` |  |  |
-| TASK-07600 | Implement `start_renderer(socket_path: str)` using `subprocess.Popen` with `start_new_session=True` |  |  |
+| TASK-07500 | Implement `find_renderer_binary()` using `pathlib` that locates `build/platyplaty-renderer` relative to project root (resolved via shell wrapper); error if not found with message suggesting `make` |  |  |
+| TASK-07600 | Implement `start_renderer(socket_path: str)` using `asyncio.create_subprocess_exec()` with `start_new_session=True` |  |  |
 | TASK-07700 | Pass `--socket-path` argument to renderer |  |  |
-| TASK-07800 | Read renderer stdout for `SOCKET READY\n` line; no timeout; monitor subprocess liveness |  |  |
-| TASK-07900 | If renderer exits before `SOCKET READY`, report error with exit code |  |  |
-| TASK-08000 | Implement real-time stderr passthrough (not buffered) |  |  |
+| TASK-07800 | Read renderer stdout from async stream for `SOCKET READY\n` line; no timeout; monitor subprocess liveness |  |  |
+| TASK-07900 | If async subprocess exits before `SOCKET READY`, report error with exit code |  |  |
+| TASK-08000 | Implement real-time stderr passthrough via async stream iteration |  |  |
 | TASK-08100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
 
 ### Implementation Phase 11: Stderr Event Parsing
@@ -306,9 +306,10 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-08200 | Create `src/platyplaty/stderr_parser.py` module |  |  |
-| TASK-08300 | Implement detection of netstring-framed JSON on stderr (line starts with digits followed by colon) |  |  |
-| TASK-08400 | Parse PLATYPLATY events: check for `"source": "PLATYPLATY"` in JSON |  |  |
+| TASK-08300 | Implement detection of netstring-framed JSON on stderr using `re` module (line starts with digits followed by colon) |  |  |
+| TASK-08400 | Parse PLATYPLATY events: parse with `json` module; check for `"source": "PLATYPLATY"` |  |  |
 | TASK-08500 | Handle event types: `DISCONNECT`, `AUDIO_ERROR`, `QUIT` |  |  |
+| TASK-08510 | On `AUDIO_ERROR` event: log warning to stderr ("Audio error: <reason>, visualization continues silently") and continue; no reconnect needed |  |  |
 | TASK-08600 | Pass through non-PLATYPLATY stderr output to user |  |  |
 | TASK-08700 | Handle malformed netstrings on stderr gracefully (pass through as regular output) |  |  |
 | TASK-08800 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
@@ -324,8 +325,8 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-08900 | Create `src/platyplaty/event_loop.py` module |  |  |
-| TASK-09000 | Implement single-threaded `select()`/`poll()` loop with socket fd and stderr fd |  |  |
-| TASK-09100 | Calculate timeout for auto-advance timer (time remaining until next preset switch) |  |  |
+| TASK-09000 | Implement async event loop using `asyncio` with socket and stderr streams |  |  |
+| TASK-09100 | Calculate timeout for auto-advance timer using `time.monotonic()` (time remaining until next preset switch) |  |  |
 | TASK-09200 | When timer expires, send `LOAD PRESET` for next preset from playlist |  |  |
 | TASK-09300 | Handle loop=false case: when playlist at end, stop auto-advancing; visualizer stays on last preset |  |  |
 | TASK-09400 | Detect socket EOF immediately (renderer crash detection) |  |  |
@@ -342,10 +343,10 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-09700 | Implement SIGINT handler that sends `QUIT` command to renderer |  |  |
+| TASK-09700 | Implement SIGINT handler using `signal` module that sends `QUIT` command to renderer |  |  |
 | TASK-09800 | Wait for `QUIT` response before closing socket |  |  |
 | TASK-09900 | Exit with code 1, no error message on keyboard interrupt |  |  |
-| TASK-10000 | Ensure socket is closed on all exit paths |  |  |
+| TASK-10000 | Ensure socket is closed via `socket.close()` on all exit paths |  |  |
 | TASK-10100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
 
 ### Implementation Phase 14: Client Reconnection Logic
@@ -358,10 +359,10 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-10200 | On stderr `DISCONNECT` event: attempt reconnect (renderer is waiting) |  |  |
+| TASK-10200 | On stderr `DISCONNECT` event: attempt reconnect using `socket` module (renderer is waiting) |  |  |
 | TASK-10300 | On stderr `QUIT` event: do not reconnect (renderer has exited) |  |  |
-| TASK-10400 | On socket EOF with no stderr event: attempt reconnect |  |  |
-| TASK-10500 | After reconnect, client can immediately send commands (renderer already initialized) |  |  |
+| TASK-10400 | On socket EOF with no stderr event: attempt reconnect using `socket` module |  |  |
+| TASK-10500 | After reconnect, re-run full startup sequence (CHANGE AUDIO SOURCE, INIT, LOAD PRESET, SHOW WINDOW); renderer handles via idempotency (MVP behavior; revisit when STATUS command added post-MVP) |  |  |
 | TASK-10600 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
 
 ### Implementation Phase 15: Startup Sequence Integration
@@ -375,19 +376,19 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-10700 | In main.py: load and validate config |  |  |
-| TASK-10800 | Expand paths in config; resolve relative paths to absolute |  |  |
-| TASK-10900 | Validate all preset directories exist (strict validation per architecture) |  |  |
+| TASK-10800 | Expand paths in config; resolve relative paths to absolute using `pathlib` |  |  |
+| TASK-10900 | Validate all preset directories exist using `pathlib.Path.is_dir()` (strict validation per architecture) |  |  |
 | TASK-11000 | Scan preset directories; build playlist |  |  |
 | TASK-11100 | Compute socket path; check for stale socket |  |  |
-| TASK-11200 | Check renderer binary exists |  |  |
-| TASK-11300 | Start renderer subprocess; wait for `SOCKET READY` |  |  |
-| TASK-11400 | Connect to socket |  |  |
-| TASK-11500 | Send `CHANGE AUDIO SOURCE` command with audio source from config |  |  |
-| TASK-11600 | Send `INIT` command; handle error response; on error, exit with message (MVP does not retry) |  |  |
-| TASK-11700 | Attempt to load first preset via `LOAD PRESET`; if fails, try next; if all fail, warn user on stderr |  |  |
+| TASK-11200 | Check renderer binary exists using `pathlib.Path.exists()` |  |  |
+| TASK-11300 | Start renderer subprocess using `asyncio.create_subprocess_exec()`; wait for `SOCKET READY` |  |  |
+| TASK-11400 | Connect to socket using `socket` module |  |  |
+| TASK-11500 | Send `CHANGE AUDIO SOURCE` command with audio source from config; error "cannot change audio source after INIT" is ignored during reconnect (expected per MVP reconnection behavior), other errors are fatal |  |  |
+| TASK-11600 | Send `INIT` command; handle error response: "already initialized" is success (expected during reconnect per MVP reconnection behavior), other errors are fatal (exit with message; MVP does not retry) |  |  |
+| TASK-11700 | Attempt to load first preset via `LOAD PRESET`; if fails, try next; if all fail, warn user via `sys.stderr` |  |  |
 | TASK-11800 | Send `SHOW WINDOW` command |  |  |
 | TASK-11810 | Track window visibility state locally; update after successful `SHOW WINDOW` |  |  |
-| TASK-11850 | If `fullscreen` config is true, send `SET FULLSCREEN` command with `enabled: true` |  |  |
+| TASK-11850 | If `fullscreen` config is true and `SHOW WINDOW` succeeded, send `SET FULLSCREEN` command with `enabled: true`; per architecture, `SET FULLSCREEN` before `SHOW WINDOW` returns error "window not yet visible" |  |  |
 | TASK-11900 | Enter main event loop |  |  |
 | TASK-12000 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
 
@@ -434,18 +435,31 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 ## 3. Alternatives
 
 - **ALT-100**: Using argparse instead of click - rejected because click provides cleaner decorator-based interface and automatic help generation per generic-python-project-outline.org
-- **ALT-200**: Using threading for stderr handling - rejected to keep design simple; single-threaded select/poll handles all I/O
-- **ALT-300**: Using asyncio for event loop - rejected; simple select/poll is sufficient for MVP and keeps dependencies minimal
+- **ALT-200**: Using threading for stderr handling - rejected to keep design simple; asyncio handles all I/O
+- **ALT-300**: Using asyncio for event loop - selected; provides cleaner code with built-in subprocess and signal handling support
 - **ALT-400**: Default config file location (e.g., `~/.config/platyplaty.toml`) - rejected per architecture; config only loaded if `--config-file` specified
 
 ## 4. Dependencies
 
 - **DEP-100**: click - CLI argument handling (runtime dependency)
+- **DEP-150**: pydantic - Config validation with automatic type checking and error messages (runtime dependency)
 - **DEP-200**: mypy - static type checking (dev dependency)
 - **DEP-300**: ruff - linting and formatting (dev dependency)
 - **DEP-400**: pytest - testing (dev dependency, already present)
 - **DEP-500**: tomllib - TOML parsing (Python 3.11+ stdlib)
 - **DEP-600**: Stage 2 renderer - must be built and functional
+- **DEP-700**: Standard library modules (no installation required):
+  - `asyncio` - Async event loop, subprocess management, signal handling
+  - `socket` - Unix domain socket communication with renderer (via asyncio streams)
+  - `json` - JSON encoding/decoding for protocol messages
+  - `os` - Environment variables, process info (uid), file operations
+  - `pathlib` - Path manipulation and resolution
+  - `signal` - SIGINT/SIGTERM handling for graceful shutdown
+  - `random` - Playlist shuffle randomization
+  - `time` - Timer calculations for auto-advance using monotonic clock
+  - `sys` - stdout/stderr access for config generation output
+  - `re` - Regex pattern matching for stderr event detection
+  - `errno` - Error code constants for socket error handling
 
 ## 5. Files
 
@@ -489,7 +503,7 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 ### Risks
 
-- **RISK-100**: Real-time stderr passthrough may be complex with select/poll; mitigate by using non-blocking I/O
+- **RISK-100**: ~~Real-time stderr passthrough~~ - mitigated by using `asyncio` subprocess with async streams
 - **RISK-200**: Signal handling in Python can be tricky; mitigate by keeping handler minimal
 - **RISK-300**: Reconnection logic may have edge cases; mitigate with thorough testing
 
