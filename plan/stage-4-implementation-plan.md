@@ -41,7 +41,7 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 - **REQ-1900**: After `SOCKET READY`, client sends `CHANGE AUDIO SOURCE` then `INIT` to complete initialization
 - **REQ-2000**: Client uses netstring framing for all socket messages; format `<length>:<json>,`
 - **REQ-2100**: Client increments command ID for each command sent; verifies response ID matches
-- **REQ-2200**: Client uses `asyncio` event loop with calculated timeouts for auto-advance timer
+- **REQ-2200**: Client uses `asyncio` event loop; auto-advance timer resets after each successful `LOAD PRESET` to prevent race conditions
 - **REQ-2300**: Socket stream monitored to detect renderer crashes (EOF) immediately
 - **REQ-2400**: When auto-advance timer expires, client sends `LOAD PRESET` for next preset
 - **REQ-2500**: When loop=false and playlist reaches end, auto-advancing stops; visualizer stays on last preset
@@ -75,6 +75,9 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 - **STY-0400**: Files under 100 lines preferred; up to ~150 acceptable for cohesive modules
 - **STY-0500**: Maximum 3 levels of indentation; use early returns and helper functions
 - **STY-0600**: Comprehensive docstrings and type annotations (Python 3.12+ syntax)
+- **STY-0650**: Avoid `Any` types; use specific types, generics, or union types instead
+- **STY-0660**: Avoid `# type: ignore` comments; fix type issues at their source
+- **STY-0670**: Use pydantic models for protocol messages (commands and responses) for type-safe JSON handling
 - **STY-0700**: Short single-purpose functions with functional style
 - **STY-0800**: Lazy imports for fast `--help` response; heavy imports inside functions after argument validation
 - **STY-0900**: Thin `__main__.py` that imports and calls main function
@@ -325,9 +328,9 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
 | TASK-08900 | Create `src/platyplaty/event_loop.py` module |  |  |
-| TASK-09000 | Implement async event loop using `asyncio` with socket and stderr streams |  |  |
-| TASK-09100 | Calculate timeout for auto-advance timer using `time.monotonic()` (time remaining until next preset switch) |  |  |
-| TASK-09200 | When timer expires, send `LOAD PRESET` for next preset from playlist |  |  |
+| TASK-09000 | Implement async event loop using separate `asyncio` tasks for socket and stderr, coordinated via `asyncio.gather()`; stderr task signals events to main loop via shared flags or `asyncio.Event` |  |  |
+| TASK-09100 | Timer resets after each successful `LOAD PRESET`; use `asyncio` timeout of `preset_duration` seconds; no command sent while another is in flight |  |  |
+| TASK-09200 | When timer expires, send `LOAD PRESET` for next preset from playlist; reset timer after successful response |  |  |
 | TASK-09300 | Handle loop=false case: when playlist at end, stop auto-advancing; visualizer stays on last preset |  |  |
 | TASK-09400 | Detect socket EOF immediately (renderer crash detection) |  |  |
 | TASK-09500 | Process stderr events; on `QUIT` event set flag to not reconnect |  |  |
@@ -343,10 +346,11 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-09700 | Implement SIGINT handler using `signal` module that sends `QUIT` command to renderer |  |  |
+| TASK-09700 | Implement SIGINT handler using asyncio's `loop.add_signal_handler()` that sets shutdown flag; event loop sends `QUIT` command when safe |  |  |
 | TASK-09800 | Wait for `QUIT` response before closing socket |  |  |
 | TASK-09900 | Exit with code 1, no error message on keyboard interrupt |  |  |
 | TASK-10000 | Ensure socket is closed via `socket.close()` on all exit paths |  |  |
+| TASK-10050 | On shutdown, cancel all asyncio tasks (stderr task, socket task) before closing resources; use asyncio's task cancellation mechanism |  |  |
 | TASK-10100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
 
 ### Implementation Phase 14: Client Reconnection Logic
@@ -362,7 +366,7 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | TASK-10200 | On stderr `DISCONNECT` event: attempt reconnect using `socket` module (renderer is waiting) |  |  |
 | TASK-10300 | On stderr `QUIT` event: do not reconnect (renderer has exited) |  |  |
 | TASK-10400 | On socket EOF with no stderr event: attempt reconnect using `socket` module |  |  |
-| TASK-10500 | After reconnect, re-run full startup sequence (CHANGE AUDIO SOURCE, INIT, LOAD PRESET, SHOW WINDOW); renderer handles via idempotency (MVP behavior; revisit when STATUS command added post-MVP) |  |  |
+| TASK-10500 | After reconnect, re-run full startup sequence (CHANGE AUDIO SOURCE, INIT, LOAD PRESET, SHOW WINDOW) using current playlist position (same preset as before disconnect); renderer handles via idempotency; timer resets to full `preset-duration` after reconnect completes (preset gets fresh full duration, not remaining time from before disconnect) |  |  |
 | TASK-10600 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
 
 ### Implementation Phase 15: Startup Sequence Integration
@@ -385,7 +389,7 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 | TASK-11400 | Connect to socket using `socket` module |  |  |
 | TASK-11500 | Send `CHANGE AUDIO SOURCE` command with audio source from config; error "cannot change audio source after INIT" is ignored during reconnect (expected per MVP reconnection behavior), other errors are fatal |  |  |
 | TASK-11600 | Send `INIT` command; handle error response: "already initialized" is success (expected during reconnect per MVP reconnection behavior), other errors are fatal (exit with message; MVP does not retry) |  |  |
-| TASK-11700 | Attempt to load first preset via `LOAD PRESET`; if fails, try next; if all fail, warn user via `sys.stderr` |  |  |
+| TASK-11700 | Attempt to load first preset via `LOAD PRESET`; if fails, try next; if all fail, warn user via `sys.stderr`; start auto-advance timer after first successful load |  |  |
 | TASK-11800 | Send `SHOW WINDOW` command |  |  |
 | TASK-11810 | Track window visibility state locally; update after successful `SHOW WINDOW` |  |  |
 | TASK-11850 | If `fullscreen` config is true and `SHOW WINDOW` succeeded, send `SET FULLSCREEN` command with `enabled: true`; per architecture, `SET FULLSCREEN` before `SHOW WINDOW` returns error "window not yet visible" |  |  |
@@ -454,7 +458,7 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
   - `json` - JSON encoding/decoding for protocol messages
   - `os` - Environment variables, process info (uid), file operations
   - `pathlib` - Path manipulation and resolution
-  - `signal` - SIGINT/SIGTERM handling for graceful shutdown
+  - `signal` - Signal constants (SIGINT, SIGTERM); handlers registered via asyncio's `loop.add_signal_handler()`
   - `random` - Playlist shuffle randomization
   - `time` - Timer calculations for auto-advance using monotonic clock
   - `sys` - stdout/stderr access for config generation output
