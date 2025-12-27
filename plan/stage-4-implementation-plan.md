@@ -171,17 +171,17 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-02500 | Create `src/platyplaty/config.py` module |  |  |
-| TASK-02600 | Define config using `pydantic.BaseModel` with all options: `preset_dirs` (list[str]), `audio_source` (str), `preset_duration` (int), `shuffle` (bool), `loop` (bool), `fullscreen` (bool) |  |  |
-| TASK-02700 | Implement `load_config(path: str)` using `tomllib`; validate required `preset-dirs` key |  |  |
-| TASK-02800 | Pydantic handles type validation automatically: `preset-duration` must be `int` (reject float even if whole number); `shuffle`, `loop`, and `fullscreen` must be bool |  |  |
-| TASK-02900 | Configure `pydantic.ConfigDict(extra='forbid')` for unknown key detection: any unrecognized top-level key is fatal error |  |  |
-| TASK-03000 | Define pydantic field defaults: `audio-source` = `@DEFAULT_SINK@.monitor`, `preset-duration` = 30, `shuffle` = false, `loop` = true, `fullscreen` = false |  |  |
-| TASK-03100 | Use `pydantic.Field(ge=1)` for `preset-duration` validation: must be >= 1 |  |  |
-| TASK-03200 | Create `src/platyplaty/paths.py` module for path expansion |  |  |
-| TASK-03300 | Implement `expand_path(path: str)` using `os.path.expanduser()` and `os.path.expandvars()`; fatal error if referenced env var is undefined |  |  |
-| TASK-03400 | Implement resolution of relative paths to absolute using `pathlib.Path.resolve()` from current working directory |  |  |
-| TASK-03500 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-02500 | Create `src/platyplaty/config.py` module | x | 2025-12-26 |
+| TASK-02600 | Define config using `pydantic.BaseModel` with all options: `preset_dirs` (list[str]), `audio_source` (str), `preset_duration` (int), `shuffle` (bool), `loop` (bool), `fullscreen` (bool) | x | 2025-12-26 |
+| TASK-02700 | Implement `load_config(path: str)` using `tomllib`; validate required `preset-dirs` key | x | 2025-12-26 |
+| TASK-02800 | Pydantic handles type validation automatically: `preset-duration` must be `int` (reject float even if whole number); `shuffle`, `loop`, and `fullscreen` must be bool | x | 2025-12-26 |
+| TASK-02900 | Configure `pydantic.ConfigDict(extra='forbid')` for unknown key detection: any unrecognized top-level key is fatal error | x | 2025-12-26 |
+| TASK-03000 | Define pydantic field defaults: `audio-source` = `@DEFAULT_SINK@.monitor`, `preset-duration` = 30, `shuffle` = false, `loop` = true, `fullscreen` = false | x | 2025-12-26 |
+| TASK-03100 | Use `pydantic.Field(ge=1)` for `preset-duration` validation: must be >= 1 | x | 2025-12-26 |
+| TASK-03200 | Create `src/platyplaty/paths.py` module for path expansion | x | 2025-12-26 |
+| TASK-03300 | Implement `expand_path(path: str)` using `os.path.expanduser()` and `os.path.expandvars()`; fatal error if referenced env var is undefined | x | 2025-12-26 |
+| TASK-03400 | Implement resolution of relative paths to absolute using `pathlib.Path.resolve()` from current working directory | x | 2025-12-26 |
+| TASK-03500 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 5: Generate Config
 
