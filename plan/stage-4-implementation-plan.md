@@ -216,12 +216,12 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-04600 | Create `src/platyplaty/socket_path.py` module |  |  |
-| TASK-04700 | Implement `compute_socket_path()` using `os` module that tries paths in order: (1) `$XDG_RUNTIME_DIR/platyplaty.sock`, (2) `$TEMPDIR/platyplaty-<uid>.sock`, (3) `$TMPDIR/platyplaty-<uid>.sock`, (4) `/tmp/platyplaty-<uid>.sock` |  |  |
-| TASK-04800 | Skip undefined environment variables using `os.environ.get()` (not fatal) when computing socket path |  |  |
-| TASK-04900 | Verify socket directory exists using `pathlib.Path.is_dir()`; error if no valid directory found |  |  |
-| TASK-05000 | Implement `check_stale_socket(path: str)` using `socket` and `errno` modules to attempt connection: ENOENT = proceed, ECONNREFUSED = `os.unlink()` and proceed, success = exit with "already running" error, other = fatal |  |  |
-| TASK-05100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-04600 | Create `src/platyplaty/socket_path.py` module | x | 2025-12-26 |
+| TASK-04700 | Implement `compute_socket_path()` using `os` module that tries paths in order: (1) `$XDG_RUNTIME_DIR/platyplaty.sock`, (2) `$TEMPDIR/platyplaty-<uid>.sock`, (3) `$TMPDIR/platyplaty-<uid>.sock`, (4) `/tmp/platyplaty-<uid>.sock` | x | 2025-12-26 |
+| TASK-04800 | Skip undefined environment variables using `os.environ.get()` (not fatal) when computing socket path | x | 2025-12-26 |
+| TASK-04900 | Verify socket directory exists using `pathlib.Path.is_dir()`; error if no valid directory found | x | 2025-12-26 |
+| TASK-05000 | Implement `check_stale_socket(path: str)` using `socket` and `errno` modules to attempt connection: ENOENT = proceed, ECONNREFUSED = `os.unlink()` and proceed, success = exit with "already running" error, other = fatal | x | 2025-12-26 |
+| TASK-05100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 7: Playlist Module
 
