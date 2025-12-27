@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+"""Main entry point for the Platyplaty visualizer client.
+
+This module provides the CLI interface using click. Only click is imported
+at module level to ensure fast --help response times.
+"""
+
+import click
+
+
+@click.command()
+@click.option(
+    "--config-file",
+    type=click.Path(exists=True),
+    help="Path to TOML configuration file.",
+)
+@click.option(
+    "--generate-config",
+    type=str,
+    metavar="PATH",
+    help="Generate example config to PATH (use '-' for stdout).",
+)
+def main(config_file: str | None, generate_config: str | None) -> None:
+    """Platyplaty - A music visualizer using projectM."""
+    # Mutual exclusivity check
+    if config_file and generate_config:
+        raise click.UsageError(
+            "--config-file and --generate-config are mutually exclusive."
+        )
+
+    # Handle --generate-config
+    if generate_config is not None:
+        from platyplaty.generate_config import generate_config as gen_config
+
+        gen_config(generate_config)
+        return
+
+    # Handle --config-file
+    if config_file is not None:
+        click.echo(f"Would run with config: {config_file}")
+        return
+
+    # No arguments: show error with suggestion
+    raise click.UsageError(
+        "No arguments provided. Use --generate-config to create a config file."
+    )

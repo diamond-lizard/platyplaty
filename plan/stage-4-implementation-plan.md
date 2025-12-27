@@ -152,14 +152,14 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-01700 | Create `src/platyplaty/main.py` with click-decorated main command; import only click at module level |  |  |
-| TASK-01800 | Add `--help` option (click provides automatically) |  |  |
-| TASK-01900 | Add `--config-file` option (mutually exclusive with `--generate-config`) |  |  |
-| TASK-02000 | Add `--generate-config` option (accepts path or `-` for stdout) |  |  |
-| TASK-02100 | Implement no-arguments case: error with suggestion to use `--generate-config` |  |  |
-| TASK-02200 | Update `__main__.py` to import and call main from `main.py` |  |  |
-| TASK-02300 | Test `--help` responds quickly (lazy imports working) |  |  |
-| TASK-02400 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-01700 | Create `src/platyplaty/main.py` with click-decorated main command; import only click at module level | x | 2025-12-26 |
+| TASK-01800 | Add `--help` option (click provides automatically) | x | 2025-12-26 |
+| TASK-01900 | Add `--config-file` option (mutually exclusive with `--generate-config`) | x | 2025-12-26 |
+| TASK-02000 | Add `--generate-config` option (accepts path or `-` for stdout) | x | 2025-12-26 |
+| TASK-02100 | Implement no-arguments case: error with suggestion to use `--generate-config` | x | 2025-12-26 |
+| TASK-02200 | Update `__main__.py` to import and call main from `main.py` | x | 2025-12-26 |
+| TASK-02300 | Test `--help` responds quickly (lazy imports working) | x | 2025-12-26 |
+| TASK-02400 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 4: Configuration Module
 
