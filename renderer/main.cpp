@@ -17,8 +17,6 @@
 #include <optional>
 
 namespace {
-constexpr char const* PRESET_PATH = "presets/test/101-per_frame.milk";
-
 // Static storage for socket path (needed by atexit handler).
 std::string g_socket_path;
 
@@ -118,11 +116,6 @@ int main(int argc, const char* argv[]) {
         platyplaty::AudioCapture audio_capture{audio_source, visualizer};
         audio_capture.start();
         socket_thread.set_initialized(true);
-
-        auto result = visualizer.load_preset(PRESET_PATH);
-        if (!result.success) {
-            std::cerr << "Warning: Failed to load preset: " << result.error_message << '\n';
-        }
 
         platyplaty::run_event_loop(window, visualizer, command_slot);
 
