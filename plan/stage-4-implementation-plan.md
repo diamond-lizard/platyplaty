@@ -254,13 +254,13 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-06200 | Create `src/platyplaty/netstring.py` module |  |  |
-| TASK-06300 | Implement `encode_netstring(payload: str) -> bytes` that produces `<length>:<payload>,` format |  |  |
-| TASK-06400 | Implement `decode_netstring(data: bytes) -> tuple[str, bytes]` that returns (payload, remaining_data) |  |  |
-| TASK-06500 | Handle partial reads by buffering until complete netstring received |  |  |
-| TASK-06550 | Implement 64KB (65536 bytes) maximum payload size validation; reject oversized messages |  |  |
-| TASK-06560 | Follow "be liberal in what we accept, strict in what we send": encode_netstring must never produce leading zeros; decode_netstring should accept them |  |  |
-| TASK-06600 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-06200 | Create `src/platyplaty/netstring.py` module | x | 2025-12-26 |
+| TASK-06300 | Implement `encode_netstring(payload: str) -> bytes` that produces `<length>:<payload>,` format | x | 2025-12-26 |
+| TASK-06400 | Implement `decode_netstring(data: bytes) -> tuple[str, bytes]` that returns (payload, remaining_data) | x | 2025-12-26 |
+| TASK-06500 | Handle partial reads by buffering until complete netstring received | x | 2025-12-26 |
+| TASK-06550 | Implement 64KB (65536 bytes) maximum payload size validation; reject oversized messages | x | 2025-12-26 |
+| TASK-06560 | Follow "be liberal in what we accept, strict in what we send": encode_netstring must never produce leading zeros; decode_netstring should accept them | x | 2025-12-26 |
+| TASK-06600 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 9: Socket Client Module
 
