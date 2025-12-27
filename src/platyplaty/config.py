@@ -21,11 +21,11 @@ class Config(BaseModel):
         fullscreen: Whether to start in fullscreen mode.
     """
 
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    preset_dirs: list[str]
-    audio_source: str = "@DEFAULT_SINK@.monitor"
-    preset_duration: int = Field(default=30, ge=1)
+    preset_dirs: list[str] = Field(alias="preset-dirs")
+    audio_source: str = Field(default="@DEFAULT_SINK@.monitor", alias="audio-source")
+    preset_duration: int = Field(default=30, ge=1, alias="preset-duration")
     shuffle: bool = False
     loop: bool = True
     fullscreen: bool = False

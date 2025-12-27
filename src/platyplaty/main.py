@@ -32,7 +32,10 @@ def main(config_file: str | None, generate_config: str | None) -> None:
     if generate_config is not None:
         from platyplaty.generate_config import generate_config as gen_config
 
-        gen_config(generate_config)
+        try:
+            gen_config(generate_config)
+        except FileExistsError as e:
+            raise click.ClickException(str(e)) from None
         return
 
     # Handle --config-file
