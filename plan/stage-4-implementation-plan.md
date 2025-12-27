@@ -381,22 +381,22 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-10700 | In main.py: load and validate config |  |  |
-| TASK-10800 | Expand paths in config; resolve relative paths to absolute using `pathlib` |  |  |
-| TASK-10900 | Validate all preset directories exist using `pathlib.Path.is_dir()` (strict validation per architecture) |  |  |
-| TASK-11000 | Scan preset directories; build playlist |  |  |
-| TASK-11100 | Compute socket path; check for stale socket |  |  |
-| TASK-11200 | Check renderer binary exists using `pathlib.Path.exists()` |  |  |
-| TASK-11300 | Start renderer subprocess using `asyncio.create_subprocess_exec()`; wait for `SOCKET READY` |  |  |
-| TASK-11400 | Connect to socket using `socket` module |  |  |
-| TASK-11500 | Send `CHANGE AUDIO SOURCE` command with audio source from config; error "cannot change audio source after INIT" is ignored during reconnect (expected per MVP reconnection behavior), other errors are fatal |  |  |
-| TASK-11600 | Send `INIT` command; handle error response: "already initialized" is success (expected during reconnect per MVP reconnection behavior), other errors are fatal (exit with message; MVP does not retry) |  |  |
-| TASK-11700 | Attempt to load first preset via `LOAD PRESET`; if fails, try next; if all fail, warn user via `sys.stderr`; start auto-advance timer after first successful load |  |  |
-| TASK-11800 | Send `SHOW WINDOW` command |  |  |
-| TASK-11810 | Track window visibility state locally; update after successful `SHOW WINDOW` |  |  |
-| TASK-11850 | If `fullscreen` config is true and `SHOW WINDOW` succeeded, send `SET FULLSCREEN` command with `enabled: true`; per architecture, `SET FULLSCREEN` before `SHOW WINDOW` returns error "window not yet visible" |  |  |
-| TASK-11900 | Enter main event loop |  |  |
-| TASK-12000 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-10700 | In main.py: load and validate config | x | 2025-12-26 |
+| TASK-10800 | Expand paths in config; resolve relative paths to absolute using `pathlib` | x | 2025-12-26 |
+| TASK-10900 | Validate all preset directories exist using `pathlib.Path.is_dir()` (strict validation per architecture) | x | 2025-12-26 |
+| TASK-11000 | Scan preset directories; build playlist | x | 2025-12-26 |
+| TASK-11100 | Compute socket path; check for stale socket | x | 2025-12-26 |
+| TASK-11200 | Check renderer binary exists using `pathlib.Path.exists()` | x | 2025-12-26 |
+| TASK-11300 | Start renderer subprocess using `asyncio.create_subprocess_exec()`; wait for `SOCKET READY` | x | 2025-12-26 |
+| TASK-11400 | Connect to socket using `socket` module | x | 2025-12-26 |
+| TASK-11500 | Send `CHANGE AUDIO SOURCE` command with audio source from config; error "cannot change audio source after INIT" is ignored during reconnect (expected per MVP reconnection behavior), other errors are fatal | x | 2025-12-26 |
+| TASK-11600 | Send `INIT` command; handle error response: "already initialized" is success (expected during reconnect per MVP reconnection behavior), other errors are fatal (exit with message; MVP does not retry) | x | 2025-12-26 |
+| TASK-11700 | Attempt to load first preset via `LOAD PRESET`; if fails, try next; if all fail, warn user via `sys.stderr`; start auto-advance timer after first successful load | x | 2025-12-26 |
+| TASK-11800 | Send `SHOW WINDOW` command | x | 2025-12-26 |
+| TASK-11810 | Track window visibility state locally; update after successful `SHOW WINDOW` | x | 2025-12-26 |
+| TASK-11850 | If `fullscreen` config is true and `SHOW WINDOW` succeeded, send `SET FULLSCREEN` command with `enabled: true`; per architecture, `SET FULLSCREEN` before `SHOW WINDOW` returns error "window not yet visible" | x | 2025-12-26 |
+| TASK-11900 | Enter main event loop | x | 2025-12-26 |
+| TASK-12000 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 16: Makefile Integration
 

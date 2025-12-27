@@ -40,8 +40,10 @@ def main(config_file: str | None, generate_config: str | None) -> None:
 
     # Handle --config-file
     if config_file is not None:
-        click.echo(f"Would run with config: {config_file}")
-        return
+        import sys
+
+        from platyplaty.startup import run_with_config
+        sys.exit(run_with_config(config_file))
 
     # No arguments: show error with suggestion
     raise click.UsageError(
