@@ -422,21 +422,21 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-12600 | Test `--help` responds quickly |  |  |
-| TASK-12700 | Test `--generate-config -` produces valid TOML |  |  |
-| TASK-12800 | Test `--generate-config path` creates file and refuses to overwrite |  |  |
-| TASK-12900 | Test config validation: missing preset-dirs, unknown keys, wrong types |  |  |
-| TASK-13000 | Test path expansion: `~`, `$HOME`, undefined env var error |  |  |
-| TASK-13100 | Test preset scanning: finds .milk files, case-insensitive, deduplication |  |  |
-| TASK-13200 | Test playlist: alphabetical order, shuffle, loop/no-loop |  |  |
-| TASK-13300 | Test stale socket handling: ENOENT, ECONNREFUSED, already running |  |  |
-| TASK-13400 | Test startup sequence: renderer starts, SOCKET READY received, commands sent |  |  |
-| TASK-13500 | Test auto-advance: presets change at configured duration |  |  |
-| TASK-13600 | Test Ctrl+C: QUIT sent, graceful shutdown |  |  |
-| TASK-13700 | Test all files under ~150 lines |  |  |
-| TASK-13800 | Test no more than 3 levels of indentation |  |  |
-| TASK-13900 | Run `uv run ruff check src/` and `uv run mypy src/` |  |  |
-| TASK-14000 | Run `uv run pytest tests/` |  |  |
+| TASK-12600 | Test `--help` responds quickly | x | 2025-12-26 |
+| TASK-12700 | Test `--generate-config -` produces valid TOML | x | 2025-12-26 |
+| TASK-12800 | Test `--generate-config path` creates file and refuses to overwrite | x | 2025-12-26 |
+| TASK-12900 | Test config validation: missing preset-dirs, unknown keys, wrong types | x | 2025-12-26 |
+| TASK-13000 | Test path expansion: `~`, `$HOME`, undefined env var error | x | 2025-12-26 |
+| TASK-13100 | Test preset scanning: finds .milk files, case-insensitive, deduplication | x | 2025-12-26 |
+| TASK-13200 | Test playlist: alphabetical order, shuffle, loop/no-loop | x | 2025-12-26 |
+| TASK-13300 | Test stale socket handling: ENOENT, ECONNREFUSED, already running | x | 2025-12-26 |
+| TASK-13400 | Test startup sequence: renderer starts, SOCKET READY received, commands sent | x | 2025-12-26 |
+| TASK-13500 | Test auto-advance: presets change at configured duration | x | 2025-12-26 |
+| TASK-13600 | Test Ctrl+C: QUIT sent, graceful shutdown | x | 2025-12-26 |
+| TASK-13700 | Test all files under ~150 lines | x | 2025-12-27 | 2025-12-27
+| TASK-13800 | Test no more than 3 levels of indentation | x | 2025-12-27 |
+| TASK-13900 | Run `uv run ruff check src/` and `uv run mypy src/` | x | 2025-12-27 |
+| TASK-14000 | Run `uv run pytest tests/` | x | 2025-12-27 |
 
 ## 3. Alternatives
 
