@@ -49,10 +49,12 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-0900 | In `visualizer.cpp`: In `load_preset()`, store `path` in `m_current_preset_path` immediately before `return {true, ""}` (only on success) | | |
 | TASK-1000 | In `visualizer.cpp`: Add implementation of `get_current_preset_path()` returning `m_current_preset_path` | | |
 | TASK-1100 | In `window.hpp`: Add public method declaration `bool is_fullscreen() const` | | |
+| TASK-1150 | Verify `m_visible` member exists in `window.hpp` and `m_visible = true` exists in `window.cpp` before attempting removal | | |
 | TASK-1200 | In `window.hpp`: Remove `bool m_visible` member declaration (will query SDL instead) | | |
 | TASK-1300 | In `window.cpp`: Modify `is_visible()` to query SDL via `SDL_GetWindowFlags(m_window) & SDL_WINDOW_SHOWN` instead of returning `m_visible` | | |
 | TASK-1400 | In `window.cpp`: Remove `m_visible = true` from `show()` method (now dead code) | | |
 | TASK-1500 | In `window.cpp`: Add implementation of `is_fullscreen()` returning `SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN_DESKTOP` | | |
+| TASK-1550 | Verify C++ build: Run `make` to ensure renderer compiles without errors | | |
 
 ### Phase 2: Protocol Layer Updates
 
@@ -64,6 +66,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-1700 | In `protocol.cpp`: Add `"GET STATUS"` to the `VALID_COMMANDS` set | | |
 | TASK-1800 | In `protocol.cpp`: Add `case` for `"GET STATUS"` in `string_to_command_type()` returning `CommandType::GET_STATUS` | | |
 | TASK-1900 | In `protocol.cpp`: Add `case CommandType::GET_STATUS:` in `allowed_fields()` returning empty set `{}` (like INIT/QUIT) | | |
+| TASK-1950 | Verify C++ build: Run `make` to ensure renderer compiles without errors | | |
 
 ### Phase 3: Command Handler and Event Loop Signature Changes
 
@@ -79,6 +82,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-2500 | In `command_handler.cpp`: Add `#include "audio_capture.hpp"` | | |
 | TASK-2600 | In `command_handler.cpp`: Update `handle_command()` definition to add `AudioCapture& audio` parameter | | |
 | TASK-2700 | In `main.cpp`: Update `run_event_loop()` call to pass `audio_capture` as additional argument | | |
+| TASK-2750 | Verify C++ build: Run `make` to ensure renderer compiles without errors | | |
 
 ### Phase 4: GET STATUS Command Implementation
 
@@ -89,6 +93,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-2800 | In `command_handler.cpp`: Add `case CommandType::GET_STATUS:` block in the command switch | | |
 | TASK-2900 | In GET_STATUS case: Create `nlohmann::json data` object with fields: `data["audio_source"] = audio.get_source()`, `data["audio_connected"] = audio.is_connected()`, `data["preset_path"] = visualizer.get_current_preset_path()`, `data["visible"] = window.is_visible()`, `data["fullscreen"] = window.is_fullscreen()` | | |
 | TASK-3000 | In GET_STATUS case: Return success response with data using `make_response(cmd.id, true, "", data)` or equivalent pattern | | |
+| TASK-3050 | Verify C++ build: Run `make` to ensure renderer compiles without errors | | |
 
 ### Phase 5: Dead Code Cleanup
 
@@ -97,6 +102,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
 | TASK-3100 | Delete file `renderer/renderer_state.hpp` entirely (RendererPhase and RendererState are defined but never used) | | |
+| TASK-3150 | Verify C++ build: Run `make` to ensure renderer compiles without errors | | |
 
 ### Phase 6: Documentation Update
 
@@ -112,6 +118,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
+| TASK-3250 | Verify which Python files import `CommandResponse`, `Config`, and `StderrEvent`; update Phase 8 task list if needed | | |
 | TASK-3300 | Create directory `src/platyplaty/types/` | | |
 | TASK-3400 | Create `src/platyplaty/types/__init__.py` that re-exports all types for convenient imports | | |
 | TASK-3500 | Create `src/platyplaty/types/socket.py` with `StatusData` Pydantic model: fields `audio_source: str`, `audio_connected: bool`, `preset_path: str`, `visible: bool`, `fullscreen: bool` | | |
@@ -119,6 +126,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-3700 | Create `src/platyplaty/types/config.py` and migrate `Config` class from its current location | | |
 | TASK-3800 | Create `src/platyplaty/types/events.py` and migrate `StderrEvent` class from its current location | | |
 | TASK-3900 | Update `types/__init__.py` to re-export `StatusData`, `CommandResponse`, `Config`, `StderrEvent` | | |
+| TASK-3950 | Verify Python syntax: Run `python3 -m py_compile` on all new Python files in `types/` | | |
 
 ### Phase 8: Python Import Updates
 
@@ -133,6 +141,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-4400 | Update imports in `startup.py` to use `from platyplaty.types import ...` | | |
 | TASK-4500 | Update imports in `reconnect.py` to use `from platyplaty.types import ...` | | |
 | TASK-4600 | Update imports in `shutdown.py` to use `from platyplaty.types import ...` | | |
+| TASK-4650 | Verify Python syntax: Run `python3 -m py_compile` on all modified Python files | | |
 
 ### Phase 9: Reconnect Logic Refactoring
 
@@ -141,6 +150,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
 | TASK-4700 | In `reconnect.py`: Add new function `async def _sync_state_from_status(client: SocketClient, playlist: Playlist, fullscreen: bool, output: TextIO) -> bool` | | |
+| TASK-4750 | Document return value contract in docstring: Returns `True` if GET STATUS succeeds and sync commands complete; returns `False` if GET STATUS fails or critical sync commands fail; `audio_connected: false` is a warning, not a failure | | |
 | TASK-4800 | In `_sync_state_from_status`: Send GET STATUS command via `client.send_command("GET STATUS")` | | |
 | TASK-4900 | In `_sync_state_from_status`: Parse response with `StatusData.model_validate(response.data)` after checking `response.success` | | |
 | TASK-5000 | In `_sync_state_from_status`: If `status.audio_connected` is false, log warning "Audio disconnected, visualization may be unresponsive to music" to output and continue | | |
@@ -155,6 +165,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-5900 | In `reconnect.py`: Delete `_load_current_preset()` helper function (now dead code) | | |
 | TASK-6000 | In `reconnect.py`: Delete `_show_window()` helper function (now dead code) | | |
 | TASK-6100 | In `async_main.py`: Update call to `attempt_reconnect()` to remove `audio_source` argument | | |
+| TASK-6150 | Verify Python syntax: Run `python3 -m py_compile` on all modified Python files | | |
 
 ### Phase 10: Renderer Tests
 
@@ -166,7 +177,8 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-6300 | Add test: GET STATUS before INIT returns error "command not allowed before INIT" | | |
 | TASK-6400 | Add test: GET STATUS after INIT returns success with all 5 fields present | | |
 | TASK-6500 | Add test: `audio_source` matches value from CHANGE AUDIO SOURCE command | | |
-| TASK-6600 | Add test: `audio_connected` is true when audio is active | | |
+| TASK-6600 | Add test: `audio_connected` is true when audio is active (query PulseAudio for available sources and use the first monitor source) | | |
+| TASK-6650 | Manual test: Verify `audio_connected` is false after disconnecting audio device or stopping PulseAudio source | | |
 | TASK-6700 | Add test: `preset_path` is empty string before any LOAD PRESET | | |
 | TASK-6800 | Add test: `preset_path` matches last successful LOAD PRESET path | | |
 | TASK-6900 | Add test: `preset_path` remains unchanged after a failed LOAD PRESET | | |
