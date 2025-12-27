@@ -290,14 +290,14 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-07400 | Create `src/platyplaty/renderer.py` module |  |  |
-| TASK-07500 | Implement `find_renderer_binary()` using `pathlib` that locates `build/platyplaty-renderer` relative to project root (resolved via shell wrapper); error if not found with message suggesting `make` |  |  |
-| TASK-07600 | Implement `start_renderer(socket_path: str)` using `asyncio.create_subprocess_exec()` with `start_new_session=True` |  |  |
-| TASK-07700 | Pass `--socket-path` argument to renderer |  |  |
-| TASK-07800 | Read renderer stdout from async stream for `SOCKET READY\n` line; no timeout; monitor subprocess liveness |  |  |
-| TASK-07900 | If async subprocess exits before `SOCKET READY`, report error with exit code |  |  |
-| TASK-08000 | Implement real-time stderr passthrough via async stream iteration |  |  |
-| TASK-08100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-07400 | Create `src/platyplaty/renderer.py` module | x | 2025-12-26 |
+| TASK-07500 | Implement `find_renderer_binary()` using `pathlib` that locates `build/platyplaty-renderer` relative to project root (resolved via shell wrapper); error if not found with message suggesting `make` | x | 2025-12-26 |
+| TASK-07600 | Implement `start_renderer(socket_path: str)` using `asyncio.create_subprocess_exec()` with `start_new_session=True` | x | 2025-12-26 |
+| TASK-07700 | Pass `--socket-path` argument to renderer | x | 2025-12-26 |
+| TASK-07800 | Read renderer stdout from async stream for `SOCKET READY\n` line; no timeout; monitor subprocess liveness | x | 2025-12-26 |
+| TASK-07900 | If async subprocess exits before `SOCKET READY`, report error with exit code | x | 2025-12-26 |
+| TASK-08000 | Implement real-time stderr passthrough via async stream iteration | x | 2025-12-26 |
+| TASK-08100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 11: Stderr Event Parsing
 
