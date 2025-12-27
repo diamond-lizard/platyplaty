@@ -28,10 +28,8 @@ async def load_preset_with_retry(
     Returns:
         True if a preset was loaded successfully, False if all failed.
     """
-    attempts = 0
-    max_attempts = len(playlist.presets)
 
-    while attempts < max_attempts:
+    for _ in range(len(playlist.presets)):
         preset_path = playlist.current()
         try:
             await client.send_command("LOAD PRESET", path=str(preset_path))
@@ -40,11 +38,8 @@ async def load_preset_with_retry(
             msg = f"Warning: Failed to load {preset_path}: {e}\n"
             output.write(msg)
             output.flush()
-            attempts += 1
-            next_preset = playlist.next()
-            if next_preset is None:
-                break
-
+        if playlist.next() is None:
+            break
     return False
 
 

@@ -110,6 +110,34 @@ class SocketClient:
 
         return response
 
+    def _try_decode_buffer(self) -> CommandResponse | None:
+        """Try to decode a response from the buffer.
+
+        Returns:
+            CommandResponse if a complete message is in buffer, None otherwise.
+        """
+        try:
+            payload, remaining = decode_netstring(self._buffer)
+            self._buffer = remaining
+            response_data = json.loads(payload)
+            return CommandResponse.model_validate(response_data)
+        except IncompleteNetstringError:
+            return None
+
+    async def _read_more_data(self) -> None:
+        """Read more data from the socket into the buffer.
+
+        Raises:
+            ConnectionError: If the connection is closed.
+        """
+        if self._reader is None:
+            msg = "Not connected"
+            raise RuntimeError(msg)
+        chunk = await self._reader.read(4096)
+        if not chunk:
+            msg = "Connection closed by renderer"
+            raise ConnectionError(msg) from None
+        self._buffer += chunk
     async def _recv_response(self) -> CommandResponse:
         """Receive and decode a response from the renderer.
 
@@ -125,15 +153,8 @@ class SocketClient:
             msg = "Not connected"
             raise RuntimeError(msg)
 
-        while True:
-            try:
-                payload, remaining = decode_netstring(self._buffer)
-                self._buffer = remaining
-                response_data = json.loads(payload)
-                return CommandResponse.model_validate(response_data)
-            except IncompleteNetstringError:
-                chunk = await self._reader.read(4096)
-                if not chunk:
-                    msg = "Connection closed by renderer"
-                    raise ConnectionError(msg) from None
-                self._buffer += chunk
+        result = self._try_decode_buffer()
+        while result is None:
+            await self._read_more_data()
+            result = self._try_decode_buffer()
+        return result

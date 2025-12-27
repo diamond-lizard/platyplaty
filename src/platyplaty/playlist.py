@@ -94,11 +94,10 @@ class Playlist:
         Returns:
             The next preset path, or None if at end and loop is False.
         """
+        if self.at_end() and not self.loop:
+            return None
         if self.at_end():
-            if self.loop:
-                self._index = 0
-            else:
-                return None
+            self._index = 0
         else:
             self._index += 1
         return self.presets[self._index]
@@ -109,11 +108,10 @@ class Playlist:
         Returns:
             The previous preset path, or None if at start and loop is False.
         """
+        if self._index == 0 and not self.loop:
+            return None
         if self._index == 0:
-            if self.loop:
-                self._index = len(self.presets) - 1
-            else:
-                return None
+            self._index = len(self.presets) - 1
         else:
             self._index -= 1
         return self.presets[self._index]
