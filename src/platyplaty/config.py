@@ -25,7 +25,7 @@ class Config(BaseModel):
 
     preset_dirs: list[str] = Field(alias="preset-dirs")
     audio_source: str = Field(default="@DEFAULT_SINK@.monitor", alias="audio-source")
-    preset_duration: int = Field(default=30, ge=1, alias="preset-duration")
+    preset_duration: int = Field(default=30, ge=1, strict=True, alias="preset-duration")
     shuffle: bool = False
     loop: bool = True
     fullscreen: bool = False
