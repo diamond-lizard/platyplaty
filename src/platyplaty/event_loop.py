@@ -74,6 +74,7 @@ def _handle_stderr_event(
     if event.event == StderrEventType.QUIT:
         state.quit_received = True
         state.shutdown_requested = True
+        state.shutdown_event.set()
     elif event.event == StderrEventType.DISCONNECT:
         state.disconnect_event.set()
     elif event.event == StderrEventType.AUDIO_ERROR:
@@ -100,3 +101,6 @@ async def stderr_monitor_task(
         await process_stderr_line(line, state, output)
         if state.shutdown_requested:
             break
+
+    # Renderer process exited - trigger shutdown
+    state.shutdown_event.set()
