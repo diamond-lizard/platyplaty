@@ -180,10 +180,8 @@ async def _async_main(
     )
 
     try:
-        # Wait for either task to complete (shutdown requested)
-        await asyncio.gather(stderr_task, advance_task)
-    except asyncio.CancelledError:
-        pass
+        # Wait for shutdown signal
+        await state.shutdown_event.wait()
     finally:
         await cancel_tasks([stderr_task, advance_task])
         await graceful_shutdown(client)

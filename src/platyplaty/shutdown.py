@@ -39,6 +39,7 @@ def _signal_handler(state: EventLoopState) -> None:
         state: Shared event loop state.
     """
     state.shutdown_requested = True
+    state.shutdown_event.set()
 
 
 async def send_quit_command(client: SocketClient) -> bool:

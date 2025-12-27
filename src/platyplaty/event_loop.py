@@ -28,12 +28,14 @@ class EventLoopState:
     shutdown_requested: bool
     quit_received: bool
     disconnect_event: asyncio.Event
+    shutdown_event: asyncio.Event
 
     def __init__(self) -> None:
         """Initialize event loop state."""
         self.shutdown_requested = False
         self.quit_received = False
         self.disconnect_event = asyncio.Event()
+        self.shutdown_event = asyncio.Event()
 
 
 async def process_stderr_line(

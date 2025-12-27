@@ -65,9 +65,16 @@ async def auto_advance_loop(
         output: Output stream for warnings.
     """
     while not state.shutdown_requested:
-        try:
-            await asyncio.sleep(duration)
-        except asyncio.CancelledError:
+        # Wait for either sleep or shutdown event
+        sleep_task = asyncio.create_task(asyncio.sleep(duration))
+        shutdown_task = asyncio.create_task(state.shutdown_event.wait())
+        done, pending = await asyncio.wait(
+            [sleep_task, shutdown_task],
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+        for task in pending:
+            task.cancel()
+        if shutdown_task in done:
             break
 
         if state.shutdown_requested:
