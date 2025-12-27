@@ -309,14 +309,14 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-08200 | Create `src/platyplaty/stderr_parser.py` module |  |  |
-| TASK-08300 | Implement detection of netstring-framed JSON on stderr using `re` module (line starts with digits followed by colon) |  |  |
-| TASK-08400 | Parse PLATYPLATY events: parse with `json` module; check for `"source": "PLATYPLATY"` |  |  |
-| TASK-08500 | Handle event types: `DISCONNECT`, `AUDIO_ERROR`, `QUIT` |  |  |
-| TASK-08510 | On `AUDIO_ERROR` event: log warning to stderr ("Audio error: <reason>, visualization continues silently") and continue; no reconnect needed |  |  |
-| TASK-08600 | Pass through non-PLATYPLATY stderr output to user |  |  |
-| TASK-08700 | Handle malformed netstrings on stderr gracefully (pass through as regular output) |  |  |
-| TASK-08800 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-08200 | Create `src/platyplaty/stderr_parser.py` module | x | 2025-12-26 |
+| TASK-08300 | Implement detection of netstring-framed JSON on stderr using `re` module (line starts with digits followed by colon) | x | 2025-12-26 |
+| TASK-08400 | Parse PLATYPLATY events: parse with `json` module; check for `"source": "PLATYPLATY"` | x | 2025-12-26 |
+| TASK-08500 | Handle event types: `DISCONNECT`, `AUDIO_ERROR`, `QUIT` | x | 2025-12-26 |
+| TASK-08510 | On `AUDIO_ERROR` event: log warning to stderr ("Audio error: <reason>, visualization continues silently") and continue; no reconnect needed | x | 2025-12-26 |
+| TASK-08600 | Pass through non-PLATYPLATY stderr output to user | x | 2025-12-26 |
+| TASK-08700 | Handle malformed netstrings on stderr gracefully (pass through as regular output) | x | 2025-12-26 |
+| TASK-08800 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 12: Main Event Loop
 
