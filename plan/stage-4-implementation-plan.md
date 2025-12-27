@@ -233,16 +233,16 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-05200 | Create `src/platyplaty/playlist.py` module |  |  |
-| TASK-05300 | Implement `scan_preset_dirs(dirs: list[str])` using `itertools.chain` and `pathlib.Path.iterdir()` to combine and scan directories flat (non-recursive) |  |  |
-| TASK-05400 | Implement case-insensitive `.milk` extension matching using `pathlib.Path.suffix` |  |  |
-| TASK-05500 | Implement deduplication by full absolute path |  |  |
-| TASK-05600 | Error if no `.milk` files found; print to `sys.stderr` message listing scanned directories |  |  |
-| TASK-05700 | Implement case-insensitive lexicographic sort by full absolute path |  |  |
-| TASK-05800 | Implement shuffle mode using `random.shuffle()`: randomize order once when enabled |  |  |
-| TASK-05900 | Create `Playlist` class with `current()`, `next()`, `previous()`, `at_end()` methods |  |  |
-| TASK-06000 | Implement loop behavior: when loop=true, wrap around; when loop=false, stop at end |  |  |
-| TASK-06100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-05200 | Create `src/platyplaty/playlist.py` module | x | 2025-12-26 |
+| TASK-05300 | Implement `scan_preset_dirs(dirs: list[str])` using `itertools.chain` and `pathlib.Path.iterdir()` to combine and scan directories flat (non-recursive) | x | 2025-12-26 |
+| TASK-05400 | Implement case-insensitive `.milk` extension matching using `pathlib.Path.suffix` | x | 2025-12-26 |
+| TASK-05500 | Implement deduplication by full absolute path | x | 2025-12-26 |
+| TASK-05600 | Error if no `.milk` files found; print to `sys.stderr` message listing scanned directories | x | 2025-12-26 |
+| TASK-05700 | Implement case-insensitive lexicographic sort by full absolute path | x | 2025-12-26 |
+| TASK-05800 | Implement shuffle mode using `random.shuffle()`: randomize order once when enabled | x | 2025-12-26 |
+| TASK-05900 | Create `Playlist` class with `current()`, `next()`, `previous()`, `at_end()` methods | x | 2025-12-26 |
+| TASK-06000 | Implement loop behavior: when loop=true, wrap around; when loop=false, stop at end | x | 2025-12-26 |
+| TASK-06100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 8: Netstring Module
 
