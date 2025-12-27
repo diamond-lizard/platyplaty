@@ -80,7 +80,11 @@ async def auto_advance_loop(
         if next_preset is None:
             break
 
-        await _try_load_preset(client, next_preset, output)
+        try:
+            await _try_load_preset(client, next_preset, output)
+        except ConnectionError:
+            state.disconnect_event.set()
+            break
 
 
 async def _try_load_preset(

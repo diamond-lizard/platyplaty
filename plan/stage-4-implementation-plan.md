@@ -365,11 +365,11 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-10200 | On stderr `DISCONNECT` event: attempt reconnect using `socket` module (renderer is waiting) |  |  |
-| TASK-10300 | On stderr `QUIT` event: do not reconnect (renderer has exited) |  |  |
-| TASK-10400 | On socket EOF with no stderr event: attempt reconnect using `socket` module |  |  |
-| TASK-10500 | After reconnect, re-run full startup sequence (CHANGE AUDIO SOURCE, INIT, LOAD PRESET, SHOW WINDOW) using current playlist position (same preset as before disconnect); renderer handles via idempotency; timer resets to full `preset-duration` after reconnect completes (preset gets fresh full duration, not remaining time from before disconnect) |  |  |
-| TASK-10600 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-10200 | On stderr `DISCONNECT` event: attempt reconnect using `socket` module (renderer is waiting) | x | 2025-12-26 |
+| TASK-10300 | On stderr `QUIT` event: do not reconnect (renderer has exited) | x | 2025-12-26 |
+| TASK-10400 | On socket EOF with no stderr event: attempt reconnect using `socket` module | x | 2025-12-26 |
+| TASK-10500 | After reconnect, re-run full startup sequence (CHANGE AUDIO SOURCE, INIT, LOAD PRESET, SHOW WINDOW) using current playlist position (same preset as before disconnect); renderer handles via idempotency; timer resets to full `preset-duration` after reconnect completes (preset gets fresh full duration, not remaining time from before disconnect) | x | 2025-12-26 |
+| TASK-10600 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 15: Startup Sequence Integration
 
