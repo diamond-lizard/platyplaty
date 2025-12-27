@@ -348,12 +348,12 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-09700 | Implement SIGINT handler using asyncio's `loop.add_signal_handler()` that sets shutdown flag; event loop sends `QUIT` command when safe |  |  |
-| TASK-09800 | Wait for `QUIT` response before closing socket |  |  |
-| TASK-09900 | Exit with code 1, no error message on keyboard interrupt |  |  |
-| TASK-10000 | Ensure socket is closed via `socket.close()` on all exit paths |  |  |
-| TASK-10050 | On shutdown, cancel all asyncio tasks (stderr task, socket task) before closing resources; use asyncio's task cancellation mechanism |  |  |
-| TASK-10100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-09700 | Implement SIGINT handler using asyncio's `loop.add_signal_handler()` that sets shutdown flag; event loop sends `QUIT` command when safe | x | 2025-12-26 |
+| TASK-09800 | Wait for `QUIT` response before closing socket | x | 2025-12-26 |
+| TASK-09900 | Exit with code 1, no error message on keyboard interrupt | x | 2025-12-26 |
+| TASK-10000 | Ensure socket is closed via `socket.close()` on all exit paths | x | 2025-12-26 |
+| TASK-10050 | On shutdown, cancel all asyncio tasks (stderr task, socket task) before closing resources; use asyncio's task cancellation mechanism with `contextlib.suppress(asyncio.CancelledError)` | x | 2025-12-26 |
+| TASK-10100 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 14: Client Reconnection Logic
 
