@@ -328,14 +328,15 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-08900 | Create `src/platyplaty/event_loop.py` module |  |  |
-| TASK-09000 | Implement async event loop using separate `asyncio` tasks for socket and stderr, coordinated via `asyncio.gather()`; stderr task signals events to main loop via shared flags or `asyncio.Event` |  |  |
-| TASK-09100 | Timer resets after each successful `LOAD PRESET`; use `asyncio` timeout of `preset_duration` seconds; no command sent while another is in flight |  |  |
-| TASK-09200 | When timer expires, send `LOAD PRESET` for next preset from playlist; reset timer after successful response |  |  |
-| TASK-09300 | Handle loop=false case: when playlist at end, stop auto-advancing; visualizer stays on last preset |  |  |
-| TASK-09400 | Detect socket EOF immediately (renderer crash detection) |  |  |
-| TASK-09500 | Process stderr events; on `QUIT` event set flag to not reconnect |  |  |
-| TASK-09600 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-08900 | Create `src/platyplaty/event_loop.py` module (state and stderr monitoring) | x | 2025-12-26 |
+| TASK-08910 | Create `src/platyplaty/auto_advance.py` module (preset loading and auto-advance loop) | x | 2025-12-26 |
+| TASK-09000 | Implement async task functions for stderr monitoring and auto-advance; coordination via `asyncio.gather()` deferred to Phase 15 startup sequence | x | 2025-12-26 |
+| TASK-09100 | Timer resets after each successful `LOAD PRESET`; use `asyncio` timeout of `preset_duration` seconds; no command sent while another is in flight | x | 2025-12-26 |
+| TASK-09200 | When timer expires, send `LOAD PRESET` for next preset from playlist; reset timer after successful response | x | 2025-12-26 |
+| TASK-09300 | Handle loop=false case: when playlist at end, stop auto-advancing; visualizer stays on last preset | x | 2025-12-26 |
+| TASK-09400 | Detect socket EOF immediately (renderer crash detection) | x | 2025-12-26 |
+| TASK-09500 | Process stderr events; on `QUIT` event set flag to not reconnect | x | 2025-12-26 |
+| TASK-09600 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 13: Signal Handling and Graceful Shutdown
 
@@ -483,7 +484,8 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 - **FILE-1000**: `src/platyplaty/socket_client.py` - Socket client for renderer communication
 - **FILE-1100**: `src/platyplaty/renderer.py` - Renderer subprocess management
 - **FILE-1200**: `src/platyplaty/stderr_parser.py` - PLATYPLATY stderr event parsing
-- **FILE-1300**: `src/platyplaty/event_loop.py` - Main event loop with auto-advance timer
+- **FILE-1300**: `src/platyplaty/event_loop.py` - Event loop state and stderr monitoring
+- **FILE-1350**: `src/platyplaty/auto_advance.py` - Auto-advance timer and preset loading
 - **FILE-1400**: `bin/platyplaty` - Shell wrapper script
 
 ### Modified Files
