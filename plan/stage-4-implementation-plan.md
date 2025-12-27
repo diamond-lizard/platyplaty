@@ -272,13 +272,13 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-06700 | Create `src/platyplaty/socket_client.py` module |  |  |
-| TASK-06800 | Implement `SocketClient` class with Unix domain socket connection (using `socket` module) |  |  |
-| TASK-06900 | Implement `send_command(command: dict) -> dict` that sends netstring-framed JSON (using `json` module) and waits for response |  |  |
-| TASK-07000 | Track command ID; increment for each command; verify response ID matches |  |  |
-| TASK-07100 | Implement `recv_response()` with buffering for partial reads |  |  |
-| TASK-07200 | Wrap socket connection with `asyncio` streams for async I/O |  |  |
-| TASK-07300 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality |  |  |
+| TASK-06700 | Create `src/platyplaty/socket_client.py` module | x | 2025-12-26 |
+| TASK-06800 | Implement `SocketClient` class with Unix domain socket connection (using `socket` module) | x | 2025-12-26 |
+| TASK-06900 | Implement `send_command(command: dict) -> dict` that sends netstring-framed JSON (using `json` module) and waits for response | x | 2025-12-26 |
+| TASK-07000 | Track command ID; increment for each command; verify response ID matches | x | 2025-12-26 |
+| TASK-07100 | Implement `recv_response()` with buffering for partial reads | x | 2025-12-26 |
+| TASK-07200 | Wrap socket connection with `asyncio` streams for async I/O | x | 2025-12-26 |
+| TASK-07300 | Run `uv run ruff check src/` and `uv run mypy src/` to verify code quality | x | 2025-12-26 |
 
 ### Implementation Phase 10: Renderer Process Management
 
