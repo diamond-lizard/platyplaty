@@ -34,13 +34,17 @@ OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
 # Target binary
 TARGET := $(BUILD_DIR)/platyplaty-renderer
 
-.PHONY: help renderer clean cppcheck-renderer test-renderer
+.PHONY: help renderer clean cppcheck-renderer test-renderer ruff mypy ruff-fix test
 
 help:
 	@echo "Available targets:"
-	@echo "  renderer          Build the platyplaty renderer"
 	@echo "  clean             Remove build artifacts"
 	@echo "  cppcheck-renderer Run cppcheck on renderer source"
+	@echo "  mypy              Run mypy type checker on Python source"
+	@echo "  renderer          Build the platyplaty renderer"
+	@echo "  ruff              Run ruff linter on Python source"
+	@echo "  ruff-fix          Auto-fix ruff issues"
+	@echo "  test              Run ruff, mypy, then pytest"
 	@echo "  test-renderer     Run all renderer tests"
 
 renderer: $(TARGET)
@@ -62,3 +66,15 @@ cppcheck-renderer:
 
 test-renderer: cppcheck-renderer
 	uv run pytest tests/renderer/
+
+ruff:
+	uv run ruff check src/
+
+mypy:
+	uv run mypy src/
+
+ruff-fix:
+	uv run ruff check --fix src/
+
+test: ruff mypy
+	uv run pytest tests/

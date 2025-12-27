@@ -406,11 +406,11 @@ This plan implements Stage 4 of Platyplaty: the Python client application. The c
 
 | Task | Description | Completed | Date |
 | ---- | ----------- | --------- | ---- |
-| TASK-12100 | Add `ruff` target to run ruff on `src/` |  |  |
-| TASK-12200 | Add `mypy` target to run mypy on `src/` |  |  |
-| TASK-12300 | Add `ruff-fix` target to auto-fix ruff issues |  |  |
-| TASK-12400 | Update `test` target to run ruff first, then mypy, then pytest |  |  |
-| TASK-12500 | Update default target to list available rules |  |  |
+| TASK-12100 | Add `ruff` target to run ruff on `src/` | x | 2025-12-26 |
+| TASK-12200 | Add `mypy` target to run mypy on `src/` | x | 2025-12-26 |
+| TASK-12300 | Add `ruff-fix` target to auto-fix ruff issues | x | 2025-12-26 |
+| TASK-12400 | Update `test` target to run ruff first, then mypy, then pytest | x | 2025-12-26 |
+| TASK-12500 | Update default target to list available rules | x | 2025-12-26 |
 
 ### Implementation Phase 17: Integration Testing
 
