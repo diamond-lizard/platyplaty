@@ -122,7 +122,7 @@ def init_renderer(sock: socket.socket, cmd_id: list[int]) -> bool:
         resp = send_command(sock, {
             "command": "CHANGE AUDIO SOURCE",
             "id": cmd_id[0],
-            "source": "@DEFAULT_SINK@.monitor"
+            "audio_source": "@DEFAULT_SINK@.monitor"
         })
         cmd_id[0] += 1
         if not resp.get("success"):

@@ -101,7 +101,7 @@ async def _send_audio_source(
         audio_source: Audio source name.
     """
     with contextlib.suppress(RendererError):
-        await client.send_command("CHANGE AUDIO SOURCE", source=audio_source)
+        await client.send_command("CHANGE AUDIO SOURCE", audio_source=audio_source)
 
 
 async def _send_init(client: SocketClient) -> None:

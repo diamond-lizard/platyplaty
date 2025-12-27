@@ -11,8 +11,8 @@ from typing import TextIO
 from platyplaty.auto_advance import auto_advance_loop, load_preset_with_retry
 from platyplaty.event_loop import EventLoopState, stderr_monitor_task
 from platyplaty.playlist import Playlist
-from platyplaty.renderer import start_renderer
 from platyplaty.reconnect import attempt_reconnect
+from platyplaty.renderer import start_renderer
 from platyplaty.shutdown import (
     cancel_tasks,
     graceful_shutdown,
@@ -47,7 +47,7 @@ async def async_main(
     await client.connect(socket_path)
 
     # Send CHANGE AUDIO SOURCE command
-    await client.send_command("CHANGE AUDIO SOURCE", source=audio_source)
+    await client.send_command("CHANGE AUDIO SOURCE", audio_source=audio_source)
 
     # Send INIT command
     await client.send_command("INIT")
@@ -89,16 +89,16 @@ async def async_main(
             )
             for task in pending:
                 task.cancel()
-            
+
             if shutdown_task in done:
                 break
-            
+
             # Disconnect event: attempt reconnection
             if disconnect_task in done and not state.quit_received:
                 await cancel_tasks([advance_task])
                 client.close()
                 await asyncio.sleep(0.5)
-                
+
                 success = await attempt_reconnect(
                     client, socket_path, audio_source, playlist,
                     fullscreen, state, output,
@@ -107,7 +107,7 @@ async def async_main(
                     output.write("Error: Reconnection failed, exiting\n")
                     output.flush()
                     break
-                
+
                 # Restart auto-advance task after successful reconnect
                 state.disconnect_event.clear()
                 advance_task = asyncio.create_task(

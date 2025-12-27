@@ -68,7 +68,7 @@ def _send_init_sequence(sock: socket.socket) -> None:
     resp = send_command(sock, {
         "command": "CHANGE AUDIO SOURCE",
         "id": 1,
-        "source": "@DEFAULT_SINK@.monitor"
+        "audio_source": "@DEFAULT_SINK@.monitor"
     })
     assert resp.get("success"), f"CHANGE AUDIO SOURCE failed: {resp}"
     resp = send_command(sock, {"command": "INIT", "id": 2})

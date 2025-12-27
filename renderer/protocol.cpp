@@ -24,7 +24,7 @@ CommandType string_to_command_type(const std::string& cmd) {
 
 // Allowed fields per command type (excluding "command" and "id")
 const std::set<std::string>& allowed_fields(CommandType type) {
-    static const std::set<std::string> audio_fields = {"source"};
+    static const std::set<std::string> audio_fields = {"audio_source"};
     static const std::set<std::string> empty_fields = {};
     static const std::set<std::string> preset_fields = {"path"};
     static const std::set<std::string> fullscreen_fields = {"enabled"};
@@ -38,10 +38,10 @@ const std::set<std::string>& allowed_fields(CommandType type) {
 }
 
 std::string parse_audio_source(const nlohmann::json& j, Command& cmd) {
-    if (!j.contains("source") || !j["source"].is_string()) {
-        return "CHANGE AUDIO SOURCE requires 'source' string";
+    if (!j.contains("audio_source") || !j["audio_source"].is_string()) {
+        return "CHANGE AUDIO SOURCE requires 'audio_source' string";
     }
-    cmd.audio_source = j["source"].get<std::string>();
+    cmd.audio_source = j["audio_source"].get<std::string>();
     return "";
 }
 
