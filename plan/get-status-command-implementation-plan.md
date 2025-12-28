@@ -118,14 +118,14 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-4000 | Create directory `src/platyplaty/types/` | | |
-| TASK-4100 | Create `src/platyplaty/types/__init__.py` that re-exports all types for convenient imports | | |
-| TASK-4200 | Create `src/platyplaty/types/socket.py` with `StatusData` Pydantic model: fields `audio_source: str`, `audio_connected: bool`, `preset_path: str`, `visible: bool`, `fullscreen: bool` | | |
-| TASK-4300 | In `types/socket.py`: Migrate `CommandResponse` class from its current location | | |
-| TASK-4400 | Create `src/platyplaty/types/config.py` and migrate `Config` class (load_config() stays in config.py) | | |
-| TASK-4500 | Create `src/platyplaty/types/events.py` and migrate `StderrEvent` and `StderrEventType` (include `from enum import Enum`; functions stay in stderr_parser.py) from its current location | | |
-| TASK-4600 | Update `types/__init__.py` to re-export `StatusData`, `CommandResponse`, `Config`, `StderrEvent`, `StderrEventType` | | |
-| TASK-4700 | Verify Python syntax: Run `python3 -m py_compile` on all new Python files in `types/` | | |
+| TASK-4000 | Create directory `src/platyplaty/types/` | Yes | 2025-12-27 |
+| TASK-4100 | Create `src/platyplaty/types/__init__.py` that re-exports all types for convenient imports | Yes | 2025-12-27 |
+| TASK-4200 | Create `src/platyplaty/types/socket.py` with `StatusData` Pydantic model: fields `audio_source: str`, `audio_connected: bool`, `preset_path: str`, `visible: bool`, `fullscreen: bool` | Yes | 2025-12-27 |
+| TASK-4300 | In `types/socket.py`: Migrate `CommandResponse` class from its current location | Yes | 2025-12-27 |
+| TASK-4400 | Create `src/platyplaty/types/config.py` and migrate `Config` class (load_config() stays in config.py) | Yes | 2025-12-27 |
+| TASK-4500 | Create `src/platyplaty/types/events.py` and migrate `StderrEvent` and `StderrEventType` (include `from enum import Enum`; functions stay in stderr_parser.py) from its current location | Yes | 2025-12-27 |
+| TASK-4600 | Update `types/__init__.py` to re-export `StatusData`, `CommandResponse`, `Config`, `StderrEvent`, `StderrEventType` | Yes | 2025-12-27 |
+| TASK-4700 | Verify Python syntax: Run `python3 -m py_compile` on all new Python files in `types/` | Yes | 2025-12-27 |
 
 ### Phase 8: Python Import Updates
 
