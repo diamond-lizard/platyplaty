@@ -117,7 +117,7 @@ int main(int argc, const char* argv[]) {
         audio_capture.start();
         socket_thread.set_initialized(true);
 
-        platyplaty::run_event_loop(window, visualizer, command_slot);
+        platyplaty::run_event_loop(window, visualizer, command_slot, audio_capture);
 
         // Shutdown sequence: audio thread, then socket thread
         audio_capture.stop();

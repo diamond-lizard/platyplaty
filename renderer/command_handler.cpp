@@ -3,6 +3,7 @@
 #include "shutdown.hpp"
 #include "visualizer.hpp"
 #include "window.hpp"
+#include "audio_capture.hpp"
 
 namespace platyplaty {
 
@@ -10,7 +11,8 @@ Response handle_command(
     const Command& cmd,
     Visualizer& viz,
     Window& win,
-    bool& running) {
+    bool& running,
+    AudioCapture& audio) {
     Response resp{};
     resp.id = cmd.id;
 

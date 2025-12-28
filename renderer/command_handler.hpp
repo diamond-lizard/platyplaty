@@ -10,10 +10,11 @@ namespace platyplaty {
 
 class Visualizer;
 class Window;
+class AudioCapture;
 
 // Handle a command received after INIT.
 // Returns a Response to send back to the client.
-Response handle_command(const Command& cmd, Visualizer& viz, Window& win, bool& running);
+Response handle_command(const Command& cmd, Visualizer& viz, Window& win, bool& running, AudioCapture& audio);
 
 }  // namespace platyplaty
 

@@ -74,15 +74,15 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-2300 | In `event_loop.hpp`: Add forward declaration `class AudioCapture;` | | |
-| TASK-2400 | In `event_loop.hpp`: Update `run_event_loop()` declaration to add `AudioCapture& audio` parameter after existing parameters | | |
-| TASK-2500 | In `event_loop.cpp`: Update `run_event_loop()` definition to add `AudioCapture& audio` parameter | | |
-| TASK-2600 | In `event_loop.cpp`: Pass `audio` through to `handle_command()` call | | |
-| TASK-2700 | In `command_handler.hpp`: Update `handle_command()` declaration to add `AudioCapture& audio` parameter | | |
-| TASK-2800 | In `command_handler.cpp`: Add `#include "audio_capture.hpp"` | | |
-| TASK-2900 | In `command_handler.cpp`: Update `handle_command()` definition to add `AudioCapture& audio` parameter | | |
-| TASK-3000 | In `main.cpp`: Update `run_event_loop()` call to pass `audio_capture` as additional argument | | |
-| TASK-3100 | User verifies C++ build by running `make renderer` | | |
+| TASK-2300 | In `event_loop.hpp`: Add forward declaration `class AudioCapture;` | Yes | 2025-12-27 |
+| TASK-2400 | In `event_loop.hpp`: Update `run_event_loop()` declaration to add `AudioCapture& audio` parameter after existing parameters | Yes | 2025-12-27 |
+| TASK-2500 | In `event_loop.cpp`: Update `run_event_loop()` definition to add `AudioCapture& audio` parameter | Yes | 2025-12-27 |
+| TASK-2600 | In `event_loop.cpp`: Pass `audio` through to `handle_command()` call | Yes | 2025-12-27 |
+| TASK-2700 | In `command_handler.hpp`: Update `handle_command()` declaration to add `AudioCapture& audio` parameter | Yes | 2025-12-27 |
+| TASK-2800 | In `command_handler.cpp`: Add `#include "audio_capture.hpp"` | Yes | 2025-12-27 |
+| TASK-2900 | In `command_handler.cpp`: Update `handle_command()` definition to add `AudioCapture& audio` parameter | Yes | 2025-12-27 |
+| TASK-3000 | In `main.cpp`: Update `run_event_loop()` call to pass `audio_capture` as additional argument | Yes | 2025-12-27 |
+| TASK-3100 | User verifies C++ build by running `make renderer` | Yes | 2025-12-27 |
 
 ### Phase 4: GET STATUS Command Implementation
 
