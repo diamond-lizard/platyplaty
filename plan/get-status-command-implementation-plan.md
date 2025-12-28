@@ -110,7 +110,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-3800 | In `reference/architecture/communication-protocol.md`: Add GET STATUS to command table with row: `\| \`GET STATUS\` \| (none) \| Query current renderer state \| Stage 5 \|` | | |
+| TASK-3800 | In `reference/architecture/communication-protocol.md`: Add GET STATUS to command table with row: `\| \`GET STATUS\` \| (none) \| Query current renderer state \| Stage 5 \|` | Yes | 2025-12-27 |
 
 ### Phase 7: Python Type Definitions
 
