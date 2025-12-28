@@ -172,18 +172,18 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-7300 | Create `tests/renderer/test_get_status.py` test file | | |
-| TASK-7400 | Add test: GET STATUS before INIT returns error "command not allowed before INIT" | | |
-| TASK-7500 | Add test: GET STATUS after INIT returns success with all 5 fields present | | |
-| TASK-7600 | Add test: `audio_source` matches value from CHANGE AUDIO SOURCE command | | |
+| TASK-7300 | Create `tests/renderer/test_get_status.py` test file | Yes | 2025-12-27 |
+| TASK-7400 | Add test: GET STATUS before INIT returns error "command not allowed before INIT" | Yes | 2025-12-27 |
+| TASK-7500 | Add test: GET STATUS after INIT returns success with all 5 fields present | Yes | 2025-12-27 |
+| TASK-7600 | Add test: `audio_source` matches value from CHANGE AUDIO SOURCE command | Yes | 2025-12-27 |
 | TASK-7700 | Manual test (not in test_get_status.py): `audio_connected` is true when audio is active (query PulseAudio for available sources and use the first monitor source) | | |
 | TASK-7800 | Manual test (not in test_get_status.py): Verify `audio_connected` is false after disconnecting audio device or stopping PulseAudio source | | |
-| TASK-7900 | Add test: `preset_path` is empty string before any LOAD PRESET | | |
-| TASK-8000 | Add test: `preset_path` matches last successful LOAD PRESET path | | |
-| TASK-8100 | Add test: `preset_path` remains unchanged after a failed LOAD PRESET | | |
-| TASK-8200 | Add test: `visible` reflects SHOW WINDOW state (false initially, true after SHOW WINDOW) | | |
-| TASK-8300 | Add test: `fullscreen` reflects SET FULLSCREEN state | | |
-| TASK-8350 | User verifies renderer tests pass by running `make test-renderer` | | |
+| TASK-7900 | Add test: `preset_path` is empty string before any LOAD PRESET | Yes | 2025-12-27 |
+| TASK-8000 | Add test: `preset_path` matches last successful LOAD PRESET path | Yes | 2025-12-27 |
+| TASK-8100 | Add test: `preset_path` remains unchanged after a failed LOAD PRESET | Yes | 2025-12-27 |
+| TASK-8200 | Add test: `visible` reflects SHOW WINDOW state (false initially, true after SHOW WINDOW) | Yes | 2025-12-27 |
+| TASK-8300 | Add test: `fullscreen` reflects SET FULLSCREEN state | Yes | 2025-12-27 |
+| TASK-8350 | User verifies renderer tests pass by running `make test-renderer` | Yes | 2025-12-27 |
 
 ### Phase 11: Client Tests
 
