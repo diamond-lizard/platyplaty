@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import TextIO
 
 from platyplaty.async_main import async_main
-from platyplaty.config import Config
+from platyplaty.types import Config
 from platyplaty.errors import StartupError
 from platyplaty.paths import UndefinedEnvVarError, expand_path, resolve_path
 from platyplaty.playlist import (

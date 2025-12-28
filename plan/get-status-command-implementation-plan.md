@@ -133,13 +133,13 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-4800 | In `socket_client.py`: Replace `CommandResponse` class definition with import `from platyplaty.types import CommandResponse` | | |
-| TASK-4850 | In `config.py`: Replace `Config` class definition with import `from platyplaty.types import Config` | | |
-| TASK-4900 | In `stderr_parser.py`: Replace `StderrEvent` and `StderrEventType` definitions with import `from platyplaty.types import StderrEvent, StderrEventType` | | |
-| TASK-4950 | In `event_loop.py`: Update import to `from platyplaty.types import StderrEvent, StderrEventType` | | |
-| TASK-5000 | In `run_sequence.py`: Update import to `from platyplaty.types import Config` | | |
-| TASK-5100 | In `startup.py`: Update import to `from platyplaty.types import Config` (keep `load_config` import from config.py) | | |
-| TASK-5200 | Verify Python syntax: Run `python3 -m py_compile` on all modified Python files | | |
+| TASK-4800 | In `socket_client.py`: Replace `CommandResponse` class definition with import `from platyplaty.types import CommandResponse` | Yes | 2025-12-27 |
+| TASK-4850 | In `config.py`: Replace `Config` class definition with import `from platyplaty.types import Config` | Yes | 2025-12-27 |
+| TASK-4900 | In `stderr_parser.py`: Replace `StderrEvent` and `StderrEventType` definitions with import `from platyplaty.types import StderrEvent, StderrEventType` | Yes | 2025-12-27 |
+| TASK-4950 | In `event_loop.py`: Update import to `from platyplaty.types import StderrEvent, StderrEventType` | Yes | 2025-12-27 |
+| TASK-5000 | In `run_sequence.py`: Update import to `from platyplaty.types import Config` | Yes | 2025-12-27 |
+| TASK-5100 | In `startup.py`: Update import to `from platyplaty.types import Config` (keep `load_config` import from config.py) | Yes | 2025-12-27 |
+| TASK-5200 | Verify Python syntax: Run `python3 -m py_compile` on all modified Python files | Yes | 2025-12-27 |
 
 ### Phase 9: Reconnect Logic Refactoring
 

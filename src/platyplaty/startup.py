@@ -7,7 +7,8 @@ configuration file.
 
 import sys
 
-from platyplaty.config import Config, load_config
+from platyplaty.config import load_config
+from platyplaty.types import Config
 from platyplaty.errors import StartupError
 from platyplaty.run_sequence import run_startup_sequence
 

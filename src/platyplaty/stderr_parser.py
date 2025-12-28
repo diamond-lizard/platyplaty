@@ -12,32 +12,14 @@ Event types: DISCONNECT, AUDIO_ERROR, QUIT
 import json
 import re
 import sys
-from enum import Enum
 
-from pydantic import BaseModel, ConfigDict
-
+from platyplaty.types import StderrEvent, StderrEventType
 from platyplaty.netstring import (
     MalformedNetstringError,
     decode_netstring,
 )
 
 
-class StderrEventType(Enum):
-    """Types of PLATYPLATY stderr events."""
-
-    DISCONNECT = "DISCONNECT"
-    AUDIO_ERROR = "AUDIO_ERROR"
-    QUIT = "QUIT"
-
-
-class StderrEvent(BaseModel):
-    """A parsed PLATYPLATY stderr event."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    source: str
-    event: StderrEventType
-    reason: str
 
 
 # Pattern to detect potential netstring start: digits followed by colon

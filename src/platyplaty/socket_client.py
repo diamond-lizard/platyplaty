@@ -9,7 +9,7 @@ import asyncio
 import json
 from asyncio import StreamReader, StreamWriter
 
-from pydantic import BaseModel, ConfigDict
+from platyplaty.types import CommandResponse
 
 from platyplaty.netstring import (
     IncompleteNetstringError,
@@ -18,15 +18,6 @@ from platyplaty.netstring import (
 )
 
 
-class CommandResponse(BaseModel):
-    """Response from the renderer for a command."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    id: int | None
-    success: bool
-    data: dict[str, object] | None = None
-    error: str | None = None
 
 
 class ResponseIdMismatchError(Exception):

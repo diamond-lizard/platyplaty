@@ -9,11 +9,10 @@ import asyncio
 from typing import TextIO
 
 from platyplaty.stderr_parser import (
-    StderrEvent,
-    StderrEventType,
     log_audio_error,
     parse_stderr_event,
 )
+from platyplaty.types import StderrEvent, StderrEventType
 
 
 class EventLoopState:
