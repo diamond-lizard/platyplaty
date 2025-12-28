@@ -66,6 +66,18 @@ Response handle_command(
         resp.error = "cannot change audio source after INIT";
         break;
 
+    case CommandType::GET_STATUS: {
+        nlohmann::json data;
+        data["audio_source"] = audio.get_source();
+        data["audio_connected"] = audio.is_connected();
+        data["preset_path"] = viz.get_current_preset_path();
+        data["visible"] = win.is_visible();
+        data["fullscreen"] = win.is_fullscreen();
+        resp.success = true;
+        resp.data = data;
+        break;
+    }
+
     case CommandType::INIT:
         resp.success = false;
         resp.error = "already initialized";

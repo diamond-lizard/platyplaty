@@ -90,10 +90,10 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-3200 | In `command_handler.cpp`: Add `case CommandType::GET_STATUS:` block in the command switch | | |
-| TASK-3300 | In GET_STATUS case: Create `nlohmann::json data` object with fields: `data["audio_source"] = audio.get_source()`, `data["audio_connected"] = audio.is_connected()`, `data["preset_path"] = visualizer.get_current_preset_path()`, `data["visible"] = window.is_visible()`, `data["fullscreen"] = window.is_fullscreen()` | | |
-| TASK-3400 | In GET_STATUS case: Return success response with data using `make_response(cmd.id, true, "", data)` or equivalent pattern | | |
-| TASK-3500 | User verifies C++ build by running `make renderer` | | |
+| TASK-3200 | In `command_handler.cpp`: Add `case CommandType::GET_STATUS:` block in the command switch | Yes | 2025-12-27 |
+| TASK-3300 | In GET_STATUS case: Create `nlohmann::json data` object with fields: `data["audio_source"] = audio.get_source()`, `data["audio_connected"] = audio.is_connected()`, `data["preset_path"] = visualizer.get_current_preset_path()`, `data["visible"] = window.is_visible()`, `data["fullscreen"] = window.is_fullscreen()` | Yes | 2025-12-27 |
+| TASK-3400 | In GET_STATUS case: Return success response with data using `make_response(cmd.id, true, "", data)` or equivalent pattern | Yes | 2025-12-27 |
+| TASK-3500 | User verifies C++ build by running `make renderer` | Yes | 2025-12-27 |
 
 ### Phase 5: Dead Code Cleanup
 
