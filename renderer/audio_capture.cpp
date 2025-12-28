@@ -89,6 +89,7 @@ void AudioCapture::capture_loop() {
         if (!read_and_submit_samples()) {
             pa_threaded_mainloop_unlock(m_mainloop);
             emit_stderr_event("AUDIO_ERROR", "Audio capture read failed");
+            m_audio_error = true;
             break;
         }
         pa_threaded_mainloop_unlock(m_mainloop);
@@ -103,6 +104,14 @@ void AudioCapture::join() {
     if (m_thread.joinable()) {
         m_thread.join();
     }
+}
+
+const std::string& AudioCapture::get_source() const {
+    return m_source;
+}
+
+bool AudioCapture::is_connected() const {
+    return !m_audio_error.load();
 }
 
 } // namespace platyplaty

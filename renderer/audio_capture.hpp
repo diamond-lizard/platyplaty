@@ -40,6 +40,12 @@ public:
     // Wait for capture thread to finish
     void join();
 
+    // Get configured audio source name
+    const std::string& get_source() const;
+
+    // Check if audio is currently connected (no error has occurred)
+    bool is_connected() const;
+
 private:
     void capture_loop();
     void wait_with_timeout();
@@ -50,6 +56,7 @@ private:
     std::string m_source;
     Visualizer& m_visualizer;
     std::atomic<bool> m_stop_requested{false};
+    std::atomic<bool> m_audio_error{false};
     std::thread m_thread;
 
     pa_threaded_mainloop* m_mainloop{nullptr};

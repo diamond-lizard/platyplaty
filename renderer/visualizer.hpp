@@ -49,6 +49,9 @@ public:
         projectm_pcm_add_float(m_handle, samples, count, PROJECTM_STEREO);
     }
 
+    // Get the current preset path (empty if none loaded)
+    const std::string& get_current_preset_path() const;
+
 private:
     static void preset_switch_failed_callback(
         const char* preset_filename,
@@ -63,6 +66,7 @@ private:
     char m_error_buffer[ERROR_BUFFER_SIZE]{};
     std::size_t m_width{0};
     std::size_t m_height{0};
+    std::string m_current_preset_path;
 };
 
 } // namespace platyplaty

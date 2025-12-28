@@ -43,13 +43,15 @@ public:
     void set_fullscreen(bool enabled);
 
     // Check if window is visible
-    bool is_visible() const { return m_visible; }
+    bool is_visible() const;
+
+    // Check if window is fullscreen
+    bool is_fullscreen() const;
 
 private:
     SDL_Window* m_window = nullptr;
     SDL_GLContext m_gl_context = nullptr;
     bool m_sdl_initialized = false;
-    bool m_visible = false;
 };
 
 } // namespace platyplaty

@@ -85,12 +85,19 @@ void Window::swap_buffers() {
 
 void Window::show() {
     SDL_ShowWindow(m_window);
-    m_visible = true;
 }
 
 void Window::set_fullscreen(bool enabled) {
     Uint32 flag = enabled ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0;
     SDL_SetWindowFullscreen(m_window, flag);
+}
+
+bool Window::is_visible() const {
+    return SDL_GetWindowFlags(m_window) & SDL_WINDOW_SHOWN;
+}
+
+bool Window::is_fullscreen() const {
+    return SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN_DESKTOP;
 }
 
 } // namespace platyplaty

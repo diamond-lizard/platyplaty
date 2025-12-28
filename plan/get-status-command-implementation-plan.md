@@ -38,23 +38,23 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-0100 | In `audio_capture.hpp`: Add `std::atomic<bool> m_audio_error{false}` member in private section | | |
-| TASK-0200 | In `audio_capture.hpp`: Add public method declaration `const std::string& get_source() const` | | |
-| TASK-0300 | In `audio_capture.hpp`: Add public method declaration `bool is_connected() const` | | |
-| TASK-0400 | In `audio_capture.cpp`: In `capture_loop()`, set `m_audio_error = true` immediately before the `break` statement that follows the `emit_stderr_event("AUDIO_ERROR", ...)` call | | |
-| TASK-0500 | In `audio_capture.cpp`: Add implementation of `get_source()` returning `m_source` | | |
-| TASK-0600 | In `audio_capture.cpp`: Add implementation of `is_connected()` returning `!m_audio_error.load()` | | |
-| TASK-0700 | In `visualizer.hpp`: Add `std::string m_current_preset_path` member in private section | | |
-| TASK-0800 | In `visualizer.hpp`: Add public method declaration `const std::string& get_current_preset_path() const` | | |
-| TASK-0900 | In `visualizer.cpp`: In `load_preset()`, store `path` in `m_current_preset_path` immediately before `return {true, ""}` (only on success) | | |
-| TASK-1000 | In `visualizer.cpp`: Add implementation of `get_current_preset_path()` returning `m_current_preset_path` | | |
-| TASK-1100 | In `window.hpp`: Add public method declaration `bool is_fullscreen() const` | | |
-| TASK-1200 | Verify `m_visible` member exists in `window.hpp` and `m_visible = true` exists in `window.cpp` before attempting removal (verified: both exist) | | |
-| TASK-1300 | In `window.hpp`: Remove `bool m_visible` member declaration (will query SDL instead) | | |
-| TASK-1400 | In `window.cpp`: Modify `is_visible()` to query SDL via `SDL_GetWindowFlags(m_window) & SDL_WINDOW_SHOWN` instead of returning `m_visible` | | |
-| TASK-1500 | In `window.cpp`: Remove `m_visible = true` from `show()` method (now dead code) | | |
-| TASK-1600 | In `window.cpp`: Add implementation of `is_fullscreen()` returning `SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN_DESKTOP` | | |
-| TASK-1700 | User verifies C++ build by running `make renderer` | | |
+| TASK-0100 | In `audio_capture.hpp`: Add `std::atomic<bool> m_audio_error{false}` member in private section | Yes | 2025-12-27 |
+| TASK-0200 | In `audio_capture.hpp`: Add public method declaration `const std::string& get_source() const` | Yes | 2025-12-27 |
+| TASK-0300 | In `audio_capture.hpp`: Add public method declaration `bool is_connected() const` | Yes | 2025-12-27 |
+| TASK-0400 | In `audio_capture.cpp`: In `capture_loop()`, set `m_audio_error = true` immediately before the `break` statement that follows the `emit_stderr_event("AUDIO_ERROR", ...)` call | Yes | 2025-12-27 |
+| TASK-0500 | In `audio_capture.cpp`: Add implementation of `get_source()` returning `m_source` | Yes | 2025-12-27 |
+| TASK-0600 | In `audio_capture.cpp`: Add implementation of `is_connected()` returning `!m_audio_error.load()` | Yes | 2025-12-27 |
+| TASK-0700 | In `visualizer.hpp`: Add `std::string m_current_preset_path` member in private section | Yes | 2025-12-27 |
+| TASK-0800 | In `visualizer.hpp`: Add public method declaration `const std::string& get_current_preset_path() const` | Yes | 2025-12-27 |
+| TASK-0900 | In `visualizer.cpp`: In `load_preset()`, store `path` in `m_current_preset_path` immediately before `return {true, ""}` (only on success) | Yes | 2025-12-27 |
+| TASK-1000 | In `visualizer.cpp`: Add implementation of `get_current_preset_path()` returning `m_current_preset_path` | Yes | 2025-12-27 |
+| TASK-1100 | In `window.hpp`: Add public method declaration `bool is_fullscreen() const` | Yes | 2025-12-27 |
+| TASK-1200 | Verify `m_visible` member exists in `window.hpp` and `m_visible = true` exists in `window.cpp` before attempting removal (verified: both exist) | Yes | 2025-12-27 |
+| TASK-1300 | In `window.hpp`: Remove `bool m_visible` member declaration (will query SDL instead) | Yes | 2025-12-27 |
+| TASK-1400 | In `window.cpp`: Modify `is_visible()` to query SDL via `SDL_GetWindowFlags(m_window) & SDL_WINDOW_SHOWN` instead of returning `m_visible` | Yes | 2025-12-27 |
+| TASK-1500 | In `window.cpp`: Remove `m_visible = true` from `show()` method (now dead code) | Yes | 2025-12-27 |
+| TASK-1600 | In `window.cpp`: Add implementation of `is_fullscreen()` returning `SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN_DESKTOP` | Yes | 2025-12-27 |
+| TASK-1700 | User verifies C++ build by running `make renderer` | Yes | 2025-12-27 |
 
 ### Phase 2: Protocol Layer Updates
 

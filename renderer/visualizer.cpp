@@ -57,6 +57,7 @@ PresetLoadResult Visualizer::load_preset(const std::string& path) {
         return {false, std::string(m_error_buffer)};
     }
 
+    m_current_preset_path = path;
     return {true, ""};
 }
 
@@ -76,6 +77,10 @@ projectm_handle Visualizer::create_projectm_instance() {
         throw std::runtime_error("Failed to create projectM instance");
     }
     return handle;
+}
+
+const std::string& Visualizer::get_current_preset_path() const {
+    return m_current_preset_path;
 }
 
 } // namespace platyplaty
