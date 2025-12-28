@@ -101,8 +101,8 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-3600 | Delete file `renderer/renderer_state.hpp` entirely (RendererPhase and RendererState are defined but never used) | | |
-| TASK-3700 | User verifies C++ build by running `make renderer` | | |
+| TASK-3600 | Delete file `renderer/renderer_state.hpp` entirely (RendererPhase and RendererState are defined but never used) | Yes | 2025-12-27 |
+| TASK-3700 | User verifies C++ build by running `make renderer` | Yes | 2025-12-27 |
 
 ### Phase 6: Documentation Update
 
