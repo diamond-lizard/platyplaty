@@ -191,12 +191,12 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-8400 | Create `tests/client/` directory | | |
-| TASK-8500 | Create `tests/client/test_reconnect.py` test file | | |
-| TASK-8600 | Add test: `send_command("GET STATUS")` parses response correctly into StatusData | | |
-| TASK-8700 | Add test: Reconnect uses GET STATUS to skip redundant commands | | |
-| TASK-8800 | Add test: Reconnect sends LOAD PRESET only if preset differs from current | | |
-| TASK-8900 | User verifies client tests pass by running `make test` | | |
+| TASK-8400 | Create `tests/client/` directory | Yes | 2025-12-27 |
+| TASK-8500 | Create `tests/client/test_reconnect.py` test file | Yes | 2025-12-27 |
+| TASK-8600 | Add test: `send_command("GET STATUS")` parses response correctly into StatusData | Yes | 2025-12-27 |
+| TASK-8700 | Add test: Reconnect uses GET STATUS to skip redundant commands | Yes | 2025-12-27 |
+| TASK-8800 | Add test: Reconnect sends LOAD PRESET only if preset differs from current | Yes | 2025-12-27 |
+| TASK-8900 | User verifies client tests pass by running `make test` | Yes | 2025-12-27 |
 
 ## 3. Alternatives
 

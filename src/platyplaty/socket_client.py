@@ -9,15 +9,12 @@ import asyncio
 import json
 from asyncio import StreamReader, StreamWriter
 
-from platyplaty.types import CommandResponse
-
 from platyplaty.netstring import (
     IncompleteNetstringError,
     decode_netstring,
     encode_netstring,
 )
-
-
+from platyplaty.types import CommandResponse
 
 
 class ResponseIdMismatchError(Exception):

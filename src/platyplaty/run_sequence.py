@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import TextIO
 
 from platyplaty.async_main import async_main
-from platyplaty.types import Config
 from platyplaty.errors import StartupError
 from platyplaty.paths import UndefinedEnvVarError, expand_path, resolve_path
 from platyplaty.playlist import (
@@ -29,6 +28,7 @@ from platyplaty.socket_path import (
     check_stale_socket,
     compute_socket_path,
 )
+from platyplaty.types import Config
 
 
 def expand_preset_dirs(preset_dirs: list[str]) -> list[str]:

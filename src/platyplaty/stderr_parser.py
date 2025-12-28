@@ -13,14 +13,11 @@ import json
 import re
 import sys
 
-from platyplaty.types import StderrEvent, StderrEventType
 from platyplaty.netstring import (
     MalformedNetstringError,
     decode_netstring,
 )
-
-
-
+from platyplaty.types import StderrEvent
 
 # Pattern to detect potential netstring start: digits followed by colon
 _NETSTRING_START = re.compile(r"^\d+:")

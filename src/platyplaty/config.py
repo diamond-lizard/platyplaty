@@ -9,8 +9,6 @@ import tomllib
 from platyplaty.types import Config
 
 
-
-
 def load_config(path: str) -> Config:
     """Load and validate configuration from a TOML file.
 

@@ -8,9 +8,9 @@ configuration file.
 import sys
 
 from platyplaty.config import load_config
-from platyplaty.types import Config
 from platyplaty.errors import StartupError
 from platyplaty.run_sequence import run_startup_sequence
+from platyplaty.types import Config
 
 
 def run_with_config(config_path: str) -> int:
