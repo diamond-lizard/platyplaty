@@ -100,7 +100,7 @@ async def async_main(
                 await asyncio.sleep(0.5)
 
                 success = await attempt_reconnect(
-                    client, socket_path, audio_source, playlist,
+                    client, socket_path, playlist,
                     fullscreen, state, output,
                 )
                 if not success:

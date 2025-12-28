@@ -2,22 +2,21 @@
 """Reconnection logic for Platyplaty.
 
 Handles reconnection to the renderer after DISCONNECT events or socket EOF.
-For MVP, reconnection re-runs the full startup sequence (CHANGE AUDIO SOURCE,
-INIT, LOAD PRESET, SHOW WINDOW) with the renderer handling idempotency.
+Uses GET STATUS to query current state and sends only commands needed to
+synchronize (LOAD PRESET, SHOW WINDOW, SET FULLSCREEN) based on differences.
 """
 
-import contextlib
 from typing import TextIO
 
 from platyplaty.event_loop import EventLoopState
 from platyplaty.playlist import Playlist
 from platyplaty.socket_client import RendererError, SocketClient
+from platyplaty.types import StatusData
 
 
 async def attempt_reconnect(
     client: SocketClient,
     socket_path: str,
-    audio_source: str,
     playlist: Playlist,
     fullscreen: bool,
     state: EventLoopState,
@@ -25,14 +24,13 @@ async def attempt_reconnect(
 ) -> bool:
     """Attempt to reconnect to the renderer and re-run startup sequence.
 
-    Re-runs the full startup sequence: CHANGE AUDIO SOURCE, INIT,
-    LOAD PRESET, SHOW WINDOW. The renderer handles idempotency
-    (returns "already initialized" for INIT if already initialized).
+    Uses GET STATUS to query current renderer state and sends only
+    the commands needed to synchronize (LOAD PRESET, SHOW WINDOW,
+    SET FULLSCREEN) based on differences from desired state.
 
     Args:
         client: The socket client.
         socket_path: Path to the Unix domain socket.
-        audio_source: Audio source for CHANGE AUDIO SOURCE command.
         playlist: The playlist manager (uses current position).
         fullscreen: Whether to enable fullscreen after showing window.
         state: Shared event loop state.
@@ -51,103 +49,69 @@ async def attempt_reconnect(
         output.flush()
         return False
 
-    return await _run_startup_sequence(
-        client, audio_source, playlist, fullscreen, output
+    return await _sync_state_from_status(
+        client, playlist, fullscreen, output
     )
 
 
-async def _run_startup_sequence(
+async def _sync_state_from_status(
     client: SocketClient,
-    audio_source: str,
     playlist: Playlist,
     fullscreen: bool,
     output: TextIO,
 ) -> bool:
-    """Run the startup sequence after reconnection.
+    """Synchronize client state with renderer using GET STATUS.
+
+    Queries renderer state and sends only the commands needed to
+    synchronize. Skips redundant commands based on current state.
 
     Args:
         client: The connected socket client.
-        audio_source: Audio source for CHANGE AUDIO SOURCE command.
         playlist: The playlist manager (uses current position).
-        fullscreen: Whether to enable fullscreen after showing window.
+        fullscreen: Desired fullscreen state.
         output: Output stream for status messages.
 
     Returns:
-        True if startup sequence succeeded, False otherwise.
+        True if GET STATUS succeeds and sync commands complete.
+        False if GET STATUS fails or critical sync commands fail.
+        Note: audio_connected=false is a warning, not a failure.
     """
+    # Query current renderer state
     try:
-        await _send_audio_source(client, audio_source)
-        await _send_init(client)
-        await _load_current_preset(client, playlist, output)
-        await _show_window(client, fullscreen)
-        return True
-    except (OSError, ConnectionError) as e:
-        output.write(f"Startup sequence failed: {e}\n")
-        output.flush()
+        response = await client.send_command("GET STATUS")
+    except (RendererError, ConnectionError):
         return False
 
+    status = StatusData.model_validate(response.data)
 
-async def _send_audio_source(
-    client: SocketClient,
-    audio_source: str,
-) -> None:
-    """Send CHANGE AUDIO SOURCE command, ignoring expected errors.
-
-    The 'cannot change audio source after INIT' error is expected
-    during reconnect per MVP reconnection behavior.
-
-    Args:
-        client: The socket client.
-        audio_source: Audio source name.
-    """
-    with contextlib.suppress(RendererError):
-        await client.send_command("CHANGE AUDIO SOURCE", audio_source=audio_source)
-
-
-async def _send_init(client: SocketClient) -> None:
-    """Send INIT command, ignoring 'already initialized' error.
-
-    The 'already initialized' error is expected during reconnect
-    per MVP reconnection behavior.
-
-    Args:
-        client: The socket client.
-    """
-    with contextlib.suppress(RendererError):
-        await client.send_command("INIT")
-
-
-async def _load_current_preset(
-    client: SocketClient,
-    playlist: Playlist,
-    output: TextIO,
-) -> None:
-    """Load the current preset from the playlist.
-
-    Args:
-        client: The socket client.
-        playlist: The playlist manager.
-        output: Output stream for warnings.
-    """
-    preset_path = playlist.current()
-    try:
-        await client.send_command("LOAD PRESET", path=str(preset_path))
-    except RendererError as e:
-        output.write(f"Warning: Failed to load {preset_path}: {e}\n")
+    # Warn if audio is disconnected
+    if not status.audio_connected:
+        output.write(
+            "Warning: Audio disconnected, visualization may be "
+            "unresponsive to music\n"
+        )
         output.flush()
 
+    # Load preset if different from current
+    current_preset = str(playlist.current())
+    if status.preset_path != current_preset:
+        try:
+            await client.send_command("LOAD PRESET", path=current_preset)
+        except (RendererError, ConnectionError):
+            return False
 
-async def _show_window(
-    client: SocketClient,
-    fullscreen: bool,
-) -> None:
-    """Send SHOW WINDOW command and optionally SET FULLSCREEN.
+    # Show window if not visible
+    if not status.visible:
+        try:
+            await client.send_command("SHOW WINDOW")
+        except (RendererError, ConnectionError):
+            return False
 
-    Args:
-        client: The socket client.
-        fullscreen: Whether to enable fullscreen.
-    """
-    await client.send_command("SHOW WINDOW")
-    if fullscreen:
-        with contextlib.suppress(RendererError):
-            await client.send_command("SET FULLSCREEN", enabled=True)
+    # Set fullscreen if different from desired
+    if status.fullscreen != fullscreen:
+        try:
+            await client.send_command("SET FULLSCREEN", enabled=fullscreen)
+        except (RendererError, ConnectionError):
+            return False
+
+    return True

@@ -147,24 +147,24 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-5550 | In `reconnect.py`: Add import `from platyplaty.types import StatusData` | | |
-| TASK-5600 | In `reconnect.py`: Add new function `async def _sync_state_from_status(client: SocketClient, playlist: Playlist, fullscreen: bool, output: TextIO) -> bool` | | |
-| TASK-5700 | Document return value contract in docstring: Returns `True` if GET STATUS succeeds and sync commands complete; returns `False` if GET STATUS fails or critical sync commands (LOAD PRESET, SHOW WINDOW, SET FULLSCREEN) fail; `audio_connected: false` is a warning, not a failure | | |
-| TASK-5800 | In `_sync_state_from_status`: Wrap GET STATUS in try/except: `response = await client.send_command("GET STATUS")`; on `RendererError` or `ConnectionError`, return `False`; re-raise other exceptions | | |
-| TASK-5900 | In `_sync_state_from_status`: Parse response with `StatusData.model_validate(response.data)` (success is guaranteed if no exception was raised) | | |
-| TASK-6000 | In `_sync_state_from_status`: If `status.audio_connected` is false, log warning "Audio disconnected, visualization may be unresponsive to music" to output and continue | | |
-| TASK-6100 | In `_sync_state_from_status`: Compare `status.preset_path` with `str(playlist.current())`; only send LOAD PRESET if different; on `RendererError` or `ConnectionError`, return `False` | | |
-| TASK-6200 | In `_sync_state_from_status`: Check `status.visible`; only send SHOW WINDOW if not visible; on `RendererError` or `ConnectionError`, return `False` | | |
-| TASK-6300 | In `_sync_state_from_status`: Check `status.fullscreen != fullscreen`; only send SET FULLSCREEN if different; on `RendererError` or `ConnectionError`, return `False` | | |
-| TASK-6400 | In `reconnect.py`: Update `attempt_reconnect()` to remove `audio_source` parameter (no longer needed) | | |
-| TASK-7100 | In `async_main.py`: Update call to `attempt_reconnect()` to remove `audio_source` argument | | |
-| TASK-6500 | In `reconnect.py`: Update `attempt_reconnect()` to call `_sync_state_from_status()` instead of `_run_startup_sequence()` | | |
-| TASK-6600 | In `reconnect.py`: Delete `_run_startup_sequence()` function (now dead code) | | |
-| TASK-6700 | In `reconnect.py`: Delete `_send_audio_source()` helper function (now dead code) | | |
-| TASK-6800 | In `reconnect.py`: Delete `_send_init()` helper function (now dead code) | | |
-| TASK-6900 | In `reconnect.py`: Delete `_load_current_preset()` helper function (now dead code) | | |
-| TASK-7000 | In `reconnect.py`: Delete `_show_window()` helper function (now dead code) | | |
-| TASK-7200 | Verify Python syntax: Run `python3 -m py_compile` on all modified Python files | | |
+| TASK-5550 | In `reconnect.py`: Add import `from platyplaty.types import StatusData` | Yes | 2025-12-27 |
+| TASK-5600 | In `reconnect.py`: Add new function `async def _sync_state_from_status(client: SocketClient, playlist: Playlist, fullscreen: bool, output: TextIO) -> bool` | Yes | 2025-12-27 |
+| TASK-5700 | Document return value contract in docstring: Returns `True` if GET STATUS succeeds and sync commands complete; returns `False` if GET STATUS fails or critical sync commands (LOAD PRESET, SHOW WINDOW, SET FULLSCREEN) fail; `audio_connected: false` is a warning, not a failure | Yes | 2025-12-27 |
+| TASK-5800 | In `_sync_state_from_status`: Wrap GET STATUS in try/except: `response = await client.send_command("GET STATUS")`; on `RendererError` or `ConnectionError`, return `False`; re-raise other exceptions | Yes | 2025-12-27 |
+| TASK-5900 | In `_sync_state_from_status`: Parse response with `StatusData.model_validate(response.data)` (success is guaranteed if no exception was raised) | Yes | 2025-12-27 |
+| TASK-6000 | In `_sync_state_from_status`: If `status.audio_connected` is false, log warning "Audio disconnected, visualization may be unresponsive to music" to output and continue | Yes | 2025-12-27 |
+| TASK-6100 | In `_sync_state_from_status`: Compare `status.preset_path` with `str(playlist.current())`; only send LOAD PRESET if different; on `RendererError` or `ConnectionError`, return `False` | Yes | 2025-12-27 |
+| TASK-6200 | In `_sync_state_from_status`: Check `status.visible`; only send SHOW WINDOW if not visible; on `RendererError` or `ConnectionError`, return `False` | Yes | 2025-12-27 |
+| TASK-6300 | In `_sync_state_from_status`: Check `status.fullscreen != fullscreen`; only send SET FULLSCREEN if different; on `RendererError` or `ConnectionError`, return `False` | Yes | 2025-12-27 |
+| TASK-6400 | In `reconnect.py`: Update `attempt_reconnect()` to remove `audio_source` parameter (no longer needed) | Yes | 2025-12-27 |
+| TASK-7100 | In `async_main.py`: Update call to `attempt_reconnect()` to remove `audio_source` argument | Yes | 2025-12-27 |
+| TASK-6500 | In `reconnect.py`: Update `attempt_reconnect()` to call `_sync_state_from_status()` instead of `_run_startup_sequence()` | Yes | 2025-12-27 |
+| TASK-6600 | In `reconnect.py`: Delete `_run_startup_sequence()` function (now dead code) | Yes | 2025-12-27 |
+| TASK-6700 | In `reconnect.py`: Delete `_send_audio_source()` helper function (now dead code) | Yes | 2025-12-27 |
+| TASK-6800 | In `reconnect.py`: Delete `_send_init()` helper function (now dead code) | Yes | 2025-12-27 |
+| TASK-6900 | In `reconnect.py`: Delete `_load_current_preset()` helper function (now dead code) | Yes | 2025-12-27 |
+| TASK-7000 | In `reconnect.py`: Delete `_show_window()` helper function (now dead code) | Yes | 2025-12-27 |
+| TASK-7200 | Verify Python syntax: Run `python3 -m py_compile` on all modified Python files | Yes | 2025-12-27 |
 
 ### Phase 10: Renderer Tests
 
