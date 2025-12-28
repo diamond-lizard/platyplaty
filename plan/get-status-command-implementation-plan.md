@@ -49,12 +49,12 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-0900 | In `visualizer.cpp`: In `load_preset()`, store `path` in `m_current_preset_path` immediately before `return {true, ""}` (only on success) | | |
 | TASK-1000 | In `visualizer.cpp`: Add implementation of `get_current_preset_path()` returning `m_current_preset_path` | | |
 | TASK-1100 | In `window.hpp`: Add public method declaration `bool is_fullscreen() const` | | |
-| TASK-1200 | Verify `m_visible` member exists in `window.hpp` and `m_visible = true` exists in `window.cpp` before attempting removal | | |
+| TASK-1200 | Verify `m_visible` member exists in `window.hpp` and `m_visible = true` exists in `window.cpp` before attempting removal (verified: both exist) | | |
 | TASK-1300 | In `window.hpp`: Remove `bool m_visible` member declaration (will query SDL instead) | | |
 | TASK-1400 | In `window.cpp`: Modify `is_visible()` to query SDL via `SDL_GetWindowFlags(m_window) & SDL_WINDOW_SHOWN` instead of returning `m_visible` | | |
 | TASK-1500 | In `window.cpp`: Remove `m_visible = true` from `show()` method (now dead code) | | |
 | TASK-1600 | In `window.cpp`: Add implementation of `is_fullscreen()` returning `SDL_GetWindowFlags(m_window) & SDL_WINDOW_FULLSCREEN_DESKTOP` | | |
-| TASK-1700 | Verify C++ build: Run `make` to ensure renderer compiles without errors | | |
+| TASK-1700 | User verifies C++ build by running `make renderer` | | |
 
 ### Phase 2: Protocol Layer Updates
 
@@ -66,7 +66,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-1900 | In `protocol.cpp`: Add `"GET STATUS"` to the `VALID_COMMANDS` set | | |
 | TASK-2000 | In `protocol.cpp`: Add `case` for `"GET STATUS"` in `string_to_command_type()` returning `CommandType::GET_STATUS` | | |
 | TASK-2100 | In `protocol.cpp`: Add `case CommandType::GET_STATUS:` in `allowed_fields()` returning empty set `{}` (like INIT/QUIT) | | |
-| TASK-2200 | Verify C++ build: Run `make` to ensure renderer compiles without errors | | |
+| TASK-2200 | User verifies C++ build by running `make renderer` | | |
 
 ### Phase 3: Command Handler and Event Loop Signature Changes
 
@@ -82,7 +82,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-2800 | In `command_handler.cpp`: Add `#include "audio_capture.hpp"` | | |
 | TASK-2900 | In `command_handler.cpp`: Update `handle_command()` definition to add `AudioCapture& audio` parameter | | |
 | TASK-3000 | In `main.cpp`: Update `run_event_loop()` call to pass `audio_capture` as additional argument | | |
-| TASK-3100 | Verify C++ build: Run `make` to ensure renderer compiles without errors | | |
+| TASK-3100 | User verifies C++ build by running `make renderer` | | |
 
 ### Phase 4: GET STATUS Command Implementation
 
@@ -93,7 +93,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-3200 | In `command_handler.cpp`: Add `case CommandType::GET_STATUS:` block in the command switch | | |
 | TASK-3300 | In GET_STATUS case: Create `nlohmann::json data` object with fields: `data["audio_source"] = audio.get_source()`, `data["audio_connected"] = audio.is_connected()`, `data["preset_path"] = visualizer.get_current_preset_path()`, `data["visible"] = window.is_visible()`, `data["fullscreen"] = window.is_fullscreen()` | | |
 | TASK-3400 | In GET_STATUS case: Return success response with data using `make_response(cmd.id, true, "", data)` or equivalent pattern | | |
-| TASK-3500 | Verify C++ build: Run `make` to ensure renderer compiles without errors | | |
+| TASK-3500 | User verifies C++ build by running `make renderer` | | |
 
 ### Phase 5: Dead Code Cleanup
 
@@ -102,7 +102,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
 | TASK-3600 | Delete file `renderer/renderer_state.hpp` entirely (RendererPhase and RendererState are defined but never used) | | |
-| TASK-3700 | Verify C++ build: Run `make` to ensure renderer compiles without errors | | |
+| TASK-3700 | User verifies C++ build by running `make renderer` | | |
 
 ### Phase 6: Documentation Update
 
@@ -118,14 +118,13 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-3900 | Verify which Python files import `CommandResponse`, `Config`, and `StderrEvent`; update Phase 8 task list if needed | | |
 | TASK-4000 | Create directory `src/platyplaty/types/` | | |
 | TASK-4100 | Create `src/platyplaty/types/__init__.py` that re-exports all types for convenient imports | | |
 | TASK-4200 | Create `src/platyplaty/types/socket.py` with `StatusData` Pydantic model: fields `audio_source: str`, `audio_connected: bool`, `preset_path: str`, `visible: bool`, `fullscreen: bool` | | |
 | TASK-4300 | In `types/socket.py`: Migrate `CommandResponse` class from its current location | | |
-| TASK-4400 | Create `src/platyplaty/types/config.py` and migrate `Config` class from its current location | | |
-| TASK-4500 | Create `src/platyplaty/types/events.py` and migrate `StderrEvent` class from its current location | | |
-| TASK-4600 | Update `types/__init__.py` to re-export `StatusData`, `CommandResponse`, `Config`, `StderrEvent` | | |
+| TASK-4400 | Create `src/platyplaty/types/config.py` and migrate `Config` class (load_config() stays in config.py) | | |
+| TASK-4500 | Create `src/platyplaty/types/events.py` and migrate `StderrEvent` and `StderrEventType` (functions stay in stderr_parser.py) from its current location | | |
+| TASK-4600 | Update `types/__init__.py` to re-export `StatusData`, `CommandResponse`, `Config`, `StderrEvent`, `StderrEventType` | | |
 | TASK-4700 | Verify Python syntax: Run `python3 -m py_compile` on all new Python files in `types/` | | |
 
 ### Phase 8: Python Import Updates
@@ -134,14 +133,13 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-4800 | Update imports in `async_main.py` to use `from platyplaty.types import ...` | | |
-| TASK-4900 | Update imports in `auto_advance.py` to use `from platyplaty.types import ...` | | |
-| TASK-5000 | Update imports in `event_loop.py` to use `from platyplaty.types import ...` | | |
-| TASK-5100 | Update imports in `run_sequence.py` to use `from platyplaty.types import ...` | | |
-| TASK-5200 | Update imports in `startup.py` to use `from platyplaty.types import ...` | | |
-| TASK-5300 | Update imports in `reconnect.py` to use `from platyplaty.types import ...` | | |
-| TASK-5400 | Update imports in `shutdown.py` to use `from platyplaty.types import ...` | | |
-| TASK-5500 | Verify Python syntax: Run `python3 -m py_compile` on all modified Python files | | |
+| TASK-4800 | In `socket_client.py`: Replace `CommandResponse` class definition with import `from platyplaty.types import CommandResponse` | | |
+| TASK-4850 | In `config.py`: Replace `Config` class definition with import `from platyplaty.types import Config` | | |
+| TASK-4900 | In `stderr_parser.py`: Replace `StderrEvent` and `StderrEventType` definitions with import `from platyplaty.types import StderrEvent, StderrEventType` | | |
+| TASK-4950 | In `event_loop.py`: Update import to `from platyplaty.types import StderrEvent, StderrEventType` | | |
+| TASK-5000 | In `run_sequence.py`: Update import to `from platyplaty.types import Config` | | |
+| TASK-5100 | In `startup.py`: Update import to `from platyplaty.types import Config` (keep `load_config` import from config.py) | | |
+| TASK-5200 | Verify Python syntax: Run `python3 -m py_compile` on all modified Python files | | |
 
 ### Phase 9: Reconnect Logic Refactoring
 
@@ -149,10 +147,11 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
+| TASK-5550 | In `reconnect.py`: Add import `from platyplaty.types import StatusData` | | |
 | TASK-5600 | In `reconnect.py`: Add new function `async def _sync_state_from_status(client: SocketClient, playlist: Playlist, fullscreen: bool, output: TextIO) -> bool` | | |
-| TASK-5700 | Document return value contract in docstring: Returns `True` if GET STATUS succeeds and sync commands complete; returns `False` if GET STATUS fails or critical sync commands fail; `audio_connected: false` is a warning, not a failure | | |
-| TASK-5800 | In `_sync_state_from_status`: Send GET STATUS command via `client.send_command("GET STATUS")` | | |
-| TASK-5900 | In `_sync_state_from_status`: Parse response with `StatusData.model_validate(response.data)` after checking `response.success` | | |
+| TASK-5700 | Document return value contract in docstring: Returns `True` if GET STATUS succeeds and sync commands complete; returns `False` if GET STATUS fails or critical sync commands (LOAD PRESET, SHOW WINDOW, SET FULLSCREEN) fail; `audio_connected: false` is a warning, not a failure | | |
+| TASK-5800 | In `_sync_state_from_status`: Wrap GET STATUS in try/except: `response = await client.send_command("GET STATUS")`; on `RendererError`, return `False` | | |
+| TASK-5900 | In `_sync_state_from_status`: Parse response with `StatusData.model_validate(response.data)` (success is guaranteed if no exception was raised) | | |
 | TASK-6000 | In `_sync_state_from_status`: If `status.audio_connected` is false, log warning "Audio disconnected, visualization may be unresponsive to music" to output and continue | | |
 | TASK-6100 | In `_sync_state_from_status`: Compare `status.preset_path` with `str(playlist.current())`; only send LOAD PRESET if different | | |
 | TASK-6200 | In `_sync_state_from_status`: Check `status.visible`; only send SHOW WINDOW if not visible | | |
@@ -177,13 +176,14 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-7400 | Add test: GET STATUS before INIT returns error "command not allowed before INIT" | | |
 | TASK-7500 | Add test: GET STATUS after INIT returns success with all 5 fields present | | |
 | TASK-7600 | Add test: `audio_source` matches value from CHANGE AUDIO SOURCE command | | |
-| TASK-7700 | Add test: `audio_connected` is true when audio is active (query PulseAudio for available sources and use the first monitor source) | | |
+| TASK-7700 | Manual test: `audio_connected` is true when audio is active (query PulseAudio for available sources and use the first monitor source) | | |
 | TASK-7800 | Manual test: Verify `audio_connected` is false after disconnecting audio device or stopping PulseAudio source | | |
 | TASK-7900 | Add test: `preset_path` is empty string before any LOAD PRESET | | |
 | TASK-8000 | Add test: `preset_path` matches last successful LOAD PRESET path | | |
 | TASK-8100 | Add test: `preset_path` remains unchanged after a failed LOAD PRESET | | |
 | TASK-8200 | Add test: `visible` reflects SHOW WINDOW state (false initially, true after SHOW WINDOW) | | |
 | TASK-8300 | Add test: `fullscreen` reflects SET FULLSCREEN state | | |
+| TASK-8350 | User verifies renderer tests pass by running `make test-renderer` | | |
 
 ### Phase 11: Client Tests
 
@@ -196,6 +196,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 | TASK-8600 | Add test: `send_command("GET STATUS")` parses response correctly into StatusData | | |
 | TASK-8700 | Add test: Reconnect uses GET STATUS to skip redundant commands | | |
 | TASK-8800 | Add test: Reconnect sends LOAD PRESET only if preset differs from current | | |
+| TASK-8900 | User verifies client tests pass by running `make test` | | |
 
 ## 3. Alternatives
 
@@ -229,15 +230,16 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 - **FILE-1500**: `reference/architecture/communication-protocol.md` - Add GET STATUS to command table
 - **FILE-1600**: `src/platyplaty/types/__init__.py` - Create, re-export all types
 - **FILE-1700**: `src/platyplaty/types/socket.py` - Create, add StatusData, migrate CommandResponse
-- **FILE-1800**: `src/platyplaty/types/config.py` - Create, migrate Config
-- **FILE-1900**: `src/platyplaty/types/events.py` - Create, migrate StderrEvent
+- **FILE-1800**: `src/platyplaty/types/config.py` - Create, migrate Config (load_config() stays in config.py)
+- **FILE-1900**: `src/platyplaty/types/events.py` - Create, migrate StderrEvent and StderrEventType (functions stay in stderr_parser.py)
 - **FILE-2000**: `src/platyplaty/reconnect.py` - Replace _run_startup_sequence with _sync_state_from_status, remove audio_source param
-- **FILE-2100**: `src/platyplaty/async_main.py` - Update attempt_reconnect() call, update imports
-- **FILE-2200**: `src/platyplaty/auto_advance.py` - Update imports
-- **FILE-2300**: `src/platyplaty/event_loop.py` - Update imports
-- **FILE-2400**: `src/platyplaty/run_sequence.py` - Update imports
-- **FILE-2500**: `src/platyplaty/startup.py` - Update imports
-- **FILE-2600**: `src/platyplaty/shutdown.py` - Update imports
+- **FILE-2100**: `src/platyplaty/async_main.py` - Update attempt_reconnect() call (remove audio_source argument)
+- **FILE-2200**: `src/platyplaty/socket_client.py` - Update imports to use CommandResponse from types
+- **FILE-2300**: `src/platyplaty/config.py` - Update imports to use Config from types
+- **FILE-2400**: `src/platyplaty/stderr_parser.py` - Update imports to use StderrEvent, StderrEventType from types
+- **FILE-2500**: `src/platyplaty/event_loop.py` - Update imports to use StderrEvent, StderrEventType from types
+- **FILE-2600**: `src/platyplaty/run_sequence.py` - Update imports to use Config from types
+- **FILE-2650**: `src/platyplaty/startup.py` - Update imports to use Config from types
 - **FILE-2700**: `tests/renderer/test_get_status.py` - Create renderer tests
 - **FILE-2800**: `tests/client/test_reconnect.py` - Create client tests
 
@@ -246,7 +248,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 - **TEST-0100**: GET STATUS before INIT returns error "command not allowed before INIT"
 - **TEST-0200**: GET STATUS after INIT returns success with all 5 fields
 - **TEST-0300**: `audio_source` matches CHANGE AUDIO SOURCE value
-- **TEST-0400**: `audio_connected` is true when audio active, false after AUDIO_ERROR
+- **TEST-0400**: `audio_connected` is true when audio active, false after AUDIO_ERROR (manual tests required for audio hardware)
 - **TEST-0500**: `preset_path` empty before LOAD PRESET
 - **TEST-0600**: `preset_path` matches last successful LOAD PRESET
 - **TEST-0700**: `preset_path` unchanged after failed LOAD PRESET
@@ -260,7 +262,7 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 - **RISK-100**: If audio thread sets m_audio_error after GET STATUS reads it, the response may be slightly stale. Mitigation: Acceptable because next GET STATUS will show correct value; no critical decisions depend on this.
 - **RISK-200**: SDL_GetWindowFlags() behavior may differ across platforms. Mitigation: Test on target platform (Linux with SDL2).
-- **ASSUMPTION-100**: renderer_state.hpp is truly dead code and can be safely deleted
+- **ASSUMPTION-100**: renderer_state.hpp is truly dead code and can be safely deleted (verified: not included anywhere)
 - **ASSUMPTION-200**: All listed Python files exist and use the types being migrated
 - **ASSUMPTION-300**: Pydantic is already a dependency of the Python client
 
