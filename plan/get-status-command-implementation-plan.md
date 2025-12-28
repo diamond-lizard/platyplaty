@@ -62,11 +62,11 @@ Implement the GET STATUS command (Stage 5) to allow the Python client to query c
 
 | Task      | Description | Completed | Date |
 | --------- | ----------- | --------- | ---- |
-| TASK-1800 | In `protocol.hpp`: Add `GET_STATUS` to the `CommandType` enum (after existing entries) | | |
-| TASK-1900 | In `protocol.cpp`: Add `"GET STATUS"` to the `VALID_COMMANDS` set | | |
-| TASK-2000 | In `protocol.cpp`: Add `case` for `"GET STATUS"` in `string_to_command_type()` returning `CommandType::GET_STATUS` | | |
-| TASK-2100 | In `protocol.cpp`: Add `case CommandType::GET_STATUS:` in `allowed_fields()` returning empty set `{}` (like INIT/QUIT) | | |
-| TASK-2200 | User verifies C++ build by running `make renderer` | | |
+| TASK-1800 | In `protocol.hpp`: Add `GET_STATUS` to the `CommandType` enum (after existing entries) | Yes | 2025-12-27 |
+| TASK-1900 | In `protocol.cpp`: Add `"GET STATUS"` to the `VALID_COMMANDS` set | Yes | 2025-12-27 |
+| TASK-2000 | In `protocol.cpp`: Add `case` for `"GET STATUS"` in `string_to_command_type()` returning `CommandType::GET_STATUS` | Yes | 2025-12-27 |
+| TASK-2100 | In `protocol.cpp`: Add `case CommandType::GET_STATUS:` in `allowed_fields()` returning empty set `{}` (like INIT/QUIT) | Yes | 2025-12-27 |
+| TASK-2200 | User verifies C++ build by running `make renderer` | Yes | 2025-12-27 |
 
 ### Phase 3: Command Handler and Event Loop Signature Changes
 

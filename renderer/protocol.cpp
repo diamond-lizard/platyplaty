@@ -9,7 +9,7 @@ namespace {
 
 const std::set<std::string> VALID_COMMANDS = {
     "CHANGE AUDIO SOURCE", "INIT", "LOAD PRESET",
-    "SHOW WINDOW", "SET FULLSCREEN", "QUIT"
+    "SHOW WINDOW", "SET FULLSCREEN", "QUIT", "GET STATUS"
 };
 
 CommandType string_to_command_type(const std::string& cmd) {
@@ -19,6 +19,7 @@ CommandType string_to_command_type(const std::string& cmd) {
     if (cmd == "SHOW WINDOW") return CommandType::SHOW_WINDOW;
     if (cmd == "SET FULLSCREEN") return CommandType::SET_FULLSCREEN;
     if (cmd == "QUIT") return CommandType::QUIT;
+    if (cmd == "GET STATUS") return CommandType::GET_STATUS;
     return CommandType::UNKNOWN;
 }
 
@@ -33,6 +34,7 @@ const std::set<std::string>& allowed_fields(CommandType type) {
         case CommandType::CHANGE_AUDIO_SOURCE: return audio_fields;
         case CommandType::LOAD_PRESET: return preset_fields;
         case CommandType::SET_FULLSCREEN: return fullscreen_fields;
+        case CommandType::GET_STATUS: return empty_fields;
         default: return empty_fields;
     }
 }

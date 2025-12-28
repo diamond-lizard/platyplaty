@@ -17,6 +17,7 @@ enum class CommandType {
     SHOW_WINDOW,
     SET_FULLSCREEN,
     QUIT,
+    GET_STATUS,
     UNKNOWN
 };
 
