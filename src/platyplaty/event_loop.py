@@ -13,7 +13,12 @@ from platyplaty.stderr_parser import (
     log_audio_error,
     parse_stderr_event,
 )
-from platyplaty.types import KeyPressedEvent, StderrEvent, StderrEventType
+from platyplaty.types import (
+    ClientKeybindings,
+    KeyPressedEvent,
+    StderrEvent,
+    StderrEventType,
+)
 
 # Maximum number of key events to queue during pending commands (REQ-0500)
 MAX_KEY_EVENT_QUEUE = 8
@@ -29,6 +34,7 @@ class EventLoopState:
         key_event_queue: Queue of key events waiting for command completion.
         command_pending: True while awaiting a socket command response.
         renderer_ready: True after renderer INIT succeeds.
+        client_keybindings: Client keybindings for terminal input.
     """
 
     shutdown_requested: bool
@@ -38,8 +44,9 @@ class EventLoopState:
     key_event_queue: deque[KeyPressedEvent]
     command_pending: bool
     renderer_ready: bool
+    client_keybindings: ClientKeybindings
 
-    def __init__(self) -> None:
+    def __init__(self, client_keybindings: ClientKeybindings) -> None:
         """Initialize event loop state."""
         self.shutdown_requested = False
         self.quit_received = False
@@ -48,6 +55,7 @@ class EventLoopState:
         self.key_event_queue: deque[KeyPressedEvent] = deque(maxlen=MAX_KEY_EVENT_QUEUE)
         self.command_pending = False
         self.renderer_ready = False
+        self.client_keybindings = client_keybindings
 
 
 async def process_stderr_line(

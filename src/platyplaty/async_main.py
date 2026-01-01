@@ -10,6 +10,7 @@ from typing import TextIO
 
 from platyplaty.auto_advance import auto_advance_loop, load_preset_with_retry
 from platyplaty.event_loop import EventLoopState, stderr_monitor_task
+from platyplaty.keybinding_dispatch import dispatch_client_key
 from platyplaty.playlist import Playlist
 from platyplaty.reconnect import attempt_reconnect
 from platyplaty.renderer import start_renderer
@@ -19,6 +20,8 @@ from platyplaty.shutdown import (
     register_signal_handlers,
 )
 from platyplaty.socket_client import SocketClient
+from platyplaty.terminal_input import is_stdin_tty, terminal_input_task
+from platyplaty.types import ClientKeybindings, KeyPressedEvent
 
 
 async def async_main(
@@ -28,6 +31,7 @@ async def async_main(
     preset_duration: int,
     fullscreen: bool,
     output: TextIO,
+    client_keybindings: ClientKeybindings,
 ) -> None:
     """Run the async portion of the startup sequence.
 
@@ -38,6 +42,7 @@ async def async_main(
         preset_duration: Seconds between preset changes.
         fullscreen: Whether to start in fullscreen mode.
         output: Output stream for status messages.
+        client_keybindings: Terminal keybindings for input dispatch.
     """
     # Start renderer subprocess
     renderer_process = await start_renderer(socket_path)
@@ -66,7 +71,8 @@ async def async_main(
         await client.send_command("SET FULLSCREEN", enabled=True)
 
     # Enter main event loop
-    state = EventLoopState()
+    state = EventLoopState(client_keybindings)
+    state.renderer_ready = True  # INIT succeeded
     loop = asyncio.get_event_loop()
     register_signal_handlers(loop, state)
 
@@ -77,6 +83,15 @@ async def async_main(
     advance_task = asyncio.create_task(
         auto_advance_loop(client, playlist, preset_duration, state, output)
     )
+
+    # Create terminal input task if stdin is a TTY
+    terminal_task: asyncio.Task[None] | None = None
+    if is_stdin_tty():
+        def _key_callback(event: KeyPressedEvent) -> None:
+            dispatch_client_key(event, state)
+        terminal_task = asyncio.create_task(
+            terminal_input_task(state, _key_callback)
+        )
 
     try:
         # Main event loop: handle shutdown and disconnect events
@@ -116,5 +131,8 @@ async def async_main(
                     )
                 )
     finally:
-        await cancel_tasks([stderr_task, advance_task])
+        tasks_to_cancel = [stderr_task, advance_task]
+        if terminal_task is not None:
+            tasks_to_cancel.append(terminal_task)
+        await cancel_tasks(tasks_to_cancel)
         await graceful_shutdown(client)

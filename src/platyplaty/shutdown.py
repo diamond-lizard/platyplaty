@@ -8,6 +8,7 @@ for the async event loop.
 import asyncio
 import contextlib
 import signal
+from collections.abc import Sequence
 
 from platyplaty.event_loop import EventLoopState
 from platyplaty.socket_client import SocketClient
@@ -73,7 +74,7 @@ async def graceful_shutdown(client: SocketClient) -> None:
         client.close()
 
 
-async def cancel_tasks(tasks: list[asyncio.Task[object]]) -> None:
+async def cancel_tasks(tasks: Sequence[asyncio.Task[object]]) -> None:
     """Cancel a list of asyncio tasks and wait for them to finish.
 
     Args:
