@@ -42,7 +42,7 @@ void render_frame(Window& window, Visualizer& visualizer) {
 
 } // anonymous namespace
 
-void run_event_loop(Window& window, Visualizer& visualizer, CommandSlot& command_slot, AudioCapture& audio) {
+void run_event_loop(Window& window, Visualizer& visualizer, CommandSlot& command_slot, const AudioCapture& audio) {
     bool running = true;
     while (running && !g_shutdown_requested.load(std::memory_order_relaxed)) {
         process_events(window, visualizer);

@@ -12,7 +12,7 @@ Response handle_command(
     Visualizer& viz,
     Window& win,
     bool& running,
-    AudioCapture& audio) {
+    const AudioCapture& audio) {
     Response resp{};
     resp.id = cmd.id;
 

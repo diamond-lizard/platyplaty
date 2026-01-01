@@ -14,7 +14,7 @@ class AudioCapture;
 
 // Handle a command received after INIT.
 // Returns a Response to send back to the client.
-Response handle_command(const Command& cmd, Visualizer& viz, Window& win, bool& running, AudioCapture& audio);
+Response handle_command(const Command& cmd, Visualizer& viz, Window& win, bool& running, const AudioCapture& audio);
 
 }  // namespace platyplaty
 

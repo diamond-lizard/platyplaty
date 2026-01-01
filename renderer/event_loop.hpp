@@ -13,7 +13,7 @@ class AudioCapture;
 
 // Run the main event loop until shutdown is requested.
 // Polls SDL events, clears buffers, renders frames, and swaps buffers.
-void run_event_loop(Window& window, Visualizer& visualizer, CommandSlot& command_slot, AudioCapture& audio);
+void run_event_loop(Window& window, Visualizer& visualizer, CommandSlot& command_slot, const AudioCapture& audio);
 
 } // namespace platyplaty
 
