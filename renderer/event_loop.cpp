@@ -6,12 +6,18 @@
 #include "window.hpp"
 #include "command_slot.hpp"
 #include "command_handler.hpp"
+#include "key_event.hpp"
+#include "scancode_map.hpp"
+#include "stderr_event.hpp"
 #include <SDL.h>
 #include <SDL_opengl.h>
 
 namespace platyplaty {
 
 namespace {
+
+// Static rate limiter for key repeat events.
+KeyRateLimiter g_key_rate_limiter;
 
 void handle_window_event(
     const SDL_Event& event,
@@ -23,6 +29,29 @@ void handle_window_event(
     }
 }
 
+void handle_key_event(const SDL_Event& event) {
+    // Extract modifier state from keyboard state.
+    const auto* state = SDL_GetKeyboardState(nullptr);
+    bool ctrl = state[SDL_SCANCODE_LCTRL] || state[SDL_SCANCODE_RCTRL];
+    bool shift = state[SDL_SCANCODE_LSHIFT] || state[SDL_SCANCODE_RSHIFT];
+    bool alt = state[SDL_SCANCODE_LALT] || state[SDL_SCANCODE_RALT];
+
+    // Translate scancode to key name.
+    auto key_name = scancode_to_keyname(event.key.keysym.scancode, ctrl, shift, alt);
+    if (!key_name) {
+        return;  // Unmapped scancode.
+    }
+
+    // Check rate limiting.
+    bool is_repeat = (event.key.repeat != 0);
+    if (!g_key_rate_limiter.should_emit(*key_name, is_repeat)) {
+        return;  // Rate-limited.
+    }
+
+    // Emit KEY_PRESSED event to stderr.
+    emit_key_pressed(*key_name);
+}
+
 void process_events(const Window& window, Visualizer& visualizer) {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
@@ -30,6 +59,8 @@ void process_events(const Window& window, Visualizer& visualizer) {
             g_shutdown_requested.store(true, std::memory_order_relaxed);
         } else if (event.type == SDL_WINDOWEVENT) {
             handle_window_event(event, window, visualizer);
+        } else if (event.type == SDL_KEYDOWN) {
+            handle_key_event(event);
         }
     }
 }

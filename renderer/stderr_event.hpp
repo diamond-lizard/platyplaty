@@ -25,6 +25,16 @@ inline void emit_stderr_event(
     std::cerr << serialize_netstring(j.dump()) << std::flush;
 }
 
+// Emit a KEY_PRESSED event to stderr in netstring-framed JSON format.
+inline void emit_key_pressed(const std::string& key_name) {
+    nlohmann::json j;
+    j["source"] = "PLATYPLATY";
+    j["event"] = "KEY_PRESSED";
+    j["key"] = key_name;
+
+    std::cerr << serialize_netstring(j.dump()) << std::flush;
+}
+
 }  // namespace platyplaty
 
 #endif  // PLATYPLATY_STDERR_EVENT_HPP
