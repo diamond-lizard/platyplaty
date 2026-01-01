@@ -2,8 +2,9 @@
 """Event type definitions for Platyplaty."""
 
 from enum import Enum
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Discriminator
 
 
 class StderrEventType(Enum):
@@ -12,13 +13,50 @@ class StderrEventType(Enum):
     DISCONNECT = "DISCONNECT"
     AUDIO_ERROR = "AUDIO_ERROR"
     QUIT = "QUIT"
+    KEY_PRESSED = "KEY_PRESSED"
 
 
-class StderrEvent(BaseModel):
-    """A parsed PLATYPLATY stderr event."""
+class KeyPressedEvent(BaseModel):
+    """A KEY_PRESSED event with key information."""
 
     model_config = ConfigDict(extra="forbid")
 
-    source: str
-    event: StderrEventType
+    source: Literal["PLATYPLATY"]
+    event: Literal[StderrEventType.KEY_PRESSED]
+    key: str
+
+
+class ReasonEvent(BaseModel):
+    """A DISCONNECT, AUDIO_ERROR, or QUIT event with reason."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    source: Literal["PLATYPLATY"]
+    event: Literal[
+        StderrEventType.DISCONNECT,
+        StderrEventType.AUDIO_ERROR,
+        StderrEventType.QUIT,
+    ]
     reason: str
+
+
+def _get_event_discriminator(v: dict[str, Any] | BaseModel) -> str:
+    """Get discriminator value for StderrEvent union.
+
+    Args:
+        v: Raw dict or already-validated model.
+
+    Returns:
+        The event type string for discrimination.
+    """
+    if isinstance(v, dict):
+        return str(v.get("event", ""))
+    event = getattr(v, "event", None)
+    return event.value if event is not None else ""
+
+
+# Discriminated union: pydantic selects model based on event field
+StderrEvent = Annotated[
+    KeyPressedEvent | ReasonEvent,
+    Discriminator(_get_event_discriminator),
+]

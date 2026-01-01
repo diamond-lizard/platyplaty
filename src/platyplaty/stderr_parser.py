@@ -6,21 +6,26 @@ notifications. This module detects and parses these events, passing through
 non-PLATYPLATY output unchanged.
 
 Event format: <length>:{"source": "PLATYPLATY", ...},
-Event types: DISCONNECT, AUDIO_ERROR, QUIT
+Event types: DISCONNECT, AUDIO_ERROR, QUIT, KEY_PRESSED
 """
 
 import json
 import re
 import sys
 
+from pydantic import TypeAdapter
+
 from platyplaty.netstring import (
     MalformedNetstringError,
     decode_netstring,
 )
-from platyplaty.types import StderrEvent
+from platyplaty.types import ReasonEvent, StderrEvent
 
 # Pattern to detect potential netstring start: digits followed by colon
 _NETSTRING_START = re.compile(r"^\d+:")
+
+# TypeAdapter for validating the StderrEvent discriminated union
+_STDERR_EVENT_ADAPTER: TypeAdapter[StderrEvent] = TypeAdapter(StderrEvent)
 
 
 def is_potential_netstring(line: str) -> bool:
@@ -58,12 +63,12 @@ def parse_stderr_event(line: str) -> StderrEvent | None:
         return None
 
     try:
-        return StderrEvent.model_validate(data)
+        return _STDERR_EVENT_ADAPTER.validate_python(data)
     except Exception:  # noqa: BLE001
         return None
 
 
-def log_audio_error(event: StderrEvent) -> None:
+def log_audio_error(event: ReasonEvent) -> None:
     """Log an AUDIO_ERROR event to stderr.
 
     Args:

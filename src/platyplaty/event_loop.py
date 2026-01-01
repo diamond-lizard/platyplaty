@@ -2,18 +2,21 @@
 """Event loop state and stderr monitoring for Platyplaty.
 
 Provides shared state for event loop tasks and monitors renderer stderr
-for PLATYPLATY events (DISCONNECT, AUDIO_ERROR, QUIT).
+for PLATYPLATY events (DISCONNECT, AUDIO_ERROR, QUIT, KEY_PRESSED).
 """
 
 import asyncio
+from collections import deque
 from typing import TextIO
 
 from platyplaty.stderr_parser import (
     log_audio_error,
     parse_stderr_event,
 )
-from platyplaty.types import StderrEvent, StderrEventType
+from platyplaty.types import KeyPressedEvent, StderrEvent, StderrEventType
 
+# Maximum number of key events to queue during pending commands (REQ-0500)
+MAX_KEY_EVENT_QUEUE = 8
 
 class EventLoopState:
     """Shared state for the event loop tasks.
@@ -22,12 +25,19 @@ class EventLoopState:
         shutdown_requested: Set to True to request graceful shutdown.
         quit_received: Set to True when QUIT event received (no reconnect).
         disconnect_event: Set when DISCONNECT event received (reconnect).
+        shutdown_event: Set when shutdown should occur.
+        key_event_queue: Queue of key events waiting for command completion.
+        command_pending: True while awaiting a socket command response.
+        renderer_ready: True after renderer INIT succeeds.
     """
 
     shutdown_requested: bool
     quit_received: bool
     disconnect_event: asyncio.Event
     shutdown_event: asyncio.Event
+    key_event_queue: deque[KeyPressedEvent]
+    command_pending: bool
+    renderer_ready: bool
 
     def __init__(self) -> None:
         """Initialize event loop state."""
@@ -35,6 +45,9 @@ class EventLoopState:
         self.quit_received = False
         self.disconnect_event = asyncio.Event()
         self.shutdown_event = asyncio.Event()
+        self.key_event_queue: deque[KeyPressedEvent] = deque(maxlen=MAX_KEY_EVENT_QUEUE)
+        self.command_pending = False
+        self.renderer_ready = False
 
 
 async def process_stderr_line(
@@ -78,6 +91,14 @@ def _handle_stderr_event(
         state.disconnect_event.set()
     elif event.event == StderrEventType.AUDIO_ERROR:
         log_audio_error(event)
+    elif event.event == StderrEventType.KEY_PRESSED:
+        # Queue key events when command is pending (TASK-2600)
+        # Dispatch happens in Phase 6 (TASK-2300); for now just queue
+        key_event = event  # narrowed to KeyPressedEvent by discriminator
+        if state.command_pending:
+            # deque with maxlen auto-discards oldest if full (REQ-0500)
+            state.key_event_queue.append(key_event)
+        # else: dispatch to keybinding handler (TASK-2300)
 
 
 async def stderr_monitor_task(
@@ -103,3 +124,30 @@ async def stderr_monitor_task(
 
     # Renderer process exited - trigger shutdown
     state.shutdown_event.set()
+
+
+def process_queued_key_events(state: EventLoopState) -> list[KeyPressedEvent]:
+    """Process queued key events after command response (TASK-2700).
+
+    Drains the key event queue and returns events for dispatch.
+    Called after a command response is received when command_pending
+    transitions to False. Per REQ-0600, events are processed FIFO.
+
+    Args:
+        state: Shared event loop state.
+
+    Returns:
+        List of queued events in FIFO order for dispatch.
+    """
+    events = list(state.key_event_queue)
+    state.key_event_queue.clear()
+    return events
+
+
+def clear_key_event_queue(state: EventLoopState) -> None:
+    """Clear queued key events on shutdown or disconnect (REQ-0700).
+
+    Args:
+        state: Shared event loop state.
+    """
+    state.key_event_queue.clear()
