@@ -9,8 +9,8 @@ import asyncio
 from collections import deque
 from typing import TYPE_CHECKING, TextIO
 
-from platyplaty.netstring import read_netstrings_from_stderr
 from platyplaty.keybinding_dispatch import DispatchTable, dispatch_key_event
+from platyplaty.netstring import read_netstrings_from_stderr
 from platyplaty.stderr_parser import (
     log_audio_error,
     parse_stderr_event,

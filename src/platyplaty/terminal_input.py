@@ -12,7 +12,7 @@ import sys
 import termios
 from collections.abc import Callable
 
-from prompt_toolkit.input import create_input
+from prompt_toolkit.input import Input, create_input
 from prompt_toolkit.keys import Keys
 
 from platyplaty.event_loop import EventLoopState
@@ -108,7 +108,7 @@ async def _process_key_queue(
 
 
 def _read_keys_to_queue(
-    input_obj: object,
+    input_obj: Input,
     key_queue: asyncio.Queue[str],
     loop: asyncio.AbstractEventLoop,
 ) -> None:
@@ -119,13 +119,13 @@ def _read_keys_to_queue(
         key_queue: Queue to put key names into.
         loop: The asyncio event loop for thread-safe queue access.
     """
-    for key_press in input_obj.read_keys():  # type: ignore[attr-defined]
+    for key_press in input_obj.read_keys():
         key_name = _key_to_name(key_press.key)
         loop.call_soon_threadsafe(key_queue.put_nowait, key_name)
 
 
 def _handle_keys_ready(
-    input_obj: object,
+    input_obj: Input,
     key_queue: asyncio.Queue[str],
     loop: asyncio.AbstractEventLoop,
     state: EventLoopState,

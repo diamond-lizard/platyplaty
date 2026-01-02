@@ -51,9 +51,7 @@ def is_valid_key_name(key: str) -> bool:
         return True
     if base_key in _DIGIT_KEYS:
         return True
-    if base_key in _SPECIAL_KEYS:
-        return True
-    return False
+    return base_key in _SPECIAL_KEYS
 
 
 def has_abbreviated_modifier(key: str) -> bool:

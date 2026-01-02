@@ -6,7 +6,6 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Discriminator, Tag
 
 
-
 class KeyPressedEvent(BaseModel):
     """A KEY_PRESSED event with key information."""
 

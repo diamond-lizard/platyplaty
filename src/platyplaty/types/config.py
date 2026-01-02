@@ -3,7 +3,11 @@
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from platyplaty.types.keys import has_abbreviated_modifier, is_valid_key_name, warn_invalid_key
+from platyplaty.types.keys import (
+    has_abbreviated_modifier,
+    is_valid_key_name,
+    warn_invalid_key,
+)
 
 
 class RendererKeybindings(BaseModel):
@@ -27,7 +31,10 @@ class RendererKeybindings(BaseModel):
         for field_name in ("next_preset", "previous_preset", "quit"):
             key = getattr(self, field_name)
             if has_abbreviated_modifier(key):
-                msg = f"Abbreviated modifier in keybindings.renderer.{field_name}: '{key}'. "
+                msg = (
+                    f"Abbreviated modifier in keybindings.renderer.{field_name}: "
+                    f"'{key}'. "
+                )
                 msg += "Use full names: control-, shift-, alt-"
                 raise ValueError(msg)
             if not is_valid_key_name(key):

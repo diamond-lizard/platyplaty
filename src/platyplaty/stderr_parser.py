@@ -15,7 +15,6 @@ from pydantic import TypeAdapter
 
 from platyplaty.types import ReasonEvent, StderrEvent
 
-
 # TypeAdapter for validating the StderrEvent discriminated union
 _STDERR_EVENT_ADAPTER: TypeAdapter[StderrEvent] = TypeAdapter(StderrEvent)
 
