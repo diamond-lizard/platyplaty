@@ -120,4 +120,5 @@ def run_startup_sequence(config: Config, output: TextIO) -> None:
         fullscreen=config.fullscreen,
         output=output,
         client_keybindings=config.keybindings.client,
+        renderer_keybindings=config.keybindings.renderer,
     ))

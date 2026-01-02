@@ -19,6 +19,7 @@ from platyplaty.types import (
     StderrEvent,
     StderrEventType,
 )
+from platyplaty.keybinding_dispatch import DispatchTable, dispatch_key_event
 
 # Maximum number of key events to queue during pending commands (REQ-0500)
 MAX_KEY_EVENT_QUEUE = 8
@@ -35,6 +36,7 @@ class EventLoopState:
         command_pending: True while awaiting a socket command response.
         renderer_ready: True after renderer INIT succeeds.
         client_keybindings: Client keybindings for terminal input.
+        renderer_dispatch_table: Dispatch table for renderer key events.
     """
 
     shutdown_requested: bool
@@ -45,8 +47,13 @@ class EventLoopState:
     command_pending: bool
     renderer_ready: bool
     client_keybindings: ClientKeybindings
+    renderer_dispatch_table: DispatchTable
 
-    def __init__(self, client_keybindings: ClientKeybindings) -> None:
+    def __init__(
+        self,
+        client_keybindings: ClientKeybindings,
+        renderer_dispatch_table: DispatchTable,
+    ) -> None:
         """Initialize event loop state."""
         self.shutdown_requested = False
         self.quit_received = False
@@ -56,6 +63,7 @@ class EventLoopState:
         self.command_pending = False
         self.renderer_ready = False
         self.client_keybindings = client_keybindings
+        self.renderer_dispatch_table = renderer_dispatch_table
 
 
 async def process_stderr_line(
@@ -101,12 +109,17 @@ def _handle_stderr_event(
         log_audio_error(event)
     elif event.event == StderrEventType.KEY_PRESSED:
         # Queue key events when command is pending (TASK-2600)
-        # Dispatch happens in Phase 6 (TASK-2300); for now just queue
         key_event = event  # narrowed to KeyPressedEvent by discriminator
         if state.command_pending:
             # deque with maxlen auto-discards oldest if full (REQ-0500)
             state.key_event_queue.append(key_event)
-        # else: dispatch to keybinding handler (TASK-2300)
+        else:
+            # Dispatch immediately (TASK-2300)
+            dispatch_key_event(
+                key_event.key,
+                state.renderer_dispatch_table,
+                state,
+            )
 
 
 async def stderr_monitor_task(

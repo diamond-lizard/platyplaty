@@ -5,17 +5,110 @@ Routes key events from terminal and renderer to their configured actions.
 Terminal events use keybindings.client, renderer events use keybindings.renderer.
 """
 
-from platyplaty.event_loop import EventLoopState
-from platyplaty.types import KeyPressedEvent
+from collections.abc import Callable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from platyplaty.event_loop import EventLoopState
+
+# Type alias for action callbacks (TASK-3400)
+# Actions receive the shared state and perform their operation synchronously.
+# Async operations (like sending commands) are handled via state flags that
+# the main loop monitors.
+ActionCallback = Callable[["EventLoopState"], None]
+
+# Type alias for dispatch tables mapping key names to callbacks
+DispatchTable = dict[str, ActionCallback]
 
 
-def dispatch_client_key(event: KeyPressedEvent, state: EventLoopState) -> None:
-    """Dispatch a terminal key event to client keybindings.
+def action_quit(state: "EventLoopState") -> None:
+    """Set shutdown flag to trigger graceful exit.
 
     Args:
-        event: The key event from terminal input.
         state: Shared event loop state.
     """
-    quit_key = state.client_keybindings.quit
-    if quit_key is not None and event.key == quit_key:
-        state.shutdown_requested = True
+    state.shutdown_requested = True
+
+
+def action_next_preset(state: "EventLoopState") -> None:
+    """Stub for next preset action (implemented in Phase 7).
+
+    Args:
+        state: Shared event loop state.
+    """
+    # Phase 7 will implement: advance playlist, send LOAD PRESET
+    if not state.renderer_ready:
+        return  # Silently ignore if renderer not ready (TASK-3700)
+
+
+def action_previous_preset(state: "EventLoopState") -> None:
+    """Stub for previous preset action (implemented in Phase 7).
+
+    Args:
+        state: Shared event loop state.
+    """
+    # Phase 7 will implement: go back in playlist, send LOAD PRESET
+    if not state.renderer_ready:
+        return  # Silently ignore if renderer not ready (TASK-3700)
+
+
+def build_renderer_dispatch_table(
+    next_preset_key: str,
+    previous_preset_key: str,
+    quit_key: str,
+) -> DispatchTable:
+    """Build dispatch table for renderer window key events.
+
+    Args:
+        next_preset_key: Key bound to next preset action.
+        previous_preset_key: Key bound to previous preset action.
+        quit_key: Key bound to quit action.
+
+    Returns:
+        Dispatch table mapping keys to action callbacks.
+    """
+    return {
+        next_preset_key: action_next_preset,
+        previous_preset_key: action_previous_preset,
+        quit_key: action_quit,
+    }
+
+
+def build_client_dispatch_table(quit_key: str | None) -> DispatchTable:
+    """Build dispatch table for terminal key events.
+
+    Args:
+        quit_key: Key bound to quit action, or None if not bound.
+
+    Returns:
+        Dispatch table mapping keys to action callbacks.
+    """
+    table: DispatchTable = {}
+    if quit_key is not None:
+        table[quit_key] = action_quit
+    return table
+
+
+def dispatch_key_event(
+    key: str,
+    table: DispatchTable,
+    state: "EventLoopState",
+) -> bool:
+    """Dispatch a key event using the given dispatch table.
+
+    Looks up the key in the table and invokes the callback if found.
+    Unbound keys are silently ignored (TASK-3800).
+
+    Args:
+        key: The key name from the event.
+        table: Dispatch table mapping keys to callbacks.
+        state: Shared event loop state.
+
+    Returns:
+        True if key was bound and callback invoked, False otherwise.
+    """
+    callback = table.get(key)
+    if callback is None:
+        return False
+    callback(state)
+    return True

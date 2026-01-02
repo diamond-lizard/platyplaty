@@ -10,7 +10,11 @@ from typing import TextIO
 
 from platyplaty.auto_advance import auto_advance_loop, load_preset_with_retry
 from platyplaty.event_loop import EventLoopState, stderr_monitor_task
-from platyplaty.keybinding_dispatch import dispatch_client_key
+from platyplaty.keybinding_dispatch import (
+    build_client_dispatch_table,
+    build_renderer_dispatch_table,
+    dispatch_key_event,
+)
 from platyplaty.playlist import Playlist
 from platyplaty.reconnect import attempt_reconnect
 from platyplaty.renderer import start_renderer
@@ -21,7 +25,7 @@ from platyplaty.shutdown import (
 )
 from platyplaty.socket_client import SocketClient
 from platyplaty.terminal_input import is_stdin_tty, terminal_input_task
-from platyplaty.types import ClientKeybindings, KeyPressedEvent
+from platyplaty.types import ClientKeybindings, KeyPressedEvent, RendererKeybindings
 
 
 async def async_main(
@@ -32,6 +36,7 @@ async def async_main(
     fullscreen: bool,
     output: TextIO,
     client_keybindings: ClientKeybindings,
+    renderer_keybindings: RendererKeybindings,
 ) -> None:
     """Run the async portion of the startup sequence.
 
@@ -43,6 +48,7 @@ async def async_main(
         fullscreen: Whether to start in fullscreen mode.
         output: Output stream for status messages.
         client_keybindings: Terminal keybindings for input dispatch.
+        renderer_keybindings: Keybindings for renderer window dispatch.
     """
     # Start renderer subprocess
     renderer_process = await start_renderer(socket_path)
@@ -70,8 +76,13 @@ async def async_main(
     if fullscreen:
         await client.send_command("SET FULLSCREEN", enabled=True)
 
-    # Enter main event loop
-    state = EventLoopState(client_keybindings)
+    # Build renderer dispatch table and enter main event loop
+    renderer_dispatch_table = build_renderer_dispatch_table(
+        renderer_keybindings.next_preset,
+        renderer_keybindings.previous_preset,
+        renderer_keybindings.quit,
+    )
+    state = EventLoopState(client_keybindings, renderer_dispatch_table)
     state.renderer_ready = True  # INIT succeeded
     loop = asyncio.get_event_loop()
     register_signal_handlers(loop, state)
@@ -84,11 +95,14 @@ async def async_main(
         auto_advance_loop(client, playlist, preset_duration, state, output)
     )
 
+    # Build client dispatch table for terminal input
+    client_dispatch_table = build_client_dispatch_table(client_keybindings.quit)
+
     # Create terminal input task if stdin is a TTY
     terminal_task: asyncio.Task[None] | None = None
     if is_stdin_tty():
         def _key_callback(event: KeyPressedEvent) -> None:
-            dispatch_client_key(event, state)
+            dispatch_key_event(event.key, client_dispatch_table, state)
         terminal_task = asyncio.create_task(
             terminal_input_task(state, _key_callback)
         )
