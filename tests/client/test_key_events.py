@@ -38,9 +38,8 @@ from platyplaty.types import (
 
 
 def make_netstring(payload: str) -> str:
-    """Create a netstring from a payload string."""
-    encoded = payload.encode("utf-8")
-    return f"{len(encoded)}:{payload},"
+    """Return payload as-is (parse_stderr_event now expects raw JSON)."""
+    return payload
 
 
 # =============================================================================

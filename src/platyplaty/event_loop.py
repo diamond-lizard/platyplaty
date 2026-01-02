@@ -9,6 +9,7 @@ import asyncio
 from collections import deque
 from typing import TYPE_CHECKING, TextIO
 
+from platyplaty.netstring import read_netstrings_from_stderr
 from platyplaty.keybinding_dispatch import DispatchTable, dispatch_key_event
 from platyplaty.stderr_parser import (
     log_audio_error,
@@ -149,9 +150,8 @@ async def stderr_monitor_task(
     if process.stderr is None:
         return
 
-    async for line_bytes in process.stderr:
-        line = line_bytes.decode()
-        await process_stderr_line(line, state, output)
+    async for payload in read_netstrings_from_stderr(process.stderr):
+        await process_stderr_line(payload, state, output)
         if state.shutdown_requested:
             break
 

@@ -22,7 +22,7 @@ inline void emit_stderr_event(
     j["event"] = event_type;
     j["reason"] = reason;
 
-    std::cerr << serialize_netstring(j.dump()) << '\n' << std::flush;
+    std::cerr << serialize_netstring(j.dump()) << std::flush;
 }
 
 // Emit a KEY_PRESSED event to stderr in netstring-framed JSON format.
@@ -32,7 +32,7 @@ inline void emit_key_pressed(const std::string& key_name) {
     j["event"] = "KEY_PRESSED";
     j["key"] = key_name;
 
-    std::cerr << serialize_netstring(j.dump()) << '\n' << std::flush;
+    std::cerr << serialize_netstring(j.dump()) << std::flush;
 }
 
 }  // namespace platyplaty
