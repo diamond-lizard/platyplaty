@@ -4,7 +4,7 @@
 from enum import Enum
 from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Discriminator
+from pydantic import BaseModel, ConfigDict, Discriminator, Tag
 
 
 class StderrEventType(Enum):
@@ -56,7 +56,12 @@ def _get_event_discriminator(v: dict[str, Any] | BaseModel) -> str:
 
 
 # Discriminated union: pydantic selects model based on event field
+# Discriminated union: pydantic selects model based on event field
+# Tag values must match what _get_event_discriminator returns
 StderrEvent = Annotated[
-    KeyPressedEvent | ReasonEvent,
+    Annotated[KeyPressedEvent, Tag("KEY_PRESSED")]
+    | Annotated[ReasonEvent, Tag("DISCONNECT")]
+    | Annotated[ReasonEvent, Tag("AUDIO_ERROR")]
+    | Annotated[ReasonEvent, Tag("QUIT")],
     Discriminator(_get_event_discriminator),
 ]

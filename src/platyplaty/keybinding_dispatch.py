@@ -31,25 +31,33 @@ def action_quit(state: "EventLoopState") -> None:
 
 
 def action_next_preset(state: "EventLoopState") -> None:
-    """Stub for next preset action (implemented in Phase 7).
+    """Advance to the next preset in the playlist.
+
+    Silently ignores if renderer not ready or if at end with loop disabled.
 
     Args:
         state: Shared event loop state.
     """
-    # Phase 7 will implement: advance playlist, send LOAD PRESET
     if not state.renderer_ready:
-        return  # Silently ignore if renderer not ready (TASK-3700)
+        return
+    next_path = state.playlist.next()
+    if next_path is not None:
+        state.command_queue.put_nowait(("LOAD PRESET", {"path": str(next_path)}))
 
 
 def action_previous_preset(state: "EventLoopState") -> None:
-    """Stub for previous preset action (implemented in Phase 7).
+    """Go back to the previous preset in the playlist.
+
+    Silently ignores if renderer not ready or if at start with loop disabled.
 
     Args:
         state: Shared event loop state.
     """
-    # Phase 7 will implement: go back in playlist, send LOAD PRESET
     if not state.renderer_ready:
-        return  # Silently ignore if renderer not ready (TASK-3700)
+        return
+    prev_path = state.playlist.previous()
+    if prev_path is not None:
+        state.command_queue.put_nowait(("LOAD PRESET", {"path": str(prev_path)}))
 
 
 def build_renderer_dispatch_table(

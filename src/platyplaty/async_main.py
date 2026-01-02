@@ -9,6 +9,7 @@ import asyncio
 from typing import TextIO
 
 from platyplaty.auto_advance import auto_advance_loop, load_preset_with_retry
+from platyplaty.command_queue import command_queue_consumer
 from platyplaty.event_loop import EventLoopState, stderr_monitor_task
 from platyplaty.keybinding_dispatch import (
     build_client_dispatch_table,
@@ -82,7 +83,9 @@ async def async_main(
         renderer_keybindings.previous_preset,
         renderer_keybindings.quit,
     )
-    state = EventLoopState(client_keybindings, renderer_dispatch_table)
+    state = EventLoopState(
+        client_keybindings, renderer_dispatch_table, playlist, client
+    )
     state.renderer_ready = True  # INIT succeeded
     loop = asyncio.get_event_loop()
     register_signal_handlers(loop, state)
@@ -93,6 +96,9 @@ async def async_main(
     )
     advance_task = asyncio.create_task(
         auto_advance_loop(client, playlist, preset_duration, state, output)
+    )
+    command_queue_task = asyncio.create_task(
+        command_queue_consumer(state)
     )
 
     # Build client dispatch table for terminal input
@@ -124,7 +130,7 @@ async def async_main(
 
             # Disconnect event: attempt reconnection
             if disconnect_task in done and not state.quit_received:
-                await cancel_tasks([advance_task])
+                await cancel_tasks([advance_task, command_queue_task])
                 client.close()
                 await asyncio.sleep(0.5)
 
@@ -144,8 +150,11 @@ async def async_main(
                         client, playlist, preset_duration, state, output
                     )
                 )
+                command_queue_task = asyncio.create_task(
+                    command_queue_consumer(state)
+                )
     finally:
-        tasks_to_cancel = [stderr_task, advance_task]
+        tasks_to_cancel = [stderr_task, advance_task, command_queue_task]
         if terminal_task is not None:
             tasks_to_cancel.append(terminal_task)
         await cancel_tasks(tasks_to_cancel)

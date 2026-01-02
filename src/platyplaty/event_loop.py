@@ -7,8 +7,9 @@ for PLATYPLATY events (DISCONNECT, AUDIO_ERROR, QUIT, KEY_PRESSED).
 
 import asyncio
 from collections import deque
-from typing import TextIO
+from typing import TYPE_CHECKING, TextIO
 
+from platyplaty.keybinding_dispatch import DispatchTable, dispatch_key_event
 from platyplaty.stderr_parser import (
     log_audio_error,
     parse_stderr_event,
@@ -19,7 +20,10 @@ from platyplaty.types import (
     StderrEvent,
     StderrEventType,
 )
-from platyplaty.keybinding_dispatch import DispatchTable, dispatch_key_event
+
+if TYPE_CHECKING:
+    from platyplaty.playlist import Playlist
+    from platyplaty.socket_client import SocketClient
 
 # Maximum number of key events to queue during pending commands (REQ-0500)
 MAX_KEY_EVENT_QUEUE = 8
@@ -37,6 +41,9 @@ class EventLoopState:
         renderer_ready: True after renderer INIT succeeds.
         client_keybindings: Client keybindings for terminal input.
         renderer_dispatch_table: Dispatch table for renderer key events.
+        playlist: The preset playlist for navigation.
+        client: Socket client for renderer commands.
+        command_queue: Queue for commands to send to renderer.
     """
 
     shutdown_requested: bool
@@ -48,11 +55,15 @@ class EventLoopState:
     renderer_ready: bool
     client_keybindings: ClientKeybindings
     renderer_dispatch_table: DispatchTable
+    playlist: "Playlist"
+    client: "SocketClient"
 
     def __init__(
         self,
         client_keybindings: ClientKeybindings,
         renderer_dispatch_table: DispatchTable,
+        playlist: "Playlist",
+        client: "SocketClient",
     ) -> None:
         """Initialize event loop state."""
         self.shutdown_requested = False
@@ -64,7 +75,9 @@ class EventLoopState:
         self.renderer_ready = False
         self.client_keybindings = client_keybindings
         self.renderer_dispatch_table = renderer_dispatch_table
-
+        self.playlist = playlist
+        self.client = client
+        self.command_queue: asyncio.Queue[tuple[str, dict[str, str]]] = asyncio.Queue()
 
 async def process_stderr_line(
     line: str,
