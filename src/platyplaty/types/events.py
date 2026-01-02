@@ -1,19 +1,10 @@
 #!/usr/bin/env python3
 """Event type definitions for Platyplaty."""
 
-from enum import Enum
 from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Discriminator, Tag
 
-
-class StderrEventType(Enum):
-    """Types of PLATYPLATY stderr events."""
-
-    DISCONNECT = "DISCONNECT"
-    AUDIO_ERROR = "AUDIO_ERROR"
-    QUIT = "QUIT"
-    KEY_PRESSED = "KEY_PRESSED"
 
 
 class KeyPressedEvent(BaseModel):

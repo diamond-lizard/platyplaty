@@ -11,7 +11,6 @@ from platyplaty.types.events import (
     KeyPressedEvent,
     ReasonEvent,
     StderrEvent,
-    StderrEventType,
 )
 from platyplaty.types.socket import CommandResponse, StatusData
 
@@ -20,7 +19,6 @@ __all__ = [
     "Config",
     "StatusData",
     "StderrEvent",
-    "StderrEventType",
     "KeyPressedEvent",
     "ReasonEvent",
     "ClientKeybindings",
