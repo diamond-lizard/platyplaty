@@ -22,7 +22,7 @@ class KeyPressedEvent(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     source: Literal["PLATYPLATY"]
-    event: Literal[StderrEventType.KEY_PRESSED]
+    event: Literal["KEY_PRESSED"]
     key: str
 
 
@@ -32,11 +32,7 @@ class ReasonEvent(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     source: Literal["PLATYPLATY"]
-    event: Literal[
-        StderrEventType.DISCONNECT,
-        StderrEventType.AUDIO_ERROR,
-        StderrEventType.QUIT,
-    ]
+    event: Literal["DISCONNECT", "AUDIO_ERROR", "QUIT"]
     reason: str
 
 
@@ -52,7 +48,7 @@ def _get_event_discriminator(v: dict[str, Any] | BaseModel) -> str:
     if isinstance(v, dict):
         return str(v.get("event", ""))
     event = getattr(v, "event", None)
-    return event.value if event is not None else ""
+    return str(event) if event is not None else ""
 
 
 # Discriminated union: pydantic selects model based on event field

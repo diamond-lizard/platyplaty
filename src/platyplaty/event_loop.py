@@ -18,7 +18,6 @@ from platyplaty.types import (
     ClientKeybindings,
     KeyPressedEvent,
     StderrEvent,
-    StderrEventType,
 )
 
 if TYPE_CHECKING:
@@ -112,15 +111,15 @@ def _handle_stderr_event(
         state: Shared event loop state.
         output: Output stream for logging.
     """
-    if event.event == StderrEventType.QUIT:
+    if event.event == "QUIT":
         state.quit_received = True
         state.shutdown_requested = True
         state.shutdown_event.set()
-    elif event.event == StderrEventType.DISCONNECT:
+    elif event.event == "DISCONNECT":
         state.disconnect_event.set()
-    elif event.event == StderrEventType.AUDIO_ERROR:
+    elif event.event == "AUDIO_ERROR":
         log_audio_error(event)
-    elif event.event == StderrEventType.KEY_PRESSED:
+    elif event.event == "KEY_PRESSED":
         # Queue key events when command is pending (TASK-2600)
         key_event = event  # narrowed to KeyPressedEvent by discriminator
         if state.command_pending:

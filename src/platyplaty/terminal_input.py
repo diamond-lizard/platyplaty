@@ -16,7 +16,7 @@ from prompt_toolkit.input import create_input
 from prompt_toolkit.keys import Keys
 
 from platyplaty.event_loop import EventLoopState
-from platyplaty.types import KeyPressedEvent, StderrEventType
+from platyplaty.types import KeyPressedEvent
 
 # Original terminal settings for restoration
 _original_termios: list[object] | None = None
@@ -81,7 +81,7 @@ def _create_key_event(key_name: str) -> KeyPressedEvent:
     Returns:
         A KeyPressedEvent with source "client".
     """
-    return KeyPressedEvent(source="PLATYPLATY", event=StderrEventType.KEY_PRESSED, key=key_name)
+    return KeyPressedEvent(source="PLATYPLATY", event="KEY_PRESSED", key=key_name)
 
 
 async def _process_key_queue(
