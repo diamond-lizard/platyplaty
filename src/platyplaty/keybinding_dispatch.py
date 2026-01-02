@@ -28,6 +28,7 @@ def action_quit(state: "EventLoopState") -> None:
         state: Shared event loop state.
     """
     state.shutdown_requested = True
+    state.shutdown_event.set()
 
 
 def action_next_preset(state: "EventLoopState") -> None:
