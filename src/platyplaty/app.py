@@ -62,3 +62,17 @@ class PlatyplatyApp(App):
             await self._client.send_command("LOAD PRESET", {"path": str(path)})
         except RendererError as e:
             self.post_message(LogMessage(f"Failed to load preset: {e}", level="warning"))
+
+    async def graceful_shutdown(self) -> None:
+        """Shut down the application gracefully.
+
+        Sets the exiting flag, sends QUIT command to the renderer (if
+        reachable), closes the socket, and exits the application.
+        """
+        self._exiting = True
+        try:
+            await self._client.send_command("QUIT")
+        except ConnectionError:
+            pass  # Renderer already gone
+        self._client.close()
+        self.exit()

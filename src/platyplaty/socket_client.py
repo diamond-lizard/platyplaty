@@ -36,6 +36,7 @@ class SocketClient:
     _writer: StreamWriter | None
     _next_id: int
     _buffer: bytes
+    _send_lock: asyncio.Lock
 
     def __init__(self) -> None:
         """Initialize the socket client."""
@@ -43,6 +44,7 @@ class SocketClient:
         self._writer = None
         self._next_id = 1
         self._buffer = b""
+        self._send_lock = asyncio.Lock()
 
     async def connect(self, socket_path: str) -> None:
         """Connect to the renderer's Unix domain socket.
@@ -80,23 +82,24 @@ class SocketClient:
             msg = "Not connected"
             raise RuntimeError(msg)
 
-        command_id = self._next_id
-        self._next_id += 1
+        async with self._send_lock:
+            command_id = self._next_id
+            self._next_id += 1
 
-        message = {"command": command, "id": command_id, **params}
-        data = encode_netstring(json.dumps(message))
-        self._writer.write(data)
-        await self._writer.drain()
+            message = {"command": command, "id": command_id, **params}
+            data = encode_netstring(json.dumps(message))
+            self._writer.write(data)
+            await self._writer.drain()
 
-        response = await self._recv_response()
-        if response.id != command_id:
-            msg = f"Response ID {response.id} doesn't match command ID {command_id}"
-            raise ResponseIdMismatchError(msg)
+            response = await self._recv_response()
+            if response.id != command_id:
+                msg = f"Response ID {response.id} doesn't match command ID {command_id}"
+                raise ResponseIdMismatchError(msg)
 
-        if not response.success:
-            raise RendererError(response.error or "Unknown error", response.id)
+            if not response.success:
+                raise RendererError(response.error or "Unknown error", response.id)
 
-        return response
+            return response
 
     def _try_decode_buffer(self) -> CommandResponse | None:
         """Try to decode a response from the buffer.

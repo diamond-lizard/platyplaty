@@ -166,8 +166,8 @@ This design means key presses are dispatched immediately (no buffering), command
 
 | Task | Description | Completed | Date |
 | -------- | --------------------- | --------- | ---- |
-| TASK-2900 | Add `_send_lock: asyncio.Lock` attribute to SocketClient; in `send_command()`, wrap the send-and-receive logic in `async with self._send_lock:` to serialize all commands. This ensures only one command is in flight at a time, enforcing the protocol invariant without an explicit queue | | |
-| TASK-3000 | Add `graceful_shutdown()` async method to PlatyplatyApp. Implementation: set `self._exiting = True`, wrap `await self._client.send_command("QUIT")` in try/except ConnectionError (renderer may already be gone), call `self._client.close()`, then call `self.exit()`. This makes `graceful_shutdown()` the single entry point for all intentional exits and prevents double-exit from stderr QUIT handler. | | |
+| TASK-2900 | Add `_send_lock: asyncio.Lock` attribute to SocketClient; in `send_command()`, wrap the send-and-receive logic in `async with self._send_lock:` to serialize all commands. This ensures only one command is in flight at a time, enforcing the protocol invariant without an explicit queue | Yes | 2026-01-03 |
+| TASK-3000 | Add `graceful_shutdown()` async method to PlatyplatyApp. Implementation: set `self._exiting = True`, wrap `await self._client.send_command("QUIT")` in try/except ConnectionError (renderer may already be gone), call `self._client.close()`, then call `self.exit()`. This makes `graceful_shutdown()` the single entry point for all intentional exits and prevents double-exit from stderr QUIT handler. | Yes | 2026-01-03 |
 
 ### Phase 70: Update Worker Functions
 
