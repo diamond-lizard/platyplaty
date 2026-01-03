@@ -150,15 +150,15 @@ This design means key presses are dispatched immediately (no buffering), command
 
 | Task | Description | Completed | Date |
 | -------- | --------------------- | --------- | ---- |
-| TASK-2100 | Change `DispatchTable` type alias from mapping keys to callbacks to mapping keys to action name strings | | |
-| TASK-2200 | Remove `ActionCallback` type alias (no longer needed with action methods) | | |
-| TASK-2300 | Add `action_quit()` async method to PlatyplatyApp that calls `await self.graceful_shutdown()` (graceful_shutdown handles exit internally) | | |
-| TASK-2400 | Add `action_next_preset()` async method to PlatyplatyApp that checks `self._renderer_ready` and `not self._exiting`, and if both True, calls `path = self.playlist.next()` and if `path is not None`, wraps the send_command call in try/except RendererError to catch preset load failures (e.g., file not found, parse error) and post a LogMessage warning; returns None when loop=false and at end of playlist | | |
-| TASK-2500 | Add `action_previous_preset()` async method to PlatyplatyApp that checks `self._renderer_ready` and `not self._exiting`, and if both True, calls `path = self.playlist.previous()` and if `path is not None`, wraps the send_command call in try/except RendererError to catch preset load failures (e.g., file not found, parse error) and post a LogMessage warning; returns None when loop=false and at start of playlist | | |
-| TASK-0100 | Update `dispatch_key_event()` to be async; change signature to take key, dispatch table, and app; look up action name from table and await `app.run_action(name)` (async required because run_action is a coroutine); wrap the `run_action()` call in try/except ConnectionError and set `app._exiting = True` then call `app.exit()`, but only if `not app._exiting` (central handling for socket failures during key-triggered actions) | | |
-| TASK-2600 | Delete `action_quit()`, `action_next_preset()`, `action_previous_preset()` standalone functions from keybinding_dispatch.py | | |
-| TASK-2700 | Update `build_renderer_dispatch_table()` to return action name strings (without `action_` prefix, e.g., `"quit"`, `"next_preset"`) instead of callbacks | | |
-| TASK-2800 | Update `build_client_dispatch_table()` to return action name strings (without `action_` prefix) instead of callbacks | | |
+| TASK-2100 | Change `DispatchTable` type alias from mapping keys to callbacks to mapping keys to action name strings | Yes | 2026-01-03 |
+| TASK-2200 | Remove `ActionCallback` type alias (no longer needed with action methods) | Yes | 2026-01-03 |
+| TASK-2300 | Add `action_quit()` async method to PlatyplatyApp that calls `await self.graceful_shutdown()` (graceful_shutdown handles exit internally) | Yes | 2026-01-03 |
+| TASK-2400 | Add `action_next_preset()` async method to PlatyplatyApp that checks `self._renderer_ready` and `not self._exiting`, and if both True, calls `path = self.playlist.next()` and if `path is not None`, wraps the send_command call in try/except RendererError to catch preset load failures (e.g., file not found, parse error) and post a LogMessage warning; returns None when loop=false and at end of playlist | Yes | 2026-01-03 |
+| TASK-2500 | Add `action_previous_preset()` async method to PlatyplatyApp that checks `self._renderer_ready` and `not self._exiting`, and if both True, calls `path = self.playlist.previous()` and if `path is not None`, wraps the send_command call in try/except RendererError to catch preset load failures (e.g., file not found, parse error) and post a LogMessage warning; returns None when loop=false and at start of playlist | Yes | 2026-01-03 |
+| TASK-0100 | Update `dispatch_key_event()` to be async; change signature to take key, dispatch table, and app; look up action name from table and await `app.run_action(name)` (async required because run_action is a coroutine); wrap the `run_action()` call in try/except ConnectionError and set `app._exiting = True` then call `app.exit()`, but only if `not app._exiting` (central handling for socket failures during key-triggered actions) | Yes | 2026-01-03 |
+| TASK-2600 | Delete `action_quit()`, `action_next_preset()`, `action_previous_preset()` standalone functions from keybinding_dispatch.py | Yes | 2026-01-03 |
+| TASK-2700 | Update `build_renderer_dispatch_table()` to return action name strings (without `action_` prefix, e.g., `"quit"`, `"next_preset"`) instead of callbacks | Yes | 2026-01-03 |
+| TASK-2800 | Update `build_client_dispatch_table()` to return action name strings (without `action_` prefix) instead of callbacks | Yes | 2026-01-03 |
 
 ### Phase 60: Implement Graceful Shutdown
 
