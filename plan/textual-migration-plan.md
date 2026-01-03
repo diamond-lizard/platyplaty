@@ -31,6 +31,12 @@ This plan migrates the Platyplaty Python client from Prompt Toolkit to Textual. 
 
 ### 1.1 Design Notes: Async Flow and Command Serialization
 
+**Why custom dispatch tables instead of Textual's BINDINGS.** Textual provides a built-in `BINDINGS` class variable that automatically maps keys to actions without custom dispatch code. However, Platyplaty uses custom dispatch tables for two reasons: (1) keybindings are user-configurable via config files at runtime, while `BINDINGS` is designed for static compile-time declarations; (2) Platyplaty has two sources of key input - terminal keys (handled by Textual) and renderer window keys (received via stderr from the C++ process) - requiring a unified dispatch mechanism that works for both. The custom approach trades Textual's Footer widget integration for runtime flexibility.
+
+**Why `run_worker()` instead of `@work` decorator.** Textual provides two mechanisms for starting workers: the `@work` decorator (for methods) and `run_worker()` (for any coroutine). This migration uses `run_worker()` to start `stderr_monitor_task()` and `auto_advance_loop()` because: (1) these are standalone functions in separate modules (`event_loop.py`, `auto_advance.py`), not methods on PlatyplatyApp; (2) Textual's `@work` decorator only works on methods - applying it to a regular async function raises an exception; (3) keeping these as standalone functions preserves the modular code structure. In `on_mount()`, workers are started with `self.run_worker(stderr_monitor_task(self), name="stderr_monitor")` and similar for `auto_advance_loop()`.
+
+**How Ctrl+C and SIGINT are handled.** Textual's terminal driver disables `ISIG` in termios settings by default (see `_patch_lflag()` in `linux_driver.py`). This means Ctrl+C pressed in the terminal is captured as a `ctrl+c` key event, NOT delivered as a SIGINT signal. To handle Ctrl+C for quitting, ensure `ctrl+c` is mapped to `"quit"` in `client_dispatch_table` (for terminal input) and `renderer_dispatch_table` (for renderer window input). Signal handlers registered via `loop.add_signal_handler(signal.SIGINT, ...)` only receive external signals (e.g., `kill -INT pid`, process managers, systemd). Both the key event path and signal handler path call `graceful_shutdown()`, and the `_exiting` flag prevents double-shutdown races. Textual's default `ctrl+c` binding calls `action_help_quit()` which shows a "use Ctrl+Q to quit" message; our custom dispatch table overrides this.
+
 This section documents key Textual behaviors that inform the migration design.
 
 **Textual message handlers can be async.** If you prefix a handler (e.g., `on_key`) with `async def`, Textual will automatically `await` it. This is documented in the Textual guide under "Async handlers." This allows `on_key()` to await async methods like `run_action()`.
@@ -60,7 +66,7 @@ This design means key presses are dispatched immediately (no buffering), command
 2. **Guards command sending**: Action methods check `_exiting` before sending commands, avoiding attempts to communicate with a disconnecting renderer.
 
 **Shutdown entry points.** Exit can be triggered by:
-- **Client-initiated**: User presses quit key (terminal or renderer window) or Ctrl+C/SIGTERM. These call `graceful_shutdown()`, which sets `_exiting`, sends QUIT command, closes socket, then calls `app.exit()`.
+- **Client-initiated**: User presses quit key (terminal or renderer window) or Ctrl+C (as key event) or external SIGINT/SIGTERM. These call `graceful_shutdown()`, which sets `_exiting`, sends QUIT command, closes socket, then calls `app.exit()`.
 - **Renderer-initiated**: Renderer window closed, renderer receives signal, or renderer crashes. The stderr monitor sees a QUIT/DISCONNECT event or process exit. It sets `_exiting` then calls `app.exit()` (no QUIT command needed since renderer already exited).
 - **Socket failure during operation**: If `send_command()` raises `ConnectionError` (socket EOF or write failure while awaiting response), set `_exiting` then call `app.exit()` directly. Do not call `graceful_shutdown()` since the socket is already broken and QUIT cannot be sent. The renderer will detect the client disconnect and stay alive per the robustness philosophy. See TASK-0100 and TASK-0200. See the State Transition Tables below for all `_exiting` transitions.
 
@@ -83,7 +89,8 @@ This design means key presses are dispatched immediately (no buffering), command
 | Transition | Trigger | Responsible Component | Method/Location |
 |------------|---------|----------------------|-----------------|
 | False -> True | User presses quit key | PlatyplatyApp | `graceful_shutdown()` |
-| False -> True | Ctrl+C / SIGTERM received | Signal handler | Calls `graceful_shutdown()` |
+| False -> True | Ctrl+C key event (terminal) | dispatch_key_event | Calls `action_quit()` -> `graceful_shutdown()` |
+| False -> True | External SIGINT/SIGTERM | Signal handler | Calls `graceful_shutdown()` |
 | False -> True | Renderer stderr emits QUIT | stderr_monitor | `_handle_stderr_event()` |
 | False -> True | Renderer stderr emits DISCONNECT | stderr_monitor | `_handle_stderr_event()` |
 | False -> True | Renderer process exits | stderr_monitor | `stderr_monitor_task()` |
@@ -209,7 +216,7 @@ This design means key presses are dispatched immediately (no buffering), command
 | TASK-5300 | In `on_mount()`, start auto_advance_loop as a Textual worker (part of Stage B; see TASK-5000 for ordering) | | |
 | TASK-5400 | Implement async `on_key()` handler to dispatch terminal key events via `self.client_dispatch_table` using `await dispatch_key_event()` (Textual awaits async message handlers) | | |
 | TASK-5500 | Implement `on_log_message()` handler to write messages to RichLog widget | | |
-| TASK-5600 | In `on_mount()`, register SIGINT and SIGTERM handlers via `loop.add_signal_handler()` that call `asyncio.create_task(self.graceful_shutdown())` to schedule the async method instead of using Textual's default behavior. Note: registering in `on_mount()` (not `__init__()`) ensures the event loop is running; the brief window before mount uses Textual's default handling | | |
+| TASK-5600 | In `on_mount()`, register SIGINT and SIGTERM handlers via `loop.add_signal_handler()` that call `asyncio.create_task(self.graceful_shutdown())`. These handlers are for external signals only (e.g., `kill -INT pid`) because Textual disables ISIG so terminal Ctrl+C arrives as a key event, not a signal. Note: registering in `on_mount()` (not `__init__()`) ensures the event loop is running | | |
 
 ### Phase 100: Update Entry Points
 
@@ -320,7 +327,7 @@ This design means key presses are dispatched immediately (no buffering), command
 - **RISK-100**: Textual's worker cancellation timing may differ from explicit shutdown events, potentially causing race conditions during shutdown
 - **RISK-200**: Breaking change to key naming in config files may confuse existing users
 - **RISK-300**: Textual version updates may change key naming or worker APIs
-- **ASSUMPTION-100**: Textual's default signal handling does not send QUIT to renderer, so we override it with custom handlers that call graceful_shutdown()
+- **ASSUMPTION-100**: Textual disables ISIG in termios settings, so terminal Ctrl+C arrives as a `ctrl+c` key event (not a SIGINT signal). Signal handlers registered via `loop.add_signal_handler()` are only needed for external signals (e.g., `kill -INT pid`). Both paths call `graceful_shutdown()` and the `_exiting` flag prevents double-shutdown
 - **ASSUMPTION-200**: Workers receiving CancelledError will have time to clean up before the event loop stops
 - **ASSUMPTION-300**: RichLog widget can handle the volume of log messages produced during operation
 - **ASSUMPTION-400**: Textual's on_key event provides sufficient key information for keybinding dispatch
