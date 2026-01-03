@@ -98,9 +98,9 @@ This design means key presses are dispatched immediately (no buffering), command
 
 | Task | Description | Completed | Date |
 | -------- | --------------------- | --------- | ---- |
-| TASK-0300 | Run `uv add textual` to add the package | | |
-| TASK-0400 | Run `uv remove prompt-toolkit` to remove the package | | |
-| TASK-0500 | Run dependency installation to verify no conflicts | | |
+| TASK-0300 | Run `uv add textual` to add the package | Yes | 2026-01-03 |
+| TASK-0400 | Run `uv remove prompt-toolkit` to remove the package | Yes | 2026-01-03 |
+| TASK-0500 | Run dependency installation to verify no conflicts | Yes | 2026-01-03 |
 
 ### Phase 20: Create Log Message Infrastructure
 

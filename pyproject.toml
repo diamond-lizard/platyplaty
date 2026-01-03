@@ -5,7 +5,7 @@ requires-python = ">=3.12"
 dependencies = [
     "click>=8.3.1",
     "pydantic>=2.12.5",
-    "prompt-toolkit>=3.0.0",
+    "textual>=7.0.0",
 ]
 
 [dependency-groups]
