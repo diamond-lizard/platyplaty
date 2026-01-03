@@ -108,8 +108,8 @@ This design means key presses are dispatched immediately (no buffering), command
 
 | Task | Description | Completed | Date |
 | -------- | --------------------- | --------- | ---- |
-| TASK-0600 | Create `messages.py` module with `LogMessage` class extending Textual's Message | | |
-| TASK-0700 | LogMessage contains text content and optional severity level | | |
+| TASK-0600 | Create `messages.py` module with `LogMessage` class extending Textual's Message | Yes | 2026-01-03 |
+| TASK-0700 | LogMessage contains text content and optional severity level | Yes | 2026-01-03 |
 
 ### Phase 30: Update Key Naming Convention
 
