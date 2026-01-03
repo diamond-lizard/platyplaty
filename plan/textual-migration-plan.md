@@ -98,8 +98,8 @@ This design means key presses are dispatched immediately (no buffering), command
 
 | Task | Description | Completed | Date |
 | -------- | --------------------- | --------- | ---- |
-| TASK-0300 | Add `textual` package to pyproject.toml dependencies | | |
-| TASK-0400 | Remove `prompt-toolkit` package from pyproject.toml dependencies | | |
+| TASK-0300 | Run `uv add textual` to add the package | | |
+| TASK-0400 | Run `uv remove prompt-toolkit` to remove the package | | |
 | TASK-0500 | Run dependency installation to verify no conflicts | | |
 
 ### Phase 20: Create Log Message Infrastructure
@@ -270,7 +270,7 @@ This design means key presses are dispatched immediately (no buffering), command
 
 ## 4. Dependencies
 
-- **DEP-100**: textual package (to be added to pyproject.toml)
+- **DEP-100**: textual package (to be added via `uv add textual`)
 - **DEP-200**: Existing socket_client.py module (adds _send_lock for command serialization)
 - **DEP-300**: Existing playlist.py module (unchanged)
 - **DEP-400**: Existing renderer.py module (unchanged)
@@ -293,7 +293,7 @@ This design means key presses are dispatched immediately (no buffering), command
 - **FILE-1100**: `src/platyplaty/types/keys.py` - Key naming convention (modified)
 - **FILE-1200**: `src/platyplaty/types/config.py` - Validation messages (modified)
 - **FILE-1300**: `conf/platyplaty-conf.toml` - Example config update (modified)
-- **FILE-1400**: `pyproject.toml` - Dependencies (modified)
+- **FILE-1400**: `pyproject.toml` - Dependencies (modified via uv commands)
 - **FILE-1500**: `src/platyplaty/terminal_input.py` - (deleted)
 - **FILE-1600**: `src/platyplaty/async_main.py` - (deleted)
 - **FILE-1700**: `src/platyplaty/shutdown.py` - (deleted)
