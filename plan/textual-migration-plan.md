@@ -140,9 +140,9 @@ This design means key presses are dispatched immediately (no buffering), command
 
 | Task | Description | Completed | Date |
 | -------- | --------------------- | --------- | ---- |
-| TASK-1700 | Create `app.py` module with `PlatyplatyApp` class extending textual.app.App | | |
-| TASK-1800 | Add `renderer_dispatch_table` and `client_dispatch_table` attributes to PlatyplatyApp (type: mapping of key names to action name strings) | | |
-| TASK-1900 | Add `_renderer_ready: bool` instance attribute type annotation to PlatyplatyApp (initialization in TASK-2000) | | |
+| TASK-1700 | Create `app.py` module with `PlatyplatyApp` class extending textual.app.App | Yes | 2026-01-03 |
+| TASK-1800 | Add `renderer_dispatch_table` and `client_dispatch_table` attributes to PlatyplatyApp (type: mapping of key names to action name strings) | Yes | 2026-01-03 |
+| TASK-1900 | Add `_renderer_ready: bool` instance attribute type annotation to PlatyplatyApp (initialization in TASK-2000) | Yes | 2026-01-03 |
 
 ### Phase 50: Migrate Actions to App Methods
 
