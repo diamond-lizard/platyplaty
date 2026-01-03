@@ -124,15 +124,15 @@ This design means key presses are dispatched immediately (no buffering), command
 
 | Task | Description | Completed | Date |
 | -------- | --------------------- | --------- | ---- |
-| TASK-0800 | Update `types/keys.py` to use Textual key names: `ctrl+` instead of `control-`, `shift+` instead of `shift-`, `alt+` instead of `alt-` | | |
-| TASK-0900 | Update `_MODIFIER_PREFIXES` and `_ABBREVIATED_PREFIXES` constants | | |
-| TASK-1000 | Update `is_valid_key_name()` function for new format | | |
-| TASK-1100 | Update `has_abbreviated_modifier()` function for new format | | |
-| TASK-1200 | Update `types/config.py` validation error messages to reference new format | | |
-| TASK-1300 | Update `conf/platyplaty-conf.toml` example keybinding to use `ctrl+q` format | | |
-| TASK-1400 | Update `renderer/scancode_map.cpp` to use Textual modifier prefixes: `ctrl+` instead of `control-`, `shift+` instead of `shift-`, `alt+` instead of `alt-` | | |
-| TASK-1500 | Update file header comment in `scancode_map.cpp` from "prompt_toolkit-style" to "Textual-style" | | |
-| TASK-1600 | Rebuild the renderer with `make` | | |
+| TASK-0800 | Update `types/keys.py` to use Textual key names: `ctrl+` instead of `control-`, `shift+` instead of `shift-`, `alt+` instead of `alt-` | Yes | 2026-01-03 |
+| TASK-0900 | Update `_MODIFIER_PREFIXES` and `_ABBREVIATED_PREFIXES` constants | Yes | 2026-01-03 |
+| TASK-1000 | Update `is_valid_key_name()` function for new format | Yes | 2026-01-03 |
+| TASK-1100 | Update `has_abbreviated_modifier()` function for new format | Yes | 2026-01-03 |
+| TASK-1200 | Update `types/config.py` validation error messages to reference new format | Yes | 2026-01-03 |
+| TASK-1300 | Update `conf/platyplaty-conf.toml` example keybinding to use `ctrl+q` format | Yes | 2026-01-03 |
+| TASK-1400 | Update `renderer/scancode_map.cpp` to use Textual modifier prefixes: `ctrl+` instead of `control-`, `shift+` instead of `shift-`, `alt+` instead of `alt-` | Yes | 2026-01-03 |
+| TASK-1500 | Update file header comment in `scancode_map.cpp` from "prompt_toolkit-style" to "Textual-style" | Yes | 2026-01-03 |
+| TASK-1600 | Rebuild the renderer with `make` | Yes | 2026-01-03 |
 
 ### Phase 40: Create App Skeleton
 

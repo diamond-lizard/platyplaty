@@ -1,5 +1,5 @@
 // Scancode to key name mapping implementation.
-// Translates SDL scancodes to prompt_toolkit-style key names.
+// Translates SDL scancodes to Textual-style key names.
 
 #include "scancode_map.hpp"
 #include <unordered_map>
@@ -9,7 +9,7 @@ namespace platyplaty {
 namespace {
 
 // Map of SDL scancodes to their base key names (without modifiers).
-// Uses prompt_toolkit-style naming: lowercase letters, named keys.
+// Uses Textual-style naming: lowercase letters, named keys.
 const std::unordered_map<SDL_Scancode, std::string> g_scancode_map = {
     // Letter keys (a-z)
     {SDL_SCANCODE_A, "a"},
@@ -121,15 +121,15 @@ std::optional<std::string> scancode_to_keyname(
 
     std::string result;
 
-    // Add modifier prefixes in consistent order: control-, shift-, alt-
+    // Add modifier prefixes in consistent order: ctrl+, shift+, alt+
     if (ctrl) {
-        result += "control-";
+        result += "ctrl+";
     }
     if (shift) {
-        result += "shift-";
+        result += "shift+";
     }
     if (alt) {
-        result += "alt-";
+        result += "alt+";
     }
 
     result += it->second;

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Valid key names for keybindings configuration.
 
-Key names follow the prompt_toolkit naming convention.
+Key names follow the Textual naming convention.
 """
 
 import re
@@ -22,7 +22,7 @@ _SPECIAL_KEYS = frozenset({
 })
 
 # Valid modifier prefixes (full names only)
-_MODIFIER_PREFIXES = frozenset({"control-", "shift-", "alt-"})
+_MODIFIER_PREFIXES = frozenset({"ctrl+", "shift+", "alt+"})
 
 # Abbreviated modifier prefixes (rejected with fatal error)
 _ABBREVIATED_PREFIXES = frozenset({"c-", "s-", "a-"})

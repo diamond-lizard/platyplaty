@@ -35,7 +35,7 @@ class RendererKeybindings(BaseModel):
                     f"Abbreviated modifier in keybindings.renderer.{field_name}: "
                     f"'{key}'. "
                 )
-                msg += "Use full names: control-, shift-, alt-"
+                msg += "Use full names: ctrl+, shift+, alt+"
                 raise ValueError(msg)
             if not is_valid_key_name(key):
                 warn_invalid_key(key, f"keybindings.renderer.{field_name}")
@@ -58,7 +58,7 @@ class ClientKeybindings(BaseModel):
         """Validate key names and warn for unrecognized keys."""
         if self.quit is not None and has_abbreviated_modifier(self.quit):
             msg = f"Abbreviated modifier in keybindings.client.quit: '{self.quit}'. "
-            msg += "Use full names: control-, shift-, alt-"
+            msg += "Use full names: ctrl+, shift+, alt+"
             raise ValueError(msg)
         if self.quit is not None and not is_valid_key_name(self.quit):
             warn_invalid_key(self.quit, "keybindings.client.quit")
