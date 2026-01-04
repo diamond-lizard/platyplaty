@@ -24,9 +24,8 @@ class ResponseIdMismatchError(Exception):
 class RendererError(Exception):
     """Raised when the renderer returns an error response."""
 
-    def __init__(self, message: str, command_id: int | None) -> None:
+    def __init__(self, message: str) -> None:
         super().__init__(message)
-        self.command_id = command_id
 
 
 class SocketClient:
@@ -100,7 +99,7 @@ class SocketClient:
             if not response.success:
                 error_text = response.error or ""
                 msg = f"Command '{command}' (ID {command_id}) failed, error message: '{error_text}'"
-                raise RendererError(msg, response.id)
+                raise RendererError(msg)
 
             return response
 
