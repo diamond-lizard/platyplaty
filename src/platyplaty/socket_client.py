@@ -98,7 +98,9 @@ class SocketClient:
                 raise ResponseIdMismatchError(msg)
 
             if not response.success:
-                raise RendererError(response.error or "Unknown error", response.id)
+                error_text = response.error or ""
+                msg = f"Command '{command}' (ID {command_id}) failed, error message: '{error_text}'"
+                raise RendererError(msg, response.id)
 
             return response
 
