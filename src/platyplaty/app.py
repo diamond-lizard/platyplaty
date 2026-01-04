@@ -124,19 +124,19 @@ class PlatyplatyApp(App):
             self._client = SocketClient()
             await self._client.connect(self.socket_path)
             await self._client.send_command(
-                "CHANGE AUDIO SOURCE", source=self.audio_source
+                "CHANGE AUDIO SOURCE", audio_source=self.audio_source
             )
             await self._client.send_command("INIT")
             self._renderer_ready = True
 
             # Build dispatch tables from stored keybindings
             self.renderer_dispatch_table = build_renderer_dispatch_table(
-                next_preset_key=self._renderer_keybindings.get("next_preset", "right"),
-                previous_preset_key=self._renderer_keybindings.get("previous_preset", "left"),
-                quit_key=self._renderer_keybindings.get("quit", "q"),
+                next_preset_key=self._renderer_keybindings.next_preset,
+                previous_preset_key=self._renderer_keybindings.previous_preset,
+                quit_key=self._renderer_keybindings.quit,
             )
             self.client_dispatch_table = build_client_dispatch_table(
-                quit_key=self._client_keybindings.get("quit"),
+                quit_key=self._client_keybindings.quit,
             )
             # Add ctrl+c mapping for terminal quit
             self.client_dispatch_table["ctrl+c"] = "quit"
@@ -182,7 +182,7 @@ class PlatyplatyApp(App):
         if path is None:
             return
         try:
-            await self._client.send_command("LOAD PRESET", {"path": str(path)})
+            await self._client.send_command("LOAD PRESET", path=str(path))
         except RendererError as e:
             self.post_message(LogMessage(f"Failed to load preset: {e}", level="warning"))
 
@@ -198,7 +198,7 @@ class PlatyplatyApp(App):
         if path is None:
             return
         try:
-            await self._client.send_command("LOAD PRESET", {"path": str(path)})
+            await self._client.send_command("LOAD PRESET", path=str(path))
         except RendererError as e:
             self.post_message(LogMessage(f"Failed to load preset: {e}", level="warning"))
 
