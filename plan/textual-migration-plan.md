@@ -196,11 +196,11 @@ This design means key presses are dispatched immediately (no buffering), command
 
 | Task | Description | Completed | Date |
 | -------- | --------------------- | --------- | ---- |
-| TASK-4400 | Delete `EventLoopState` class from event_loop.py (all state now on PlatyplatyApp) | | |
-| TASK-4500 | Delete `process_queued_key_events()` function from event_loop.py (no longer needed) | | |
-| TASK-4600 | Delete `clear_key_event_queue()` function from event_loop.py (no longer needed) | | |
-| TASK-4700 | Delete `MAX_KEY_EVENT_QUEUE` constant from event_loop.py (no longer needed) | | |
-| TASK-4800 | Remove unused imports from event_loop.py (`deque`, `asyncio.Event`, etc.) | | |
+| TASK-4400 | Delete `EventLoopState` class from event_loop.py (all state now on PlatyplatyApp) | Yes | 2026-01-03 |
+| TASK-4500 | Delete `process_queued_key_events()` function from event_loop.py (no longer needed) | Yes | 2026-01-03 |
+| TASK-4600 | Delete `clear_key_event_queue()` function from event_loop.py (no longer needed) | Yes | 2026-01-03 |
+| TASK-4700 | Delete `MAX_KEY_EVENT_QUEUE` constant from event_loop.py (no longer needed) | Yes | 2026-01-03 |
+| TASK-4800 | Remove unused imports from event_loop.py (`deque`, `asyncio.Event`, etc.) | Yes | 2026-01-03 |
 
 ### Phase 90: Implement Textual Application
 
