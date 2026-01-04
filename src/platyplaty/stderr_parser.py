@@ -9,11 +9,10 @@ Event types: DISCONNECT, AUDIO_ERROR, QUIT, KEY_PRESSED
 """
 
 import json
-import sys
 
 from pydantic import TypeAdapter
 
-from platyplaty.types import ReasonEvent, StderrEvent
+from platyplaty.types import StderrEvent
 
 # TypeAdapter for validating the StderrEvent discriminated union
 _STDERR_EVENT_ADAPTER: TypeAdapter[StderrEvent] = TypeAdapter(StderrEvent)
@@ -41,13 +40,3 @@ def parse_stderr_event(line: str) -> StderrEvent | None:
         return _STDERR_EVENT_ADAPTER.validate_python(data)
     except Exception:  # noqa: BLE001
         return None
-
-
-def log_audio_error(event: ReasonEvent) -> None:
-    """Log an AUDIO_ERROR event to stderr.
-
-    Args:
-        event: The AUDIO_ERROR event to log.
-    """
-    msg = f"Audio error: {event.reason}, visualization continues silently"
-    print(msg, file=sys.stderr)

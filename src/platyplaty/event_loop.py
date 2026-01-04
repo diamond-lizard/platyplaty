@@ -7,14 +7,12 @@ for PLATYPLATY events (DISCONNECT, AUDIO_ERROR, QUIT, KEY_PRESSED).
 
 import asyncio
 from collections import deque
-from typing import TYPE_CHECKING, TextIO
+from typing import TYPE_CHECKING
 
 from platyplaty.keybinding_dispatch import DispatchTable, dispatch_key_event
 from platyplaty.netstring import read_netstrings_from_stderr
-from platyplaty.stderr_parser import (
-    log_audio_error,
-    parse_stderr_event,
-)
+from platyplaty.stderr_parser import parse_stderr_event
+from platyplaty.messages import LogMessage
 from platyplaty.types import (
     ClientKeybindings,
     KeyPressedEvent,
@@ -24,6 +22,7 @@ from platyplaty.types import (
 if TYPE_CHECKING:
     from platyplaty.playlist import Playlist
     from platyplaty.socket_client import SocketClient
+    from platyplaty.app import PlatyplatyApp
 
 # Maximum number of key events to queue during pending commands (REQ-0500)
 MAX_KEY_EVENT_QUEUE = 8
@@ -79,84 +78,77 @@ class EventLoopState:
         self.client = client
         self.command_queue: asyncio.Queue[tuple[str, dict[str, str]]] = asyncio.Queue()
 
+
 async def process_stderr_line(
     line: str,
-    state: EventLoopState,
-    output: TextIO,
+    app: "PlatyplatyApp",
 ) -> None:
     """Process a single stderr line, detecting PLATYPLATY events.
 
     Args:
         line: The stderr line to process.
-        state: Shared event loop state.
-        output: Output stream for non-event lines.
+        app: The Textual application instance.
     """
     event = parse_stderr_event(line)
     if event is None:
-        output.write(line)
-        output.flush()
+        app.post_message(LogMessage(line.rstrip(), level="debug"))
         return
 
-    _handle_stderr_event(event, state, output)
+    await _handle_stderr_event(event, app)
 
 
-def _handle_stderr_event(
+async def _handle_stderr_event(
     event: StderrEvent,
-    state: EventLoopState,
-    output: TextIO,
+    app: "PlatyplatyApp",
 ) -> None:
     """Handle a parsed PLATYPLATY stderr event.
 
     Args:
         event: The parsed event.
-        state: Shared event loop state.
-        output: Output stream for logging.
+        app: The Textual application instance.
     """
     if event.event == "QUIT":
-        state.quit_received = True
-        state.shutdown_requested = True
-        state.shutdown_event.set()
+        if not app._exiting:
+            app._exiting = True
+            app.exit()
     elif event.event == "DISCONNECT":
-        state.disconnect_event.set()
+        if not app._exiting:
+            app._exiting = True
+            app.exit()
     elif event.event == "AUDIO_ERROR":
-        log_audio_error(event)
+        msg = f"Audio error: {event.reason}, visualization continues silently"
+        app.post_message(LogMessage(msg, level="warning"))
     elif event.event == "KEY_PRESSED":
-        # Queue key events when command is pending (TASK-2600)
-        key_event = event  # narrowed to KeyPressedEvent by discriminator
-        if state.command_pending:
-            # deque with maxlen auto-discards oldest if full (REQ-0500)
-            state.key_event_queue.append(key_event)
-        else:
-            # Dispatch immediately (TASK-2300)
-            dispatch_key_event(
-                key_event.key,
-                state.renderer_dispatch_table,
-                state,
-            )
+        await dispatch_key_event(
+            event.key,
+            app.renderer_dispatch_table,
+            app,
+        )
 
 
-async def stderr_monitor_task(
-    process: asyncio.subprocess.Process,
-    state: EventLoopState,
-    output: TextIO,
-) -> None:
+async def stderr_monitor_task(app: "PlatyplatyApp") -> None:
     """Monitor renderer stderr for events.
 
+    Runs as a Textual worker. Uses CancelledError for shutdown.
+
     Args:
-        process: The renderer subprocess.
-        state: Shared event loop state.
-        output: Output stream for passthrough.
+        app: The Textual application instance.
     """
-    if process.stderr is None:
+    process = app._renderer_process
+    if process is None or process.stderr is None:
         return
 
-    async for payload in read_netstrings_from_stderr(process.stderr):
-        await process_stderr_line(payload, state, output)
-        if state.shutdown_requested:
-            break
+    try:
+        async for payload in read_netstrings_from_stderr(process.stderr):
+            await process_stderr_line(payload, app)
+    except asyncio.CancelledError:
+        pass  # Normal shutdown via Textual worker cancellation
 
     # Renderer process exited - trigger shutdown
-    state.shutdown_event.set()
+    if not app._exiting:
+        app._exiting = True
+        app.exit()
+
 
 
 def process_queued_key_events(state: EventLoopState) -> list[KeyPressedEvent]:

@@ -5,110 +5,105 @@ Handles automatic preset cycling and preset loading with retry logic.
 """
 
 import asyncio
-from pathlib import Path
-from typing import TextIO
+from typing import TYPE_CHECKING
 
-from platyplaty.event_loop import EventLoopState
-from platyplaty.playlist import Playlist
-from platyplaty.socket_client import RendererError, SocketClient
+from platyplaty.socket_client import RendererError
+from platyplaty.messages import LogMessage
+
+if TYPE_CHECKING:
+    from platyplaty.app import PlatyplatyApp
 
 
-async def load_preset_with_retry(
-    client: SocketClient,
-    playlist: Playlist,
-    output: TextIO,
-) -> bool:
+async def load_preset_with_retry(app: "PlatyplatyApp") -> bool:
     """Attempt to load the current preset, trying next on failure.
 
+    Tries to load the current playlist preset. On failure, advances
+    to the next preset and retries. Gives up if all presets fail.
+
     Args:
-        client: The socket client.
-        playlist: The playlist manager.
-        output: Output stream for warnings.
+        app: The Textual application instance.
 
     Returns:
         True if a preset was loaded successfully, False if all failed.
     """
-
-    for _ in range(len(playlist.presets)):
-        preset_path = playlist.current()
+    for _ in range(len(app.playlist.presets)):
+        if app._exiting:
+            return False
+        preset_path = app.playlist.current()
         try:
-            await client.send_command("LOAD PRESET", path=str(preset_path))
+            await app._client.send_command("LOAD PRESET", path=str(preset_path))
             return True
         except RendererError as e:
-            msg = f"Warning: Failed to load {preset_path}: {e}\n"
-            output.write(msg)
-            output.flush()
-        if playlist.next() is None:
+            app.post_message(LogMessage(f"Failed to load {preset_path}: {e}", level="warning"))
+        if app.playlist.next() is None:
             break
     return False
 
 
-async def auto_advance_loop(
-    client: SocketClient,
-    playlist: Playlist,
-    duration: int,
-    state: EventLoopState,
-    output: TextIO,
-) -> None:
+
+async def auto_advance_loop(app: "PlatyplatyApp") -> None:
     """Run the auto-advance loop for preset cycling.
 
+    Runs as a Textual worker. Uses CancelledError for shutdown.
+    Advances through playlist, attempting to load each preset.
+    On success, waits preset_duration seconds. On failure, waits
+    0.5 seconds and retries. Exits if all presets fail consecutively.
+
     Args:
-        client: The socket client.
-        playlist: The playlist manager.
-        duration: Seconds between preset changes.
-        state: Shared event loop state.
-        output: Output stream for warnings.
+        app: The Textual application instance.
     """
-    while not state.shutdown_requested:
-        # Wait for either sleep or shutdown event
-        sleep_task = asyncio.create_task(asyncio.sleep(duration))
-        shutdown_task = asyncio.create_task(state.shutdown_event.wait())
-        done, pending = await asyncio.wait(
-            [sleep_task, shutdown_task],
-            return_when=asyncio.FIRST_COMPLETED,
-        )
-        for task in pending:
-            task.cancel()
-        if shutdown_task in done:
-            break
+    consecutive_failures = 0
+    max_failures = len(app.playlist.presets)
 
-        if state.shutdown_requested:
-            break
+    try:
+        while True:
+            if app._exiting:
+                break
 
-        if playlist.at_end() and not playlist.loop:
-            break
+            # Advance to next preset
+            path = app.playlist.next()
+            if path is None:
+                # At end with loop disabled
+                break
 
-        next_preset = playlist.next()
-        if next_preset is None:
-            break
+            # Try to load the preset
+            try:
+                success = await _try_load_preset(app)
+            except ConnectionError:
+                if not app._exiting:
+                    app._exiting = True
+                    app.exit()
+                break
 
-        try:
-            await _try_load_preset(client, next_preset, output)
-        except ConnectionError:
-            state.disconnect_event.set()
-            break
+            if success:
+                consecutive_failures = 0
+                await asyncio.sleep(app.preset_duration)
+            else:
+                consecutive_failures += 1
+                if consecutive_failures >= max_failures:
+                    app.post_message(
+                        LogMessage("All presets failed to load", level="warning")
+                    )
+                    break
+                await asyncio.sleep(0.5)
+    except asyncio.CancelledError:
+        pass  # Normal shutdown via Textual worker cancellation
 
 
-async def _try_load_preset(
-    client: SocketClient,
-    preset_path: Path,
-    output: TextIO,
-) -> bool:
-    """Try to load a single preset.
+
+async def _try_load_preset(app: "PlatyplatyApp") -> bool:
+    """Try to load the current preset.
 
     Args:
-        client: The socket client.
-        preset_path: Path to the preset file.
-        output: Output stream for warnings.
+        app: The Textual application instance.
 
     Returns:
         True if successful, False otherwise.
     """
+    preset_path = app.playlist.current()
     try:
-        await client.send_command("LOAD PRESET", path=str(preset_path))
+        await app._client.send_command("LOAD PRESET", path=str(preset_path))
         return True
     except RendererError as e:
-        msg = f"Warning: Failed to load {preset_path}: {e}\n"
-        output.write(msg)
-        output.flush()
+        app.post_message(LogMessage(f"Failed to load {preset_path}: {e}", level="warning"))
         return False
