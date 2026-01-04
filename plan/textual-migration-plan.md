@@ -254,15 +254,15 @@ This design means key presses are dispatched immediately (no buffering), command
 
 | Task | Description | Completed | Date |
 | -------- | --------------------- | --------- | ---- |
-| TASK-7300 | Run the application and verify renderer starts | | |
-| TASK-7400 | Verify audio capture works | | |
-| TASK-7500 | Verify keybindings work in terminal (quit key) | | |
-| TASK-7600 | Verify keybindings work in renderer window (next/previous/quit) | | |
-| TASK-7700 | Verify auto-advance cycles through presets | | |
-| TASK-7800 | Verify log messages appear in RichLog widget | | |
-| TASK-7900 | Verify clean shutdown when pressing quit key | | |
-| TASK-8000 | Verify clean shutdown when closing renderer window | | |
-| TASK-8100 | Verify clean shutdown on Ctrl+C | | |
+| TASK-7300 | Run the application and verify renderer starts | Yes | 2026-01-03 |
+| TASK-7400 | Verify audio capture works | Yes | 2026-01-03 |
+| TASK-7500 | Verify keybindings work in terminal (quit key) | Yes | 2026-01-03 |
+| TASK-7600 | Verify keybindings work in renderer window (next/previous/quit) | Yes | 2026-01-03 |
+| TASK-7700 | Verify auto-advance cycles through presets | Yes | 2026-01-03 |
+| TASK-7800 | Verify log messages appear in RichLog widget | Yes | 2026-01-03 |
+| TASK-7900 | Verify clean shutdown when pressing quit key | Yes | 2026-01-03 |
+| TASK-8000 | Verify clean shutdown when closing renderer window | Yes | 2026-01-03 |
+| TASK-8100 | Verify clean shutdown on Ctrl+C | Yes | 2026-01-03 |
 
 ## 3. Alternatives
 
