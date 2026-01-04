@@ -24,7 +24,7 @@ def run_with_config(config_path: str) -> int:
     """
     try:
         config = _load_and_validate_config(config_path)
-        run_startup_sequence(config, sys.stderr)
+        run_startup_sequence(config)
         return 0
     except KeyboardInterrupt:
         return 1

@@ -224,12 +224,12 @@ This design means key presses are dispatched immediately (no buffering), command
 
 | Task | Description | Completed | Date |
 | -------- | --------------------- | --------- | ---- |
-| TASK-5700 | Update `run_sequence.py` to import PlatyplatyApp | | |
-| TASK-5800 | Update `run_startup_sequence()` to instantiate PlatyplatyApp with config values and remove the `output: TextIO` parameter from the function signature | | |
-| TASK-5900 | Replace `asyncio.run(async_main(...))` with `app.run()` | | |
-| TASK-6000 | Remove unused imports from run_sequence.py (async_main, etc.) | | |
-| TASK-6100 | Update `startup.py` to call `run_startup_sequence(config)` without output argument | | |
-| TASK-6200 | Update any failing tests; create replacement tests for key event handling (action methods, dispatch_key_event with run_action) to replace deleted test_key_events.py coverage | | |
+| TASK-5700 | Update `run_sequence.py` to import PlatyplatyApp | Yes | 2026-01-03 |
+| TASK-5800 | Update `run_startup_sequence()` to instantiate PlatyplatyApp with config values and remove the `output: TextIO` parameter from the function signature | Yes | 2026-01-03 |
+| TASK-5900 | Replace `asyncio.run(async_main(...))` with `app.run()` | Yes | 2026-01-03 |
+| TASK-6000 | Remove unused imports from run_sequence.py (async_main, etc.) | Yes | 2026-01-03 |
+| TASK-6100 | Update `startup.py` to call `run_startup_sequence(config)` without output argument | Yes | 2026-01-03 |
+| TASK-6200 | Update any failing tests; create replacement tests for key event handling (action methods, dispatch_key_event with run_action) to replace deleted test_key_events.py coverage | Yes | 2026-01-03 |
 
 ### Phase 110: Delete Obsolete Files
 

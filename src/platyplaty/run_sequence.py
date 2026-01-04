@@ -5,11 +5,9 @@ This module contains the functions for running the startup sequence
 after configuration has been loaded and validated.
 """
 
-import asyncio
 from pathlib import Path
-from typing import TextIO
 
-from platyplaty.async_main import async_main
+from platyplaty.app import PlatyplatyApp
 from platyplaty.errors import StartupError
 from platyplaty.paths import UndefinedEnvVarError, expand_path, resolve_path
 from platyplaty.playlist import (
@@ -67,12 +65,11 @@ def validate_preset_dirs(preset_dirs: list[str]) -> None:
             raise StartupError(f"Preset directory not found: {path}")
 
 
-def run_startup_sequence(config: Config, output: TextIO) -> None:
+def run_startup_sequence(config: Config) -> None:
     """Run the main startup sequence.
 
     Args:
         config: Validated configuration.
-        output: Output stream for status messages.
 
     Raises:
         StartupError: If any startup step fails.
@@ -111,14 +108,14 @@ def run_startup_sequence(config: Config, output: TextIO) -> None:
     except RendererNotFoundError as e:
         raise StartupError(str(e)) from None
 
-    # Run the async startup sequence
-    asyncio.run(async_main(
+    # Create and run Textual app
+    app = PlatyplatyApp(
         socket_path=socket_path,
         audio_source=config.audio_source,
         playlist=playlist,
         preset_duration=config.preset_duration,
         fullscreen=config.fullscreen,
-        output=output,
         client_keybindings=config.keybindings.client,
         renderer_keybindings=config.keybindings.renderer,
-    ))
+    )
+    app.run()
