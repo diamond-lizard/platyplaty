@@ -93,7 +93,8 @@ class SocketClient:
 
             response = await self._recv_response()
             if response.id != command_id:
-                msg = f"Response ID {response.id} doesn't match command ID {command_id}"
+                error_text = response.error or ""
+                msg = f"Response ID {response.id} doesn't match command ID {command_id}, error message: '{error_text}'"
                 raise ResponseIdMismatchError(msg)
 
             if not response.success:
