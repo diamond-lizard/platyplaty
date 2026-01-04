@@ -237,16 +237,16 @@ This design means key presses are dispatched immediately (no buffering), command
 
 | Task | Description | Completed | Date |
 | -------- | --------------------- | --------- | ---- |
-| TASK-6300 | Delete `terminal_input.py` | | |
-| TASK-6400 | Delete `async_main.py` | | |
-| TASK-6500 | Delete `shutdown.py`. Note: `register_signal_handlers()` is replaced by signal handling in `PlatyplatyApp.on_mount()` (see TASK-5600). `cancel_tasks()` is not migrated because Textual handles worker cancellation internally (see REQ-300). `graceful_shutdown()` becomes a method on PlatyplatyApp (see TASK-3000). | | |
-| TASK-6600 | Delete `command_queue.py` (command queueing is replaced by direct async `send_command()` calls with internal lock serialization) | | |
-| TASK-6700 | Delete `reconnect.py` | | |
-| TASK-6800 | Delete `tests/client/test_reconnect.py` | | |
-| TASK-6900 | Delete `tests/client/test_key_events.py` (tests EventLoopState, command_pending, key_event_queue, command_queue - all concepts being removed; replacement tests created in TASK-6200) | | |
-| TASK-7000 | Remove imports of deleted modules and deleted exports (EventLoopState, process_queued_key_events, clear_key_event_queue, MAX_KEY_EVENT_QUEUE, ActionCallback) from any remaining files | | |
-| TASK-7100 | Update `types/__init__.py` if any deleted modules were referenced | | |
-| TASK-7200 | Update architecture documents to reflect Textual migration: (1) `keyboard-input.md` - replace prompt_toolkit implementation details (command_queue, command_pending, EventLoopState, key_event_queue) with Textual-based descriptions; update key naming examples to `ctrl+`/`shift+`/`alt+` format; remove the "Migration Note" section since migration is complete; (2) `manual-navigation.md` - update line 13 to say "Textual" instead of "Textual (migrating from prompt_toolkit)"; (3) `python-ui-enhancements.md` - update Historical Note to past tense; (4) `platyplaty-architecture-discussion-2.md` - update the framework comparison table to note that Textual was chosen and migration is complete | | |
+| TASK-6300 | Delete `terminal_input.py` | Yes | 2026-01-03 |
+| TASK-6400 | Delete `async_main.py` | Yes | 2026-01-03 |
+| TASK-6500 | Delete `shutdown.py`. Note: `register_signal_handlers()` is replaced by signal handling in `PlatyplatyApp.on_mount()` (see TASK-5600). `cancel_tasks()` is not migrated because Textual handles worker cancellation internally (see REQ-300). `graceful_shutdown()` becomes a method on PlatyplatyApp (see TASK-3000). | Yes | 2026-01-03 |
+| TASK-6600 | Delete `command_queue.py` (command queueing is replaced by direct async `send_command()` calls with internal lock serialization) | Yes | 2026-01-03 |
+| TASK-6700 | Delete `reconnect.py` | Yes | 2026-01-03 |
+| TASK-6800 | Delete `tests/client/test_reconnect.py` | Yes | 2026-01-03 |
+| TASK-6900 | Delete `tests/client/test_key_events.py` (tests EventLoopState, command_pending, key_event_queue, command_queue - all concepts being removed; replacement tests created in TASK-6200) | Yes | 2026-01-03 |
+| TASK-7000 | Remove imports of deleted modules and deleted exports (EventLoopState, process_queued_key_events, clear_key_event_queue, MAX_KEY_EVENT_QUEUE, ActionCallback) from any remaining files | Yes | 2026-01-03 |
+| TASK-7100 | Update `types/__init__.py` if any deleted modules were referenced | Yes | 2026-01-03 |
+| TASK-7200 | Update architecture documents to reflect Textual migration: (1) `keyboard-input.md` - replace prompt_toolkit implementation details (command_queue, command_pending, EventLoopState, key_event_queue) with Textual-based descriptions; update key naming examples to `ctrl+`/`shift+`/`alt+` format; remove the "Migration Note" section since migration is complete; (2) `manual-navigation.md` - update line 13 to say "Textual" instead of "Textual (migrating from prompt_toolkit)"; (3) `python-ui-enhancements.md` - update Historical Note to past tense; (4) `platyplaty-architecture-discussion-2.md` - update the framework comparison table to note that Textual was chosen and migration is complete | Yes | 2026-01-03 |
 
 ### Phase 120: Testing and Validation
 
