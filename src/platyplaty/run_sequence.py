@@ -8,7 +8,7 @@ after configuration has been loaded and validated.
 from pathlib import Path
 
 from platyplaty.app import PlatyplatyApp
-from platyplaty.errors import StartupError
+from platyplaty.errors import InaccessibleDirectoryError, StartupError
 from platyplaty.paths import UndefinedEnvVarError, expand_path, resolve_path
 from platyplaty.playlist import (
     NoPresetsFoundError,
@@ -118,4 +118,7 @@ def run_startup_sequence(config: Config) -> None:
         client_keybindings=config.keybindings.client,
         renderer_keybindings=config.keybindings.renderer,
     )
-    app.run()
+    try:
+        app.run()
+    except InaccessibleDirectoryError as e:
+        raise StartupError(str(e)) from None

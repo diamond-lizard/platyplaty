@@ -19,6 +19,7 @@ from platyplaty.ui.directory import (
     list_directory,
 )
 from platyplaty.ui.pane import Pane
+from platyplaty.errors import InaccessibleDirectoryError
 
 
 class FileBrowser(Widget):
@@ -57,6 +58,14 @@ class FileBrowser(Widget):
             self.current_dir = Path.cwd()
         else:
             self.current_dir = starting_dir.resolve()
+
+        # Check if directory is accessible
+        if not self.current_dir.is_dir():
+            raise InaccessibleDirectoryError(str(self.current_dir))
+        try:
+            list(self.current_dir.iterdir())
+        except PermissionError:
+            raise InaccessibleDirectoryError(str(self.current_dir))
         self.selected_index = 0
 
         # Cache for directory listings
