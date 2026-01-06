@@ -14,6 +14,7 @@ from platyplaty.ui.directory import (
     EntryType,
     list_directory,
 )
+from platyplaty.errors import InaccessibleDirectoryError
 
 
 @dataclass
@@ -206,10 +207,20 @@ class NavigationState:
 
         Returns:
             True if navigated, False if at root.
+
+        Raises:
+            InaccessibleDirectoryError: If parent directory cannot be accessed.
         """
         parent = self.current_dir.parent
         if parent == self.current_dir:
             return False
+        # Check if parent is accessible before navigating
+        try:
+            list(parent.iterdir())
+        except PermissionError:
+            raise InaccessibleDirectoryError(str(parent))
+        except OSError:
+            raise InaccessibleDirectoryError(str(parent))
         self._save_current_memory()
         came_from = self.current_dir.name
         self.current_dir = parent
@@ -237,6 +248,9 @@ class NavigationState:
 
         Returns:
             Path string if a file should be opened in editor, None otherwise.
+
+        Raises:
+            InaccessibleDirectoryError: If target directory cannot be accessed.
         """
         if self._is_empty_or_inaccessible():
             return None
@@ -267,7 +281,18 @@ class NavigationState:
 
         Args:
             name: The name of the directory to enter.
+
+        Raises:
+            InaccessibleDirectoryError: If target directory cannot be accessed.
         """
+        target = self.current_dir / name
+        # Check if target is accessible before navigating
+        try:
+            list(target.iterdir())
+        except PermissionError:
+            raise InaccessibleDirectoryError(str(target))
+        except OSError:
+            raise InaccessibleDirectoryError(str(target))
         self._save_current_memory()
         self.current_dir = self.current_dir / name
         self._refresh_listing()
