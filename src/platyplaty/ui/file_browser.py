@@ -6,6 +6,7 @@ and right (preview of selected item).
 """
 
 from pathlib import Path
+from dataclasses import dataclass
 
 from textual.widget import Widget
 from textual.strip import Strip
@@ -27,6 +28,39 @@ from platyplaty.ui.editor import open_in_editor
 from platyplaty.keybinding_dispatch import DispatchTable
 
 
+@dataclass
+class RightPaneDirectory:
+    """Right pane content showing a directory listing."""
+
+    listing: DirectoryListing
+
+
+@dataclass
+class RightPaneFilePreview:
+    """Right pane content showing lines from a file."""
+
+    lines: tuple[str, ...]
+
+
+RightPaneContent = RightPaneDirectory | RightPaneFilePreview | None
+
+
+def read_file_preview_lines(path: Path) -> tuple[str, ...] | None:
+    """Read lines from a file for preview.
+
+    Args:
+        path: Path to the file to read.
+
+    Returns:
+        Tuple of lines from the file, or None if file cannot be read.
+    """
+    try:
+        with path.open('r', encoding='utf-8', errors='replace') as f:
+            return tuple(f.readlines())
+    except (OSError, IOError):
+        return None
+
+
 class FileBrowser(Widget):
     """A three-pane file browser widget.
 
@@ -44,6 +78,7 @@ class FileBrowser(Widget):
     selected_index: int
     _nav_state: NavigationState
     _dispatch_table: DispatchTable
+    _middle_scroll_offset: int
 
     def __init__(
         self,
@@ -77,11 +112,12 @@ class FileBrowser(Widget):
         except PermissionError:
             raise InaccessibleDirectoryError(str(self.current_dir))
         self.selected_index = 0
+        self._middle_scroll_offset = 0
 
         # Cache for directory listings
         self._left_listing: DirectoryListing | None = None
         self._middle_listing: DirectoryListing | None = None
-        self._right_listing: DirectoryListing | None = None
+        self._right_content: RightPaneContent = None
 
         # Navigation state manager
         self._nav_state = NavigationState(self.current_dir)
@@ -113,11 +149,11 @@ class FileBrowser(Widget):
     def _refresh_right_pane(self) -> None:
         """Refresh the right pane based on selected item."""
         if not self._middle_listing or not self._middle_listing.entries:
-            self._right_listing = None
+            self._right_content = None
             return
 
         if self.selected_index < 0 or self.selected_index >= len(self._middle_listing.entries):
-            self._right_listing = None
+            self._right_content = None
             return
 
         selected = self._middle_listing.entries[self.selected_index]
@@ -125,10 +161,25 @@ class FileBrowser(Widget):
         # Only show directory contents for directories
         if selected.entry_type in (EntryType.DIRECTORY, EntryType.SYMLINK_TO_DIRECTORY):
             selected_path = self.current_dir / selected.name
-            self._right_listing = list_directory(selected_path)
+            self._right_content = RightPaneDirectory(list_directory(selected_path))
         else:
-            # File selected - right pane empty (file preview deferred)
-            self._right_listing = None
+            # File selected - show file preview
+            self._right_content = self._make_file_preview(selected)
+
+    def _make_file_preview(self, entry: DirectoryEntry) -> RightPaneContent:
+        """Create file preview content for an entry.
+
+        Args:
+            entry: The directory entry to preview.
+
+        Returns:
+            RightPaneFilePreview with file lines, or None if unreadable.
+        """
+        file_path = self.current_dir / entry.name
+        lines = read_file_preview_lines(file_path)
+        if lines is None:
+            return None
+        return RightPaneFilePreview(lines)
 
     def get_content_width(self, container: Size, viewport: Size) -> int:
         """Return the content width.
@@ -182,15 +233,13 @@ class FileBrowser(Widget):
 
         # Render middle pane
         middle_text = self._render_pane_line(
-            self._middle_listing, y, pane_widths.middle, is_left_pane=False
+            self._middle_listing, y, pane_widths.middle, is_left_pane=False, scroll_offset=self._middle_scroll_offset
         )
         segments.append(Segment(middle_text))
         segments.append(Segment(" "))  # Gap
 
         # Render right pane
-        right_text = self._render_pane_line(
-            self._right_listing, y, pane_widths.right, is_left_pane=False
-        )
+        right_text = self._render_right_pane_line(y, pane_widths.right)
         segments.append(Segment(right_text))
 
         return Strip(segments)
@@ -201,6 +250,7 @@ class FileBrowser(Widget):
         y: int,
         width: int,
         is_left_pane: bool,
+        scroll_offset: int = 0,
     ) -> str:
         """Render a single line of a pane.
 
@@ -209,6 +259,7 @@ class FileBrowser(Widget):
             y: The line number to render (0-indexed).
             width: The width of the pane.
             is_left_pane: True if rendering the left pane (for root case).
+            scroll_offset: Offset into the listing for scrolling (default 0).
 
         Returns:
             A string padded to the pane width.
@@ -230,11 +281,48 @@ class FileBrowser(Widget):
             return " " * width
 
         # Render entry
-        if y < len(listing.entries):
-            name = listing.entries[y].name
+        if y + scroll_offset < len(listing.entries):
+            name = listing.entries[y + scroll_offset].name
             return name.ljust(width)[:width]
 
         return " " * width
+
+    def _render_right_pane_line(self, y: int, width: int) -> str:
+        """Render a single line of the right pane.
+
+        Handles both directory listings and file previews.
+
+        Args:
+            y: The line number to render (0-indexed).
+            width: The width of the pane.
+
+        Returns:
+            A string padded to the pane width.
+        """
+        content = self._right_content
+        if content is None:
+            return " " * width
+        if isinstance(content, RightPaneDirectory):
+            return self._render_pane_line(content.listing, y, width, is_left_pane=False)
+        return self._render_file_preview_line(content.lines, y, width)
+
+    def _render_file_preview_line(
+        self, lines: tuple[str, ...], y: int, width: int
+    ) -> str:
+        """Render a single line of file preview.
+
+        Args:
+            lines: The file lines to display.
+            y: The line number to render (0-indexed).
+            width: The width of the pane.
+
+        Returns:
+            A string padded/truncated to the pane width.
+        """
+        if y >= len(lines):
+            return " " * width
+        line = lines[y].rstrip('\n\r')
+        return line.ljust(width)[:width]
 
     def on_resize(self, event) -> None:
         """Handle terminal resize events.
@@ -272,7 +360,7 @@ class FileBrowser(Widget):
     def _sync_from_nav_state(self) -> None:
         """Sync FileBrowser state from NavigationState.
 
-        Updates current_dir and selected_index from the navigation state.
+        Updates current_dir, selected_index, and scroll offset from nav state.
         """
         self.current_dir = self._nav_state.current_dir
         listing = self._nav_state.get_listing()
@@ -284,6 +372,19 @@ class FileBrowser(Widget):
             self.selected_index = 0
             return
         self.selected_index = self._find_entry_index(listing, selected_entry.name)
+        self._nav_state.adjust_scroll(self.size.height)
+        self._middle_scroll_offset = self._nav_state.scroll_offset
+
+    def refresh_panes(self) -> None:
+        """Refresh all three panes after navigation state changes.
+
+        This method syncs state from NavigationState, refreshes all
+        directory listings, and triggers a visual refresh. It should
+        be called after any navigation action that changes pane contents.
+        """
+        self._sync_from_nav_state()
+        self._refresh_listings()
+        self.refresh()
 
     def _show_transient_error(self, message: str) -> None:
         """Show a transient error message at the bottom of the screen.
@@ -321,6 +422,7 @@ class FileBrowser(Widget):
         if not self._nav_state.move_up():
             return
         self._sync_from_nav_state()
+        self._refresh_right_pane()
         self.refresh()
 
     async def action_nav_down(self) -> None:
@@ -331,6 +433,7 @@ class FileBrowser(Widget):
         if not self._nav_state.move_down():
             return
         self._sync_from_nav_state()
+        self._refresh_right_pane()
         self.refresh()
 
     async def action_nav_left(self) -> None:
@@ -345,9 +448,7 @@ class FileBrowser(Widget):
             return
         if not moved:
             return
-        self._sync_from_nav_state()
-        self._refresh_listings()
-        self.refresh()
+        self.refresh_panes()
 
     async def action_nav_right(self) -> None:
         """Navigate into directory or open file in editor.
@@ -375,9 +476,7 @@ class FileBrowser(Widget):
             return None
         if file_path is not None:
             return file_path
-        self._sync_from_nav_state()
-        self._refresh_listings()
-        self.refresh()
+        self.refresh_panes()
         return None
 
     async def on_key(self, event: Key) -> None:

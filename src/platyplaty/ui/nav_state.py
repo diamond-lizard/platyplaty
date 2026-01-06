@@ -343,3 +343,34 @@ class NavigationState:
                 self.selected_name = self._listing.entries[max_index].name
         else:
             self.selected_name = None
+
+    def adjust_scroll(self, pane_height: int) -> None:
+        """Adjust scroll_offset so the selected item is visible.
+
+        Call this after any operation that changes selection to ensure
+        the selected item remains visible within the pane.
+
+        Args:
+            pane_height: The height of the pane in lines. If zero or
+                negative, this method does nothing.
+        """
+        if pane_height <= 0:
+            return
+        selected_index = self._get_selected_index()
+        if selected_index is None:
+            return
+        self._clamp_scroll_to_selection(selected_index, pane_height)
+
+    def _clamp_scroll_to_selection(self, index: int, pane_height: int) -> None:
+        """Clamp scroll_offset so index is visible within pane_height.
+
+        Args:
+            index: The selected item index.
+            pane_height: The height of the pane in lines.
+        """
+        if index < self.scroll_offset:
+            self.scroll_offset = index
+            return
+        visible_end = self.scroll_offset + pane_height
+        if index >= visible_end:
+            self.scroll_offset = index - pane_height + 1
