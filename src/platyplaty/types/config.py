@@ -65,18 +65,68 @@ class ClientKeybindings(BaseModel):
         return self
 
 
+
+def _validate_key_list(keys: list[str], field_path: str) -> None:
+    """Validate a list of key names for file browser keybindings.
+
+    Args:
+        keys: List of key names to validate.
+        field_path: Full path for error messages (e.g., keybindings.file_browser.nav_up).
+
+    Raises:
+        ValueError: If any key has an abbreviated modifier.
+    """
+    for key in keys:
+        if has_abbreviated_modifier(key):
+            msg = f"Abbreviated modifier in {field_path}: '{key}'. "
+            msg += "Use full names: ctrl+, shift+, alt+"
+            raise ValueError(msg)
+        if not is_valid_key_name(key):
+            warn_invalid_key(key, field_path)
+
+
+class FileBrowserKeybindings(BaseModel):
+    """Keybindings for file browser navigation.
+
+    Uses array syntax to allow multiple keys per action. Empty array disables action.
+
+    Attributes:
+        nav_up: Keys to move selection up.
+        nav_down: Keys to move selection down.
+        nav_left: Keys to navigate to parent directory.
+        nav_right: Keys to navigate into directory or open file.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    nav_up: list[str] = Field(default=["k", "up"])
+    nav_down: list[str] = Field(default=["j", "down"])
+    nav_left: list[str] = Field(default=["h", "left"])
+    nav_right: list[str] = Field(default=["l", "right"])
+
+    @model_validator(mode="after")
+    def validate_keys(self) -> "FileBrowserKeybindings":
+        """Validate key names and warn for unrecognized keys."""
+        for field_name in ("nav_up", "nav_down", "nav_left", "nav_right"):
+            keys = getattr(self, field_name)
+            field_path = f"keybindings.file_browser.{field_name}"
+            _validate_key_list(keys, field_path)
+        return self
+
 class Keybindings(BaseModel):
     """Keybindings configuration container.
 
     Attributes:
         renderer: Keybindings for the renderer window.
         client: Keybindings for the terminal.
+        file_browser: Keybindings for file browser navigation.
     """
 
     model_config = ConfigDict(extra="forbid")
 
     renderer: RendererKeybindings = Field(default_factory=RendererKeybindings)
     client: ClientKeybindings = Field(default_factory=ClientKeybindings)
+    file_browser: FileBrowserKeybindings = Field(default_factory=FileBrowserKeybindings)
 
 class Config(BaseModel):
     """Configuration for the Platyplaty visualizer.

@@ -10,6 +10,7 @@ from pathlib import Path
 from textual.widget import Widget
 from textual.strip import Strip
 from textual.geometry import Size
+from textual.events import Key
 
 from platyplaty.ui.layout import calculate_pane_widths
 from platyplaty.ui.directory import (
@@ -20,6 +21,10 @@ from platyplaty.ui.directory import (
 )
 from platyplaty.ui.pane import Pane
 from platyplaty.errors import InaccessibleDirectoryError
+from platyplaty.errors import NoEditorFoundError
+from platyplaty.ui.nav_state import NavigationState
+from platyplaty.ui.editor import open_in_editor
+from platyplaty.keybinding_dispatch import DispatchTable
 
 
 class FileBrowser(Widget):
@@ -37,9 +42,12 @@ class FileBrowser(Widget):
 
     current_dir: Path
     selected_index: int
+    _nav_state: NavigationState
+    _dispatch_table: DispatchTable
 
     def __init__(
         self,
+        dispatch_table: DispatchTable,
         starting_dir: Path | None = None,
         name: str | None = None,
         id: str | None = None,
@@ -48,12 +56,14 @@ class FileBrowser(Widget):
         """Initialize the FileBrowser widget.
 
         Args:
+            dispatch_table: Dispatch table for navigation key bindings.
             starting_dir: Initial directory to display. Defaults to CWD.
             name: Optional widget name.
             id: Optional widget ID.
             classes: Optional CSS classes.
         """
         super().__init__(name=name, id=id, classes=classes)
+        self._dispatch_table = dispatch_table
         if starting_dir is None:
             self.current_dir = Path.cwd()
         else:
@@ -72,6 +82,9 @@ class FileBrowser(Widget):
         self._left_listing: DirectoryListing | None = None
         self._middle_listing: DirectoryListing | None = None
         self._right_listing: DirectoryListing | None = None
+
+        # Navigation state manager
+        self._nav_state = NavigationState(self.current_dir)
 
         # Refresh listings on init
         self._refresh_listings()
@@ -242,3 +255,145 @@ class FileBrowser(Widget):
         if self.selected_index < 0 or self.selected_index >= len(self._middle_listing.entries):
             return None
         return self._middle_listing.entries[self.selected_index]
+
+    def _find_entry_index(self, listing: DirectoryListing, name: str) -> int:
+        """Find the index of an entry by name.
+
+        Args:
+            listing: The directory listing to search.
+            name: The name to find.
+
+        Returns:
+            Index of the entry, or 0 if not found.
+        """
+        gen = (i for i, e in enumerate(listing.entries) if e.name == name)
+        return next(gen, 0)
+
+    def _sync_from_nav_state(self) -> None:
+        """Sync FileBrowser state from NavigationState.
+
+        Updates current_dir and selected_index from the navigation state.
+        """
+        self.current_dir = self._nav_state.current_dir
+        listing = self._nav_state.get_listing()
+        if listing is None or not listing.entries:
+            self.selected_index = 0
+            return
+        selected_entry = self._nav_state.get_selected_entry()
+        if selected_entry is None:
+            self.selected_index = 0
+            return
+        self.selected_index = self._find_entry_index(listing, selected_entry.name)
+
+    def _show_transient_error(self, message: str) -> None:
+        """Show a transient error message at the bottom of the screen.
+
+        Displays black text on red background for 0.5 seconds.
+
+        Args:
+            message: The error message to display.
+        """
+        # TODO: Implement transient error display (Phase 60 or later)
+        pass
+
+    async def _open_in_editor(self, file_path: str) -> None:
+        """Open a file in the external editor.
+
+        Suspends the app, runs the editor, then refreshes after exit.
+
+        Args:
+            file_path: Path to the file to edit.
+
+        Raises:
+            NoEditorFoundError: If no editor is available.
+        """
+        await open_in_editor(self.app, file_path)
+        self._nav_state.refresh_after_editor()
+        self._sync_from_nav_state()
+        self._refresh_listings()
+        self.refresh()
+
+    async def action_nav_up(self) -> None:
+        """Move selection up in the current directory.
+
+        No-op if already at top, directory is empty, or inaccessible.
+        """
+        if not self._nav_state.move_up():
+            return
+        self._sync_from_nav_state()
+        self.refresh()
+
+    async def action_nav_down(self) -> None:
+        """Move selection down in the current directory.
+
+        No-op if already at bottom, directory is empty, or inaccessible.
+        """
+        if not self._nav_state.move_down():
+            return
+        self._sync_from_nav_state()
+        self.refresh()
+
+    async def action_nav_left(self) -> None:
+        """Navigate to parent directory.
+
+        No-op if at filesystem root. Shows error if parent inaccessible.
+        """
+        try:
+            moved = self._nav_state.move_left()
+        except InaccessibleDirectoryError:
+            self._show_transient_error("permission denied")
+            return
+        if not moved:
+            return
+        self._sync_from_nav_state()
+        self._refresh_listings()
+        self.refresh()
+
+    async def action_nav_right(self) -> None:
+        """Navigate into directory or open file in editor.
+
+        For directories: navigates into them.
+        For files: opens in external editor.
+        For broken symlinks: no-op.
+        Shows error if directory inaccessible or no editor found.
+        """
+        file_path = self._handle_nav_right()
+        if file_path is None:
+            return
+        await self._open_in_editor(file_path)
+
+    def _handle_nav_right(self) -> str | None:
+        """Handle right navigation, returning file path if editor needed.
+
+        Returns:
+            File path string if a file should be opened, None otherwise.
+        """
+        try:
+            file_path = self._nav_state.move_right()
+        except InaccessibleDirectoryError:
+            self._show_transient_error("permission denied")
+            return None
+        if file_path is not None:
+            return file_path
+        self._sync_from_nav_state()
+        self._refresh_listings()
+        self.refresh()
+        return None
+
+    async def on_key(self, event: Key) -> None:
+        """Handle key events for file browser navigation.
+
+        Looks up the key in the dispatch table and calls the action method.
+
+        Args:
+            event: The key event from Textual.
+        """
+        if not self.has_focus:
+            return
+        action_name = self._dispatch_table.get(event.key)
+        if action_name is None:
+            return
+        action_method = getattr(self, f"action_{action_name}", None)
+        if action_method is not None:
+            await action_method()
+            event.prevent_default()

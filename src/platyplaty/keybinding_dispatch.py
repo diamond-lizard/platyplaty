@@ -52,6 +52,35 @@ def build_client_dispatch_table(quit_key: str | None) -> DispatchTable:
     return table
 
 
+def build_file_browser_dispatch_table(
+    nav_up_keys: list[str],
+    nav_down_keys: list[str],
+    nav_left_keys: list[str],
+    nav_right_keys: list[str],
+) -> DispatchTable:
+    """Build dispatch table for file browser navigation key events.
+
+    Args:
+        nav_up_keys: List of keys bound to move selection up.
+        nav_down_keys: List of keys bound to move selection down.
+        nav_left_keys: List of keys bound to navigate to parent.
+        nav_right_keys: List of keys bound to navigate into directory.
+
+    Returns:
+        Dispatch table mapping keys to action names.
+    """
+    table: DispatchTable = {}
+    for key in nav_up_keys:
+        table[key] = "nav_up"
+    for key in nav_down_keys:
+        table[key] = "nav_down"
+    for key in nav_left_keys:
+        table[key] = "nav_left"
+    for key in nav_right_keys:
+        table[key] = "nav_right"
+    return table
+
+
 
 async def dispatch_key_event(
     key: str,
