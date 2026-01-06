@@ -20,3 +20,10 @@ class InaccessibleDirectoryError(Exception):
         """
         self.path = path
         super().__init__(f"Cannot access directory: {path}")
+
+class NoEditorFoundError(Exception):
+    """Raised when no editor command is available.
+
+    The editor fallback chain ($VISUAL -> $EDITOR -> sensible-editor -> vi)
+    found no available editor.
+    """

@@ -316,3 +316,30 @@ class NavigationState:
         if index is None or not self._listing:
             return None
         return self._listing.entries[index]
+
+    def refresh_after_editor(self) -> None:
+        """Refresh directory after editor exits and restore selection.
+
+        Re-reads the current directory listing. If the previously selected
+        filename still exists, keeps it selected. Otherwise, selects the
+        item that is now at the previous index position (or the last item
+        if the previous position is beyond the new list length).
+        """
+        old_name = self.selected_name
+        old_index = self._get_selected_index()
+        self._refresh_listing()
+
+        # Try to keep the same filename selected
+        if old_name and self._listing and self._listing.entries:
+            if _find_name_in_listing(self._listing, old_name):
+                return  # Name still exists, keep it
+
+        # Filename gone: select item at previous index, or last item
+        if self._listing and self._listing.entries:
+            max_index = len(self._listing.entries) - 1
+            if old_index is not None and old_index <= max_index:
+                self.selected_name = self._listing.entries[old_index].name
+            else:
+                self.selected_name = self._listing.entries[max_index].name
+        else:
+            self.selected_name = None
