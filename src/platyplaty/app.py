@@ -19,6 +19,7 @@ from platyplaty.keybinding_dispatch import (
     build_renderer_dispatch_table,
 )
 from platyplaty.renderer import start_renderer
+from platyplaty.ui import FileBrowser
 
 if TYPE_CHECKING:
     from platyplaty.playlist import Playlist
@@ -35,6 +36,15 @@ class PlatyplatyApp(App):
         renderer_dispatch_table: Maps renderer window keys to action names.
         client_dispatch_table: Maps terminal keys to action names.
         _renderer_ready: True after INIT command succeeds.
+    """
+
+    CSS = """
+    #file_browser {
+        height: 70%;
+    }
+    #log {
+        height: 30%;
+    }
     """
 
     renderer_dispatch_table: dict[str, str]
@@ -94,6 +104,7 @@ class PlatyplatyApp(App):
             Widgets to mount in the application.
         """
         yield Static("Platyplaty Visualizer", id="status")
+        yield FileBrowser(id="file_browser")
         yield RichLog(id="log")
 
 
