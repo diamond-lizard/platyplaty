@@ -273,7 +273,9 @@ class FileBrowser(Widget):
                 # At filesystem root - left pane is truly empty
                 return " " * width
             if y == 0:
-                if listing.was_empty:
+                if listing.permission_denied:
+                    msg = "inaccessible directory"
+                elif listing.was_empty:
                     msg = "empty"
                 else:
                     msg = "no .milk files"
