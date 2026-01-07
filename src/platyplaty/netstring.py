@@ -5,12 +5,10 @@ Netstrings are a simple framing format: <length>:<payload>,
 For example, "hello" becomes "5:hello,"
 
 This module handles encoding Python strings to netstrings and decoding
-netstrings back to strings, with support for buffered/partial reads.
+netstrings back to strings.
 """
 
-import asyncio
 import logging
-from collections.abc import AsyncIterator
 
 logger = logging.getLogger(__name__)
 
@@ -97,46 +95,3 @@ def decode_netstring(data: bytes) -> tuple[str, bytes]:
     except UnicodeDecodeError as e:
         raise MalformedNetstringError(f"Invalid UTF-8 in payload: {e}") from e
     return payload, data[end_pos + 1:]
-
-
-def _extract_netstrings(buffer: bytes) -> tuple[list[str], bytes, bool]:
-    """Extract complete netstrings from buffer.
-
-    Returns:
-        Tuple of (payloads, remaining_buffer, should_abort).
-        should_abort is True if a malformed netstring was encountered.
-    """
-    payloads: list[str] = []
-    while buffer:
-        try:
-            payload, buffer = decode_netstring(buffer)
-            payloads.append(payload)
-        except IncompleteNetstringError:
-            break
-        except MalformedNetstringError as e:
-            logger.error("Malformed netstring: %s", e)
-            return payloads, buffer, True
-    return payloads, buffer, False
-
-
-async def read_netstrings_from_stderr(
-    stderr: asyncio.StreamReader,
-) -> AsyncIterator[str]:
-    """Read netstring-framed messages from stderr stream.
-
-    Yields:
-        Decoded netstring payloads as they become available.
-    """
-    buffer = b""
-    while True:
-        chunk = await stderr.read(4096)
-        if not chunk:
-            break
-        buffer += chunk
-        payloads, buffer, abort = _extract_netstrings(buffer)
-        for payload in payloads:
-            yield payload
-        if abort:
-            return
-    if buffer:
-        logger.warning("Incomplete netstring at EOF: %r", buffer)
