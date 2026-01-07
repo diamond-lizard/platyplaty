@@ -70,14 +70,14 @@ class Pane(Widget):
                 msg = "empty" if self.is_truly_empty else "no .milk files"
                 text = Text(msg)
                 text.truncate(self._width)
-                return Strip([text.render(self.app.console)])
+                return Strip(list(text.render(self.app.console)))
             return Strip([])
 
         if y < len(self.entries):
             entry = self.entries[y]
             text = Text(entry.name)
             text.truncate(self._width)
-            return Strip([text.render(self.app.console)])
+            return Strip(list(text.render(self.app.console)))
 
         return Strip([])
 

@@ -79,5 +79,5 @@ async def open_in_editor(app: "App[object]", path: str) -> None:
         NoEditorFoundError: If no editor is available.
     """
     editor = require_editor_command()
-    async with app.suspend():
+    with app.suspend():
         subprocess.run([editor, path])

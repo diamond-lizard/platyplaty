@@ -172,6 +172,7 @@ class NavigationState:
         """
         if self._is_empty_or_inaccessible():
             return False
+        assert self._listing is not None  # narrowed by _is_empty_or_inaccessible
         index = self._get_selected_index()
         if index is None or index <= 0:
             return False
@@ -188,6 +189,7 @@ class NavigationState:
         """
         if self._is_empty_or_inaccessible():
             return False
+        assert self._listing is not None  # narrowed by _is_empty_or_inaccessible
         index = self._get_selected_index()
         if index is None:
             return False

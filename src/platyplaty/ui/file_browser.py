@@ -8,7 +8,7 @@ and right (preview of selected item).
 from dataclasses import dataclass
 from pathlib import Path
 
-from textual.events import Key
+from textual.events import Key, Resize
 from textual.geometry import Size
 from textual.strip import Strip
 from textual.widget import Widget
@@ -29,6 +29,7 @@ from platyplaty.ui.nav_state import NavigationState
 # See: 40-basic-color-scheme-plan.md, 50-selection-highlighting-plan.md,
 # 60-middle-pane-indicators-plan.md. Remove this noqa when Pane is used.
 from platyplaty.ui.pane import Pane  # noqa: F401
+from platyplaty.ui.transient_error import TransientErrorBar
 
 
 @dataclass
@@ -331,7 +332,7 @@ class FileBrowser(Widget):
         line = lines[y].rstrip('\n\r')
         return line.ljust(width)[:width]
 
-    def on_resize(self, event) -> None:
+    def on_resize(self, event: "Resize") -> None:
         """Handle terminal resize events.
 
         Args:
@@ -402,7 +403,7 @@ class FileBrowser(Widget):
         Args:
             message: The error message to display.
         """
-        error_bar = self.app.query_one("#transient_error")
+        error_bar = self.app.query_one("#transient_error", TransientErrorBar)
         error_bar.show_error(message)
 
     async def _open_in_editor(self, file_path: str) -> None:

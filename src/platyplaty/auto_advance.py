@@ -27,7 +27,7 @@ async def load_preset_with_retry(app: "PlatyplatyApp") -> bool:
         True if a preset was loaded successfully, False if all failed.
     """
     for _ in range(len(app.playlist.presets)):
-        if app._exiting:
+        if app._exiting or not app._client:
             return False
         preset_path = app.playlist.current()
         try:
@@ -103,6 +103,8 @@ async def _try_load_preset(app: "PlatyplatyApp") -> bool:
         True if successful, False otherwise.
     """
     preset_path = app.playlist.current()
+    if not app._client:
+        return False
     try:
         await app._client.send_command("LOAD PRESET", path=str(preset_path))
         return True

@@ -25,10 +25,10 @@ from platyplaty.ui import FileBrowser, TransientErrorBar
 
 if TYPE_CHECKING:
     from platyplaty.playlist import Playlist
-    from platyplaty.types.config import FileBrowserKeybindings
+    from platyplaty.types.config import ClientKeybindings, FileBrowserKeybindings, RendererKeybindings
 
 
-class PlatyplatyApp(App):
+class PlatyplatyApp(App[None]):
     """Textual application for controlling the Platyplaty visualizer.
 
     This app manages the renderer process, handles keyboard input from both
@@ -61,8 +61,8 @@ class PlatyplatyApp(App):
     fullscreen: bool
     socket_path: str
     audio_source: str
-    _client_keybindings: dict[str, str]
-    _renderer_keybindings: dict[str, str]
+    _client_keybindings: "ClientKeybindings"
+    _renderer_keybindings: "RendererKeybindings"
     _file_browser_keybindings: "FileBrowserKeybindings"
 
 
@@ -73,8 +73,8 @@ class PlatyplatyApp(App):
         playlist: "Playlist",
         preset_duration: float,
         fullscreen: bool,
-        client_keybindings: dict[str, str],
-        renderer_keybindings: dict[str, str],
+        client_keybindings: "ClientKeybindings",
+        renderer_keybindings: "RendererKeybindings",
         file_browser_keybindings: "FileBrowserKeybindings",
     ) -> None:
         """Initialize the Platyplaty application.
@@ -206,7 +206,7 @@ class PlatyplatyApp(App):
         Silently ignores if renderer not ready, exiting, or at end with
         loop disabled. Posts LogMessage warning on preset load failure.
         """
-        if not self._renderer_ready or self._exiting:
+        if not self._renderer_ready or not self._client or self._exiting:
             return
         path = self.playlist.next()
         if path is None:
@@ -224,7 +224,7 @@ class PlatyplatyApp(App):
         Silently ignores if renderer not ready, exiting, or at start with
         loop disabled. Posts LogMessage warning on preset load failure.
         """
-        if not self._renderer_ready or self._exiting:
+        if not self._renderer_ready or not self._client or self._exiting:
             return
         path = self.playlist.previous()
         if path is None:
@@ -243,9 +243,10 @@ class PlatyplatyApp(App):
         reachable), closes the socket, and exits the application.
         """
         self._exiting = True
-        with contextlib.suppress(ConnectionError):
-            await self._client.send_command("QUIT")
-        self._client.close()
+        if self._client:
+            with contextlib.suppress(ConnectionError):
+                await self._client.send_command("QUIT")
+            self._client.close()
         self.exit()
 
     async def on_key(self, event: Key) -> None:
