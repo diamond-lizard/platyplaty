@@ -114,7 +114,7 @@ class FileBrowser(Widget):
         try:
             list(self.current_dir.iterdir())
         except PermissionError:
-            raise InaccessibleDirectoryError(str(self.current_dir))
+            raise InaccessibleDirectoryError(str(self.current_dir)) from None
         self.selected_index = 0
         self._middle_scroll_offset = 0
 

@@ -218,9 +218,9 @@ class NavigationState:
         try:
             list(parent.iterdir())
         except PermissionError:
-            raise InaccessibleDirectoryError(str(parent))
+            raise InaccessibleDirectoryError(str(parent)) from None
         except OSError:
-            raise InaccessibleDirectoryError(str(parent))
+            raise InaccessibleDirectoryError(str(parent)) from None
         self._save_current_memory()
         came_from = self.current_dir.name
         self.current_dir = parent
@@ -290,9 +290,9 @@ class NavigationState:
         try:
             list(target.iterdir())
         except PermissionError:
-            raise InaccessibleDirectoryError(str(target))
+            raise InaccessibleDirectoryError(str(target)) from None
         except OSError:
-            raise InaccessibleDirectoryError(str(target))
+            raise InaccessibleDirectoryError(str(target)) from None
         self._save_current_memory()
         self.current_dir = self.current_dir / name
         self._refresh_listing()
