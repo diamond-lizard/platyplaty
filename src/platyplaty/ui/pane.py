@@ -84,7 +84,9 @@ class Pane(Widget):
 
         return Strip([])
 
-    def get_content_height(self, container: "Size", viewport: "Size", width: int) -> int:
+    def get_content_height(
+        self, container: "Size", viewport: "Size", width: int
+    ) -> int:
         """Return the height of the content.
 
         Args:

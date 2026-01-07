@@ -170,7 +170,9 @@ class PlatyplatyApp(App):
 
             # Load initial preset
             if not await load_preset_with_retry(self):
-                self.post_message(LogMessage("All presets failed to load", level="warning"))
+                self.post_message(
+                    LogMessage("All presets failed to load", level="warning")
+                )
 
             # Stage B: Start workers
             self.run_worker(stderr_monitor_task(self), name="stderr_monitor")
@@ -211,7 +213,9 @@ class PlatyplatyApp(App):
         try:
             await self._client.send_command("LOAD PRESET", path=str(path))
         except RendererError as e:
-            self.post_message(LogMessage(f"Failed to load preset: {e}", level="warning"))
+            self.post_message(
+                LogMessage(f"Failed to load preset: {e}", level="warning")
+            )
 
     async def action_previous_preset(self) -> None:
         """Go back to the previous preset in the playlist.
@@ -227,7 +231,9 @@ class PlatyplatyApp(App):
         try:
             await self._client.send_command("LOAD PRESET", path=str(path))
         except RendererError as e:
-            self.post_message(LogMessage(f"Failed to load preset: {e}", level="warning"))
+            self.post_message(
+                LogMessage(f"Failed to load preset: {e}", level="warning")
+            )
 
     async def graceful_shutdown(self) -> None:
         """Shut down the application gracefully.

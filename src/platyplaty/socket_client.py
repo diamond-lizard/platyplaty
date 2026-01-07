@@ -93,12 +93,18 @@ class SocketClient:
             response = await self._recv_response()
             if response.id != command_id:
                 error_text = response.error or ""
-                msg = f"Response ID {response.id} doesn't match command ID {command_id}, error message: '{error_text}'"
+                msg = (
+                    f"Response ID {response.id} doesn't match "
+                    f"command ID {command_id}, error message: '{error_text}'"
+                )
                 raise ResponseIdMismatchError(msg)
 
             if not response.success:
                 error_text = response.error or ""
-                msg = f"Command '{command}' (ID {command_id}) failed, error message: '{error_text}'"
+                msg = (
+                    f"Command '{command}' (ID {command_id}) failed, "
+                    f"error message: '{error_text}'"
+                )
                 raise RendererError(msg)
 
             return response

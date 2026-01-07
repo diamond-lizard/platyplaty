@@ -71,7 +71,8 @@ def _validate_key_list(keys: list[str], field_path: str) -> None:
 
     Args:
         keys: List of key names to validate.
-        field_path: Full path for error messages (e.g., keybindings.file_browser.nav_up).
+        field_path: Full path for error messages
+            (e.g., keybindings.file_browser.nav_up).
 
     Raises:
         ValueError: If any key has an abbreviated modifier.

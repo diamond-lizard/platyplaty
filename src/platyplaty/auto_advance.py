@@ -34,7 +34,9 @@ async def load_preset_with_retry(app: "PlatyplatyApp") -> bool:
             await app._client.send_command("LOAD PRESET", path=str(preset_path))
             return True
         except RendererError as e:
-            app.post_message(LogMessage(f"Failed to load {preset_path}: {e}", level="warning"))
+            app.post_message(
+                LogMessage(f"Failed to load {preset_path}: {e}", level="warning")
+            )
         if app.playlist.next() is None:
             break
     return False
@@ -105,5 +107,7 @@ async def _try_load_preset(app: "PlatyplatyApp") -> bool:
         await app._client.send_command("LOAD PRESET", path=str(preset_path))
         return True
     except RendererError as e:
-        app.post_message(LogMessage(f"Failed to load {preset_path}: {e}", level="warning"))
+        app.post_message(
+            LogMessage(f"Failed to load {preset_path}: {e}", level="warning")
+        )
         return False

@@ -156,7 +156,8 @@ class FileBrowser(Widget):
             self._right_content = None
             return
 
-        if self.selected_index < 0 or self.selected_index >= len(self._middle_listing.entries):
+        if (self.selected_index < 0
+                or self.selected_index >= len(self._middle_listing.entries)):
             self._right_content = None
             return
 
@@ -236,7 +237,8 @@ class FileBrowser(Widget):
 
         # Render middle pane
         middle_text = self._render_pane_line(
-            self._middle_listing, y, pane_widths.middle, is_left_pane=False, scroll_offset=self._middle_scroll_offset
+            self._middle_listing, y, pane_widths.middle,
+            is_left_pane=False, scroll_offset=self._middle_scroll_offset
         )
         segments.append(Segment(middle_text))
         segments.append(Segment(" "))  # Gap
@@ -345,7 +347,8 @@ class FileBrowser(Widget):
         """
         if not self._middle_listing or not self._middle_listing.entries:
             return None
-        if self.selected_index < 0 or self.selected_index >= len(self._middle_listing.entries):
+        if (self.selected_index < 0
+                or self.selected_index >= len(self._middle_listing.entries)):
             return None
         return self._middle_listing.entries[self.selected_index]
 
