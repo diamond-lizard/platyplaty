@@ -5,6 +5,7 @@ entries, one per line, left-justified within a constrained width.
 """
 
 from rich.text import Text
+from textual.geometry import Size
 from textual.strip import Strip
 from textual.widget import Widget
 
