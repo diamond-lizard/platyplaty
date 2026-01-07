@@ -20,7 +20,10 @@ from platyplaty.ui.directory import (
     EntryType,
     list_directory,
 )
-from platyplaty.ui.pane import Pane
+# TODO: Pane will be used when Parts 40-60 are implemented.
+# See: 40-basic-color-scheme-plan.md, 50-selection-highlighting-plan.md,
+# 60-middle-pane-indicators-plan.md. Remove this noqa when Pane is used.
+from platyplaty.ui.pane import Pane  # noqa: F401
 from platyplaty.errors import InaccessibleDirectoryError
 from platyplaty.errors import NoEditorFoundError
 from platyplaty.ui.nav_state import NavigationState
@@ -216,7 +219,6 @@ class FileBrowser(Widget):
         Returns:
             A Strip containing the rendered line.
         """
-        from rich.text import Text
         from rich.segment import Segment
 
         width = self.size.width
