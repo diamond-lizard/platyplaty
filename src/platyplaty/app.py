@@ -1,31 +1,29 @@
 #!/usr/bin/env python3
 """Textual application for Platyplaty visualizer control."""
 
-import asyncio
-import contextlib
-import signal
 from typing import TYPE_CHECKING
 
 from textual.app import App, ComposeResult
 from textual.events import Key
 from textual.widgets import RichLog, Static
 
-from platyplaty.auto_advance import auto_advance_loop, load_preset_with_retry
-from platyplaty.dispatch_tables import (
-    build_client_dispatch_table,
-    build_file_browser_dispatch_table,
-    build_renderer_dispatch_table,
+from platyplaty.app_actions import load_preset_by_direction
+from platyplaty.app_dispatch import build_app_dispatch_tables
+from platyplaty.app_shutdown import perform_graceful_shutdown
+from platyplaty.app_startup import (
+    cleanup_on_startup_failure,
+    perform_startup,
+    setup_signal_handlers,
 )
-from platyplaty.event_loop import stderr_monitor_task
 from platyplaty.keybinding_dispatch import dispatch_key_event
-from platyplaty.messages import LogMessage
-from platyplaty.renderer import start_renderer
-from platyplaty.socket_client import SocketClient
-from platyplaty.socket_exceptions import RendererError
 from platyplaty.ui import FileBrowser, TransientErrorBar
 
 if TYPE_CHECKING:
+    import asyncio
+
+    from platyplaty.messages import LogMessage
     from platyplaty.playlist import Playlist
+    from platyplaty.socket_client import SocketClient
     from platyplaty.types.keybindings import FileBrowserKeybindings
     from platyplaty.types.renderer_keybindings import (
         ClientKeybindings,
@@ -57,6 +55,7 @@ class PlatyplatyApp(App[None]):
 
     renderer_dispatch_table: dict[str, str]
     client_dispatch_table: dict[str, str]
+    file_browser_dispatch_table: dict[str, str]
     _renderer_ready: bool
     _exiting: bool
     _renderer_process: asyncio.subprocess.Process | None
@@ -107,19 +106,8 @@ class PlatyplatyApp(App[None]):
         self._renderer_ready = False
         self._client = None
 
-        # Build file browser dispatch table (available in compose)
-        self.file_browser_dispatch_table = build_file_browser_dispatch_table(
-            nav_up_keys=self._file_browser_keybindings.nav_up,
-            nav_down_keys=self._file_browser_keybindings.nav_down,
-            nav_left_keys=self._file_browser_keybindings.nav_left,
-            nav_right_keys=self._file_browser_keybindings.nav_right,
-        )
-
-        # Build client dispatch table for app-level actions
-        self.client_dispatch_table = build_client_dispatch_table(
-            quit_key=self._client_keybindings.quit,
-        )
-        self.client_dispatch_table["ctrl+c"] = "quit"
+        # Build dispatch tables for file browser and client actions
+        build_app_dispatch_tables(self)
 
 
 
@@ -138,64 +126,14 @@ class PlatyplatyApp(App[None]):
     async def on_mount(self) -> None:
         """Perform startup sequence when the app is mounted.
 
-        Stage A: Start renderer, connect socket, send initial commands.
-        Stage B: Start background workers.
-        Stage C: Show window and optionally go fullscreen.
-
-        On startup error, terminates renderer if started, closes client
-        if connected, and exits with error message.
+        Delegates to app_startup module for signal handlers and startup
+        sequence. On failure, cleans up and exits with error message.
         """
-        # Register signal handlers for external SIGINT/SIGTERM
-        loop = asyncio.get_running_loop()
-        loop.add_signal_handler(
-            signal.SIGINT,
-            lambda: asyncio.create_task(self.graceful_shutdown()),
-        )
-        loop.add_signal_handler(
-            signal.SIGTERM,
-            lambda: asyncio.create_task(self.graceful_shutdown()),
-        )
-
+        setup_signal_handlers(self)
         try:
-            # Stage A: Direct calls before workers start
-            self._renderer_process = await start_renderer(self.socket_path)
-            self._client = SocketClient()
-            await self._client.connect(self.socket_path)
-            await self._client.send_command(
-                "CHANGE AUDIO SOURCE", audio_source=self.audio_source
-            )
-            await self._client.send_command("INIT")
-            self._renderer_ready = True
-
-            # Build dispatch tables from stored keybindings
-            self.renderer_dispatch_table = build_renderer_dispatch_table(
-                next_preset_key=self._renderer_keybindings.next_preset,
-                previous_preset_key=self._renderer_keybindings.previous_preset,
-                quit_key=self._renderer_keybindings.quit,
-            )
-
-            # Load initial preset
-            if not await load_preset_with_retry(self):
-                self.post_message(
-                    LogMessage("All presets failed to load", level="warning")
-                )
-
-            # Stage B: Start workers
-            self.run_worker(stderr_monitor_task(self), name="stderr_monitor")
-            self.run_worker(auto_advance_loop(self), name="auto_advance")
-
-            # Stage C: Send final startup commands
-            await self._client.send_command("SHOW WINDOW")
-            if self.fullscreen:
-                await self._client.send_command("SET FULLSCREEN", enabled=True)
-
+            await perform_startup(self)
         except Exception as e:
-            # Clean up on startup failure
-            if self._renderer_process is not None:
-                self._renderer_process.terminate()
-                await self._renderer_process.wait()
-            if self._client is not None:
-                self._client.close()
+            await cleanup_on_startup_failure(self)
             self.exit(message=str(e))
 
     async def action_quit(self) -> None:
@@ -206,53 +144,16 @@ class PlatyplatyApp(App[None]):
         await self.graceful_shutdown()
 
     async def action_next_preset(self) -> None:
-        """Advance to the next preset in the playlist.
-
-        Silently ignores if renderer not ready, exiting, or at end with
-        loop disabled. Posts LogMessage warning on preset load failure.
-        """
-        if not self._renderer_ready or not self._client or self._exiting:
-            return
-        path = self.playlist.next()
-        if path is None:
-            return
-        try:
-            await self._client.send_command("LOAD PRESET", path=str(path))
-        except RendererError as e:
-            self.post_message(
-                LogMessage(f"Failed to load preset: {e}", level="warning")
-            )
+        """Advance to the next preset in the playlist."""
+        await load_preset_by_direction(self, self.playlist.next, "next")
 
     async def action_previous_preset(self) -> None:
-        """Go back to the previous preset in the playlist.
-
-        Silently ignores if renderer not ready, exiting, or at start with
-        loop disabled. Posts LogMessage warning on preset load failure.
-        """
-        if not self._renderer_ready or not self._client or self._exiting:
-            return
-        path = self.playlist.previous()
-        if path is None:
-            return
-        try:
-            await self._client.send_command("LOAD PRESET", path=str(path))
-        except RendererError as e:
-            self.post_message(
-                LogMessage(f"Failed to load preset: {e}", level="warning")
-            )
+        """Go back to the previous preset in the playlist."""
+        await load_preset_by_direction(self, self.playlist.previous, "previous")
 
     async def graceful_shutdown(self) -> None:
-        """Shut down the application gracefully.
-
-        Sets the exiting flag, sends QUIT command to the renderer (if
-        reachable), closes the socket, and exits the application.
-        """
-        self._exiting = True
-        if self._client:
-            with contextlib.suppress(ConnectionError):
-                await self._client.send_command("QUIT")
-            self._client.close()
-        self.exit()
+        """Shut down the application gracefully."""
+        await perform_graceful_shutdown(self)
 
     async def on_key(self, event: Key) -> None:
         """Handle terminal key events.
