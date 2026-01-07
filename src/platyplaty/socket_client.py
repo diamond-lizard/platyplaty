@@ -9,23 +9,9 @@ import asyncio
 import json
 from asyncio import StreamReader, StreamWriter
 
-from platyplaty.netstring import (
-    IncompleteNetstringError,
-    decode_netstring,
-    encode_netstring,
-)
+from platyplaty.netstring import encode_netstring
+from platyplaty.socket_response import recv_response, validate_response
 from platyplaty.types import CommandResponse
-
-
-class ResponseIdMismatchError(Exception):
-    """Raised when response ID doesn't match command ID."""
-
-
-class RendererError(Exception):
-    """Raised when the renderer returns an error response."""
-
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
 
 
 class SocketClient:
@@ -90,70 +76,8 @@ class SocketClient:
             self._writer.write(data)
             await self._writer.drain()
 
-            response = await self._recv_response()
-            if response.id != command_id:
-                error_text = response.error or ""
-                msg = (
-                    f"Response ID {response.id} doesn't match "
-                    f"command ID {command_id}, error message: '{error_text}'"
-                )
-                raise ResponseIdMismatchError(msg)
-
-            if not response.success:
-                error_text = response.error or ""
-                msg = (
-                    f"Command '{command}' (ID {command_id}) failed, "
-                    f"error message: '{error_text}'"
-                )
-                raise RendererError(msg)
+            reader = self._reader
+            response, self._buffer = await recv_response(reader, self._buffer)
+            validate_response(response, command_id, command)
 
             return response
-
-    def _try_decode_buffer(self) -> CommandResponse | None:
-        """Try to decode a response from the buffer.
-
-        Returns:
-            CommandResponse if a complete message is in buffer, None otherwise.
-        """
-        try:
-            payload, remaining = decode_netstring(self._buffer)
-            self._buffer = remaining
-            response_data = json.loads(payload)
-            return CommandResponse.model_validate(response_data)
-        except IncompleteNetstringError:
-            return None
-
-    async def _read_more_data(self) -> None:
-        """Read more data from the socket into the buffer.
-
-        Raises:
-            ConnectionError: If the connection is closed.
-        """
-        if self._reader is None:
-            msg = "Not connected"
-            raise RuntimeError(msg)
-        chunk = await self._reader.read(4096)
-        if not chunk:
-            msg = "Connection closed by renderer"
-            raise ConnectionError(msg) from None
-        self._buffer += chunk
-    async def _recv_response(self) -> CommandResponse:
-        """Receive and decode a response from the renderer.
-
-        Uses buffering to handle partial reads.
-
-        Returns:
-            CommandResponse parsed from the netstring-framed JSON.
-
-        Raises:
-            ConnectionError: If the connection is closed unexpectedly.
-        """
-        if self._reader is None:
-            msg = "Not connected"
-            raise RuntimeError(msg)
-
-        result = self._try_decode_buffer()
-        while result is None:
-            await self._read_more_data()
-            result = self._try_decode_buffer()
-        return result

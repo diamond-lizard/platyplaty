@@ -8,7 +8,7 @@ import asyncio
 from typing import TYPE_CHECKING
 
 from platyplaty.messages import LogMessage
-from platyplaty.socket_client import RendererError
+from platyplaty.socket_exceptions import RendererError
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp

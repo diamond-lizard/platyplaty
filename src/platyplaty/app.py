@@ -20,7 +20,8 @@ from platyplaty.event_loop import stderr_monitor_task
 from platyplaty.keybinding_dispatch import dispatch_key_event
 from platyplaty.messages import LogMessage
 from platyplaty.renderer import start_renderer
-from platyplaty.socket_client import RendererError, SocketClient
+from platyplaty.socket_client import SocketClient
+from platyplaty.socket_exceptions import RendererError
 from platyplaty.ui import FileBrowser, TransientErrorBar
 
 if TYPE_CHECKING:
