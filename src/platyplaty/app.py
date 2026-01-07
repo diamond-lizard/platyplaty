@@ -96,6 +96,12 @@ class PlatyplatyApp(App):
         self._renderer_ready = False
         self._client = None
 
+        # Build client dispatch table for FileBrowser (available in compose)
+        self.client_dispatch_table = build_client_dispatch_table(
+            quit_key=self._client_keybindings.quit,
+        )
+        self.client_dispatch_table["ctrl+c"] = "quit"
+
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the application.
@@ -104,7 +110,7 @@ class PlatyplatyApp(App):
             Widgets to mount in the application.
         """
         yield Static("Platyplaty Visualizer", id="status")
-        yield FileBrowser(id="file_browser")
+        yield FileBrowser(self.client_dispatch_table, id="file_browser")
         yield RichLog(id="log")
 
 
@@ -146,11 +152,6 @@ class PlatyplatyApp(App):
                 previous_preset_key=self._renderer_keybindings.previous_preset,
                 quit_key=self._renderer_keybindings.quit,
             )
-            self.client_dispatch_table = build_client_dispatch_table(
-                quit_key=self._client_keybindings.quit,
-            )
-            # Add ctrl+c mapping for terminal quit
-            self.client_dispatch_table["ctrl+c"] = "quit"
 
             # Load initial preset
             if not await load_preset_with_retry(self):
