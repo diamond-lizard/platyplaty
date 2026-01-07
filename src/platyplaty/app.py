@@ -25,9 +25,9 @@ from platyplaty.ui import FileBrowser, TransientErrorBar
 
 if TYPE_CHECKING:
     from platyplaty.playlist import Playlist
-    from platyplaty.types.config import (
+    from platyplaty.types.keybindings import FileBrowserKeybindings
+    from platyplaty.types.renderer_keybindings import (
         ClientKeybindings,
-        FileBrowserKeybindings,
         RendererKeybindings,
     )
 
