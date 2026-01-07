@@ -1,15 +1,17 @@
 """Pane widget for the three-pane file browser.
 
 This module provides a Pane widget that displays a list of directory
-entries, one per line, left-justified within a constrained width.
+entries, one per line, left-justified within a constrained width. See also:
+pane_rendering.py for rendering helpers and pane_selection.py for
+selection helpers.
 """
 
-from rich.text import Text
 from textual.geometry import Size
 from textual.strip import Strip
 from textual.widget import Widget
 
 from platyplaty.ui.directory_types import DirectoryEntry
+from platyplaty.ui.pane_rendering import render_empty_message, render_entry
 
 
 class Pane(Widget):
@@ -65,20 +67,13 @@ class Pane(Widget):
             A Strip containing the rendered line.
         """
         if not self.entries:
-            # Empty directory message
-            if y == 0:
-                msg = "empty" if self.is_truly_empty else "no .milk files"
-                text = Text(msg)
-                text.truncate(self._width)
-                return Strip(list(text.render(self.app.console)))
-            return Strip([])
-
+            return render_empty_message(
+                y, self.is_truly_empty, self._width, self.app.console
+            )
         if y < len(self.entries):
-            entry = self.entries[y]
-            text = Text(entry.name)
-            text.truncate(self._width)
-            return Strip(list(text.render(self.app.console)))
-
+            return render_entry(
+                self.entries[y].name, self._width, self.app.console
+            )
         return Strip([])
 
     def get_content_height(
@@ -98,21 +93,3 @@ class Pane(Widget):
             return 1  # One line for empty message
         return len(self.entries)
 
-    def get_selected_entry(self) -> DirectoryEntry | None:
-        """Get the currently selected entry.
-
-        Returns:
-            The selected DirectoryEntry, or None if no entries.
-        """
-        if self.selected_index < 0 or self.selected_index >= len(self.entries):
-            return None
-        return self.entries[self.selected_index]
-
-    def get_selected_name(self) -> str | None:
-        """Get the name of the currently selected entry.
-
-        Returns:
-            The name of the selected entry, or None if no entries.
-        """
-        entry = self.get_selected_entry()
-        return entry.name if entry else None
