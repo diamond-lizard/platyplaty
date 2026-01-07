@@ -397,8 +397,8 @@ class FileBrowser(Widget):
         Args:
             message: The error message to display.
         """
-        # TODO: Implement transient error display (Phase 60 or later)
-        pass
+        error_bar = self.app.query_one("#transient_error")
+        error_bar.show_error(message)
 
     async def _open_in_editor(self, file_path: str) -> None:
         """Open a file in the external editor.
@@ -408,10 +408,12 @@ class FileBrowser(Widget):
         Args:
             file_path: Path to the file to edit.
 
-        Raises:
-            NoEditorFoundError: If no editor is available.
         """
-        await open_in_editor(self.app, file_path)
+        try:
+            await open_in_editor(self.app, file_path)
+        except NoEditorFoundError:
+            self._show_transient_error("No editor found")
+            return
         self._nav_state.refresh_after_editor()
         self._sync_from_nav_state()
         self._refresh_listings()

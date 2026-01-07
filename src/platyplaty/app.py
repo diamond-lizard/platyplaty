@@ -20,7 +20,7 @@ from platyplaty.keybinding_dispatch import (
     build_file_browser_dispatch_table,
 )
 from platyplaty.renderer import start_renderer
-from platyplaty.ui import FileBrowser
+from platyplaty.ui import FileBrowser, TransientErrorBar
 
 if TYPE_CHECKING:
     from platyplaty.playlist import Playlist
@@ -126,6 +126,7 @@ class PlatyplatyApp(App):
         yield Static("Platyplaty Visualizer", id="status")
         yield FileBrowser(self.file_browser_dispatch_table, id="file_browser")
         yield RichLog(id="log")
+        yield TransientErrorBar(id="transient_error")
 
 
     async def on_mount(self) -> None:

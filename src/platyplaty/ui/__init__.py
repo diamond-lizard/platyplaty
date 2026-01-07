@@ -12,6 +12,7 @@ from platyplaty.ui.directory import (
 from platyplaty.ui.file_browser import FileBrowser
 from platyplaty.ui.layout import PaneWidths, calculate_pane_widths
 from platyplaty.ui.pane import Pane
+from platyplaty.ui.transient_error import TransientErrorBar
 
 __all__ = [
     "DirectoryEntry",
@@ -22,4 +23,5 @@ __all__ = [
     "PaneWidths",
     "calculate_pane_widths",
     "list_directory",
+    "TransientErrorBar",
 ]
