@@ -16,7 +16,7 @@ from platyplaty.preset_scanner import (
     scan_preset_dirs,
     shuffle_presets,
 )
-from platyplaty.renderer import (
+from platyplaty.renderer_binary import (
     RendererNotFoundError,
     find_renderer_binary,
 )
