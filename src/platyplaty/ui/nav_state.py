@@ -40,10 +40,7 @@ def _find_name_in_listing(listing: DirectoryListing, name: str) -> bool:
     Returns:
         True if the name exists in the listing.
     """
-    for entry in listing.entries:
-        if entry.name == name:
-            return True
-    return False
+    return any(entry.name == name for entry in listing.entries)
 
 
 def _find_index_by_name(listing: DirectoryListing, name: str) -> int | None:
@@ -330,9 +327,9 @@ class NavigationState:
         self._refresh_listing()
 
         # Try to keep the same filename selected
-        if old_name and self._listing and self._listing.entries:
-            if _find_name_in_listing(self._listing, old_name):
-                return  # Name still exists, keep it
+        if (old_name and self._listing and self._listing.entries
+                and _find_name_in_listing(self._listing, old_name)):
+            return  # Name still exists, keep it
 
         # Filename gone: select item at previous index, or last item
         if self._listing and self._listing.entries:

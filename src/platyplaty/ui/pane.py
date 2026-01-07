@@ -67,10 +67,7 @@ class Pane(Widget):
         if not self.entries:
             # Empty directory message
             if y == 0:
-                if self.is_truly_empty:
-                    msg = "empty"
-                else:
-                    msg = "no .milk files"
+                msg = "empty" if self.is_truly_empty else "no .milk files"
                 text = Text(msg)
                 text.truncate(self._width)
                 return Strip([text.render(self.app.console)])

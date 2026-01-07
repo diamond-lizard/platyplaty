@@ -2,6 +2,7 @@
 """Textual application for Platyplaty visualizer control."""
 
 import asyncio
+import contextlib
 import signal
 from typing import TYPE_CHECKING
 
@@ -242,10 +243,8 @@ class PlatyplatyApp(App):
         reachable), closes the socket, and exits the application.
         """
         self._exiting = True
-        try:
+        with contextlib.suppress(ConnectionError):
             await self._client.send_command("QUIT")
-        except ConnectionError:
-            pass  # Renderer already gone
         self._client.close()
         self.exit()
 
