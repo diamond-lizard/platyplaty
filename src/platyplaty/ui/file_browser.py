@@ -5,30 +5,30 @@ widgets horizontally: left (parent directory), middle (current directory),
 and right (preview of selected item).
 """
 
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 
-from textual.widget import Widget
-from textual.strip import Strip
-from textual.geometry import Size
 from textual.events import Key
+from textual.geometry import Size
+from textual.strip import Strip
+from textual.widget import Widget
 
-from platyplaty.ui.layout import calculate_pane_widths
+from platyplaty.errors import InaccessibleDirectoryError, NoEditorFoundError
+from platyplaty.keybinding_dispatch import DispatchTable
 from platyplaty.ui.directory import (
     DirectoryEntry,
     DirectoryListing,
     EntryType,
     list_directory,
 )
+from platyplaty.ui.editor import open_in_editor
+from platyplaty.ui.layout import calculate_pane_widths
+from platyplaty.ui.nav_state import NavigationState
+
 # TODO: Pane will be used when Parts 40-60 are implemented.
 # See: 40-basic-color-scheme-plan.md, 50-selection-highlighting-plan.md,
 # 60-middle-pane-indicators-plan.md. Remove this noqa when Pane is used.
 from platyplaty.ui.pane import Pane  # noqa: F401
-from platyplaty.errors import InaccessibleDirectoryError
-from platyplaty.errors import NoEditorFoundError
-from platyplaty.ui.nav_state import NavigationState
-from platyplaty.ui.editor import open_in_editor
-from platyplaty.keybinding_dispatch import DispatchTable
 
 
 @dataclass
@@ -60,7 +60,7 @@ def read_file_preview_lines(path: Path) -> tuple[str, ...] | None:
     try:
         with path.open('r', encoding='utf-8', errors='replace') as f:
             return tuple(f.readlines())
-    except (OSError, IOError):
+    except OSError:
         return None
 
 

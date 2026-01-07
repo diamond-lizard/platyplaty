@@ -9,9 +9,9 @@ import asyncio
 from typing import TYPE_CHECKING
 
 from platyplaty.keybinding_dispatch import dispatch_key_event
+from platyplaty.messages import LogMessage
 from platyplaty.netstring import read_netstrings_from_stderr
 from platyplaty.stderr_parser import parse_stderr_event
-from platyplaty.messages import LogMessage
 from platyplaty.types import StderrEvent
 
 if TYPE_CHECKING:
@@ -45,11 +45,7 @@ async def _handle_stderr_event(
         event: The parsed event.
         app: The Textual application instance.
     """
-    if event.event == "QUIT":
-        if not app._exiting:
-            app._exiting = True
-            app.exit()
-    elif event.event == "DISCONNECT":
+    if event.event == "QUIT" or event.event == "DISCONNECT":
         if not app._exiting:
             app._exiting = True
             app.exit()

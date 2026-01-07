@@ -8,13 +8,13 @@ state transitions.
 from dataclasses import dataclass
 from pathlib import Path
 
+from platyplaty.errors import InaccessibleDirectoryError
 from platyplaty.ui.directory import (
     DirectoryEntry,
     DirectoryListing,
     EntryType,
     list_directory,
 )
-from platyplaty.errors import InaccessibleDirectoryError
 
 
 @dataclass

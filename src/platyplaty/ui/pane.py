@@ -4,10 +4,9 @@ This module provides a Pane widget that displays a list of directory
 entries, one per line, left-justified within a constrained width.
 """
 
-from textual.widget import Widget
-from textual.strip import Strip
-
 from rich.text import Text
+from textual.strip import Strip
+from textual.widget import Widget
 
 from platyplaty.ui.directory import DirectoryEntry
 

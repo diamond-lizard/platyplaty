@@ -7,8 +7,8 @@ Handles automatic preset cycling and preset loading with retry logic.
 import asyncio
 from typing import TYPE_CHECKING
 
-from platyplaty.socket_client import RendererError
 from platyplaty.messages import LogMessage
+from platyplaty.socket_client import RendererError
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
