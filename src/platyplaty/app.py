@@ -11,13 +11,13 @@ from textual.events import Key
 from textual.widgets import RichLog, Static
 
 from platyplaty.auto_advance import auto_advance_loop, load_preset_with_retry
-from platyplaty.event_loop import stderr_monitor_task
-from platyplaty.keybinding_dispatch import (
+from platyplaty.dispatch_tables import (
     build_client_dispatch_table,
     build_file_browser_dispatch_table,
     build_renderer_dispatch_table,
-    dispatch_key_event,
 )
+from platyplaty.event_loop import stderr_monitor_task
+from platyplaty.keybinding_dispatch import dispatch_key_event
 from platyplaty.messages import LogMessage
 from platyplaty.renderer import start_renderer
 from platyplaty.socket_client import RendererError, SocketClient

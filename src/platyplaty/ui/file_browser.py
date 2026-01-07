@@ -13,8 +13,8 @@ from textual.geometry import Size
 from textual.strip import Strip
 from textual.widget import Widget
 
+from platyplaty.dispatch_tables import DispatchTable
 from platyplaty.errors import InaccessibleDirectoryError, NoEditorFoundError
-from platyplaty.keybinding_dispatch import DispatchTable
 from platyplaty.ui.directory import (
     DirectoryEntry,
     DirectoryListing,
