@@ -10,9 +10,9 @@ from pathlib import Path
 from platyplaty.app import PlatyplatyApp
 from platyplaty.errors import InaccessibleDirectoryError, StartupError
 from platyplaty.paths import UndefinedEnvVarError, expand_path, resolve_path
-from platyplaty.playlist import (
+from platyplaty.playlist import Playlist
+from platyplaty.preset_scanner import (
     NoPresetsFoundError,
-    Playlist,
     scan_preset_dirs,
     shuffle_presets,
 )
