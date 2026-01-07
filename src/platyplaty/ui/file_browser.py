@@ -74,6 +74,7 @@ class FileBrowser(Widget):
         selected_index: Index of the selected item in middle pane.
     """
 
+    can_focus = True
     current_dir: Path
     selected_index: int
     _nav_state: NavigationState

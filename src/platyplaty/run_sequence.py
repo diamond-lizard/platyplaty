@@ -117,6 +117,7 @@ def run_startup_sequence(config: Config) -> None:
         fullscreen=config.fullscreen,
         client_keybindings=config.keybindings.client,
         renderer_keybindings=config.keybindings.renderer,
+        file_browser_keybindings=config.keybindings.file_browser,
     )
     try:
         app.run()

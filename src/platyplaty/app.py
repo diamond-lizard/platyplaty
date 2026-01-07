@@ -17,12 +17,14 @@ from platyplaty.keybinding_dispatch import (
     build_client_dispatch_table,
     dispatch_key_event,
     build_renderer_dispatch_table,
+    build_file_browser_dispatch_table,
 )
 from platyplaty.renderer import start_renderer
 from platyplaty.ui import FileBrowser
 
 if TYPE_CHECKING:
     from platyplaty.playlist import Playlist
+    from platyplaty.types.config import FileBrowserKeybindings
 
 
 class PlatyplatyApp(App):
@@ -60,6 +62,7 @@ class PlatyplatyApp(App):
     audio_source: str
     _client_keybindings: dict[str, str]
     _renderer_keybindings: dict[str, str]
+    _file_browser_keybindings: "FileBrowserKeybindings"
 
 
     def __init__(
@@ -71,6 +74,7 @@ class PlatyplatyApp(App):
         fullscreen: bool,
         client_keybindings: dict[str, str],
         renderer_keybindings: dict[str, str],
+        file_browser_keybindings: "FileBrowserKeybindings",
     ) -> None:
         """Initialize the Platyplaty application.
 
@@ -91,16 +95,26 @@ class PlatyplatyApp(App):
         self.fullscreen = fullscreen
         self._client_keybindings = client_keybindings
         self._renderer_keybindings = renderer_keybindings
+        self._file_browser_keybindings = file_browser_keybindings
         self._exiting = False
         self._renderer_process = None
         self._renderer_ready = False
         self._client = None
 
-        # Build client dispatch table for FileBrowser (available in compose)
+        # Build file browser dispatch table (available in compose)
+        self.file_browser_dispatch_table = build_file_browser_dispatch_table(
+            nav_up_keys=self._file_browser_keybindings.nav_up,
+            nav_down_keys=self._file_browser_keybindings.nav_down,
+            nav_left_keys=self._file_browser_keybindings.nav_left,
+            nav_right_keys=self._file_browser_keybindings.nav_right,
+        )
+
+        # Build client dispatch table for app-level actions
         self.client_dispatch_table = build_client_dispatch_table(
             quit_key=self._client_keybindings.quit,
         )
         self.client_dispatch_table["ctrl+c"] = "quit"
+
 
 
     def compose(self) -> ComposeResult:
@@ -110,7 +124,7 @@ class PlatyplatyApp(App):
             Widgets to mount in the application.
         """
         yield Static("Platyplaty Visualizer", id="status")
-        yield FileBrowser(self.client_dispatch_table, id="file_browser")
+        yield FileBrowser(self.file_browser_dispatch_table, id="file_browser")
         yield RichLog(id="log")
 
 
