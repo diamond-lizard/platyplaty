@@ -15,11 +15,11 @@ from textual.widget import Widget
 
 from platyplaty.dispatch_tables import DispatchTable
 from platyplaty.errors import InaccessibleDirectoryError, NoEditorFoundError
-from platyplaty.ui.directory import (
+from platyplaty.ui.directory import list_directory
+from platyplaty.ui.directory_types import (
     DirectoryEntry,
     DirectoryListing,
     EntryType,
-    list_directory,
 )
 from platyplaty.ui.editor import open_in_editor
 from platyplaty.ui.layout import calculate_pane_widths

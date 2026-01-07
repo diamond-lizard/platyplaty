@@ -1,117 +1,17 @@
-"""Directory listing and filtering for the file browser.
+"""Directory listing for the file browser.
 
-This module provides functions to list directory contents with filtering
-for .milk files, directories, and symlinks. It handles permission errors
-gracefully and provides entry type information.
+This module provides the main function to list directory contents with
+filtering for .milk files, directories, and symlinks.
 """
 
-from dataclasses import dataclass
-from enum import Enum, auto
 from pathlib import Path
 
-
-class EntryType(Enum):
-    """Type of directory entry."""
-
-    DIRECTORY = auto()
-    FILE = auto()
-    SYMLINK_TO_DIRECTORY = auto()
-    SYMLINK_TO_FILE = auto()
-    BROKEN_SYMLINK = auto()
-
-
-@dataclass(frozen=True)
-class DirectoryEntry:
-    """A single entry in a directory listing.
-
-    Attributes:
-        name: The entry name (filename or directory name).
-        entry_type: The type of entry (directory, file, symlink, etc.).
-    """
-
-    name: str
-    entry_type: EntryType
-
-
-@dataclass(frozen=True)
-class DirectoryListing:
-    """Result of listing a directory.
-
-    Attributes:
-        entries: List of directory entries matching the filter.
-        was_empty: True if directory had no entries at all.
-        had_filtered_entries: True if some entries were filtered out.
-        permission_denied: True if directory could not be read.
-    """
-
-    entries: list[DirectoryEntry]
-    was_empty: bool
-    had_filtered_entries: bool
-    permission_denied: bool
-
-
-def _get_entry_type(path: Path) -> EntryType:
-    """Determine the type of a directory entry.
-
-    Args:
-        path: Path to the entry.
-
-    Returns:
-        The EntryType for this entry.
-    """
-    if path.is_symlink():
-        try:
-            target = path.resolve(strict=True)
-            if target.is_dir():
-                return EntryType.SYMLINK_TO_DIRECTORY
-            return EntryType.SYMLINK_TO_FILE
-        except OSError:
-            return EntryType.BROKEN_SYMLINK
-    elif path.is_dir():
-        return EntryType.DIRECTORY
-    return EntryType.FILE
-
-
-def _should_include(path: Path, entry_type: EntryType) -> bool:
-    """Check if an entry should be included in the listing.
-
-    Filter rules:
-    - Directories (excluding . and ..): include
-    - .milk files (case-insensitive): include
-    - Symlinks to directories or .milk files: include
-    - Broken symlinks: only if name ends in .milk or has no extension
-
-    Args:
-        path: Path to the entry.
-        entry_type: The type of the entry.
-
-    Returns:
-        True if entry should be included.
-    """
-    name = path.name
-
-    # Exclude . and ..
-    if name in (".", ".."):
-        return False
-
-    # Directories and symlinks to directories always included
-    if entry_type in (EntryType.DIRECTORY, EntryType.SYMLINK_TO_DIRECTORY):
-        return True
-
-    # Check for .milk extension (case-insensitive)
-    suffix = path.suffix.lower()
-    is_milk = suffix == ".milk"
-
-    # Files and symlinks to files: must be .milk
-    if entry_type in (EntryType.FILE, EntryType.SYMLINK_TO_FILE):
-        return is_milk
-
-    # Broken symlinks: only if .milk extension or no extension
-    if entry_type == EntryType.BROKEN_SYMLINK:
-        has_no_extension = suffix == ""
-        return is_milk or has_no_extension
-
-    return False
+from platyplaty.ui.directory_entry import get_entry_type, should_include
+from platyplaty.ui.directory_types import (
+    DirectoryEntry,
+    DirectoryListing,
+    EntryType,
+)
 
 
 def _sort_key(entry: DirectoryEntry) -> tuple[int, str]:
@@ -176,8 +76,8 @@ def list_directory(directory: Path) -> DirectoryListing:
     # Build entries with type information and filter
     filtered_entries: list[DirectoryEntry] = []
     for path in all_entries:
-        entry_type = _get_entry_type(path)
-        if _should_include(path, entry_type):
+        entry_type = get_entry_type(path)
+        if should_include(path, entry_type):
             filtered_entries.append(DirectoryEntry(path.name, entry_type))
 
     had_filtered_entries = len(filtered_entries) < len(all_entries)

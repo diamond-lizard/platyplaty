@@ -9,7 +9,7 @@ from textual.geometry import Size
 from textual.strip import Strip
 from textual.widget import Widget
 
-from platyplaty.ui.directory import DirectoryEntry
+from platyplaty.ui.directory_types import DirectoryEntry
 
 
 class Pane(Widget):

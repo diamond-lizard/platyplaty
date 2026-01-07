@@ -9,11 +9,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from platyplaty.errors import InaccessibleDirectoryError
-from platyplaty.ui.directory import (
+from platyplaty.ui.directory import list_directory
+from platyplaty.ui.directory_types import (
     DirectoryEntry,
     DirectoryListing,
     EntryType,
-    list_directory,
 )
 
 

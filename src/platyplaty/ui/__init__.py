@@ -3,11 +3,11 @@
 This package provides widgets for the three-pane file browser interface.
 """
 
-from platyplaty.ui.directory import (
+from platyplaty.ui.directory import list_directory
+from platyplaty.ui.directory_types import (
     DirectoryEntry,
     DirectoryListing,
     EntryType,
-    list_directory,
 )
 from platyplaty.ui.file_browser import FileBrowser
 from platyplaty.ui.layout import PaneWidths, calculate_pane_widths
