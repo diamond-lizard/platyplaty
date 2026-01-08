@@ -130,9 +130,9 @@ class PlatyplatyApp(App[None]):
         """
         setup_signal_handlers(self)
         try:
-            await perform_startup(self)
+            await perform_startup(self.ctx, self)
         except Exception as e:
-            await cleanup_on_startup_failure(self)
+            await cleanup_on_startup_failure(self.ctx)
             self.exit(message=str(e))
 
     async def action_quit(self) -> None:
@@ -144,15 +144,17 @@ class PlatyplatyApp(App[None]):
 
     async def action_next_preset(self) -> None:
         """Advance to the next preset in the playlist."""
-        await load_preset_by_direction(self, self.playlist.next, "next")
+        await load_preset_by_direction(self.ctx, self, self.playlist.next, "next")
 
     async def action_previous_preset(self) -> None:
         """Go back to the previous preset in the playlist."""
-        await load_preset_by_direction(self, self.playlist.previous, "previous")
+        await load_preset_by_direction(
+            self.ctx, self, self.playlist.previous, "previous"
+        )
 
     async def graceful_shutdown(self) -> None:
         """Shut down the application gracefully."""
-        await perform_graceful_shutdown(self)
+        await perform_graceful_shutdown(self.ctx, self)
 
     async def on_key(self, event: Key) -> None:
         """Handle terminal key events.

@@ -5,7 +5,6 @@ import signal
 from typing import TYPE_CHECKING
 
 from platyplaty.auto_advance import auto_advance_loop, load_preset_with_retry
-from platyplaty.dispatch_tables import build_renderer_dispatch_table
 from platyplaty.event_loop import stderr_monitor_task
 from platyplaty.messages import LogMessage
 from platyplaty.renderer import start_renderer
@@ -13,6 +12,7 @@ from platyplaty.socket_client import SocketClient
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
+    from platyplaty.app_context import AppContext
 
 
 def setup_signal_handlers(app: "PlatyplatyApp") -> None:
@@ -34,7 +34,7 @@ def setup_signal_handlers(app: "PlatyplatyApp") -> None:
     )
 
 
-async def perform_startup(app: "PlatyplatyApp") -> None:
+async def perform_startup(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     """Execute the startup sequence.
 
     Stage A: Start renderer, connect socket, send initial commands.
@@ -42,27 +42,21 @@ async def perform_startup(app: "PlatyplatyApp") -> None:
     Stage C: Show window and optionally go fullscreen.
 
     Args:
-        app: The PlatyplatyApp instance.
+        ctx: The AppContext instance with runtime state.
+        app: The PlatyplatyApp instance (for post_message, run_worker).
 
     Raises:
         Exception: On any startup failure after cleanup is performed.
     """
     # Stage A: Direct calls before workers start
-    app._renderer_process = await start_renderer(app.socket_path)
-    app._client = SocketClient()
-    await app._client.connect(app.socket_path)
-    await app._client.send_command(
-        "CHANGE AUDIO SOURCE", audio_source=app.audio_source
+    ctx.renderer_process = await start_renderer(ctx.config.socket_path)
+    ctx.client = SocketClient()
+    await ctx.client.connect(ctx.config.socket_path)
+    await ctx.client.send_command(
+        "CHANGE AUDIO SOURCE", audio_source=ctx.config.audio_source
     )
-    await app._client.send_command("INIT")
-    app._renderer_ready = True
-
-    # Build dispatch table from stored keybindings
-    app.renderer_dispatch_table = build_renderer_dispatch_table(
-        next_preset_key=app._renderer_keybindings.next_preset,
-        previous_preset_key=app._renderer_keybindings.previous_preset,
-        quit_key=app._renderer_keybindings.quit,
-    )
+    await ctx.client.send_command("INIT")
+    ctx.renderer_ready = True
 
     # Load initial preset
     if not await load_preset_with_retry(app):
@@ -75,22 +69,22 @@ async def perform_startup(app: "PlatyplatyApp") -> None:
     app.run_worker(auto_advance_loop(app), name="auto_advance")
 
     # Stage C: Send final startup commands
-    await app._client.send_command("SHOW WINDOW")
-    if app.fullscreen:
-        await app._client.send_command("SET FULLSCREEN", enabled=True)
+    await ctx.client.send_command("SHOW WINDOW")
+    if ctx.config.fullscreen:
+        await ctx.client.send_command("SET FULLSCREEN", enabled=True)
 
 
-async def cleanup_on_startup_failure(app: "PlatyplatyApp") -> None:
+async def cleanup_on_startup_failure(ctx: "AppContext") -> None:
     """Clean up resources after a startup failure.
 
     Terminates the renderer process if started and closes the client
     socket if connected.
 
     Args:
-        app: The PlatyplatyApp instance.
+        ctx: The AppContext instance with runtime state.
     """
-    if app._renderer_process is not None:
-        app._renderer_process.terminate()
-        await app._renderer_process.wait()
-    if app._client is not None:
-        app._client.close()
+    if ctx.renderer_process is not None:
+        ctx.renderer_process.terminate()
+        await ctx.renderer_process.wait()
+    if ctx.client is not None:
+        ctx.client.close()
