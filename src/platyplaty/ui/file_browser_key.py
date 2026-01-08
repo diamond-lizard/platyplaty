@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
 
 
-ActionFunc = Callable[[FileBrowser], Coroutine[Any, Any, None]]
+ActionFunc = Callable[["FileBrowser"], Coroutine[Any, Any, None]]
 
 async def on_key(browser: FileBrowser, event: Key) -> None:
     """Handle key events for file browser navigation.

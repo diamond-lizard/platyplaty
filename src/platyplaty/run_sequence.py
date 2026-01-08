@@ -27,6 +27,7 @@ from platyplaty.socket_path import (
     compute_socket_path,
 )
 from platyplaty.types import Config
+from platyplaty.types.app_config import AppConfig
 
 
 def expand_preset_dirs(preset_dirs: list[str]) -> list[str]:
@@ -108,17 +109,17 @@ def run_startup_sequence(config: Config) -> None:
     except RendererNotFoundError as e:
         raise StartupError(str(e)) from None
 
-    # Create and run Textual app
-    app = PlatyplatyApp(
+    # Create AppConfig with computed socket_path and config values
+    app_config = AppConfig(
         socket_path=socket_path,
         audio_source=config.audio_source,
-        playlist=playlist,
         preset_duration=config.preset_duration,
         fullscreen=config.fullscreen,
-        client_keybindings=config.keybindings.client,
-        renderer_keybindings=config.keybindings.renderer,
-        file_browser_keybindings=config.keybindings.file_browser,
+        keybindings=config.keybindings,
     )
+
+    # Create and run Textual app
+    app = PlatyplatyApp(config=app_config, playlist=playlist)
     try:
         app.run()
     except InaccessibleDirectoryError as e:

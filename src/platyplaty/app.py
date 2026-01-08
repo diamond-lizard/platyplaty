@@ -8,7 +8,7 @@ from textual.events import Key
 from textual.widgets import RichLog, Static
 
 from platyplaty.app_actions import load_preset_by_direction
-from platyplaty.app_dispatch import build_app_dispatch_tables
+from platyplaty.app_context import AppContext
 from platyplaty.app_shutdown import perform_graceful_shutdown
 from platyplaty.app_startup import (
     cleanup_on_startup_failure,
@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from platyplaty.messages import LogMessage
     from platyplaty.playlist import Playlist
     from platyplaty.socket_client import SocketClient
+    from platyplaty.types.app_config import AppConfig
     from platyplaty.types.keybindings import FileBrowserKeybindings
     from platyplaty.types.renderer_keybindings import (
         ClientKeybindings,
@@ -53,13 +54,14 @@ class PlatyplatyApp(App[None]):
     }
     """
 
+    ctx: "AppContext"
     renderer_dispatch_table: dict[str, str]
     client_dispatch_table: dict[str, str]
     file_browser_dispatch_table: dict[str, str]
     _renderer_ready: bool
     _exiting: bool
-    _renderer_process: asyncio.subprocess.Process | None
-    _client: SocketClient | None
+    _renderer_process: "asyncio.subprocess.Process | None"
+    _client: "SocketClient | None"
     playlist: "Playlist"
     preset_duration: float
     fullscreen: bool
@@ -72,42 +74,39 @@ class PlatyplatyApp(App[None]):
 
     def __init__(
         self,
-        socket_path: str,
-        audio_source: str,
+        config: "AppConfig",
         playlist: "Playlist",
-        preset_duration: float,
-        fullscreen: bool,
-        client_keybindings: "ClientKeybindings",
-        renderer_keybindings: "RendererKeybindings",
-        file_browser_keybindings: "FileBrowserKeybindings",
     ) -> None:
         """Initialize the Platyplaty application.
 
         Args:
-            socket_path: Path to the Unix domain socket.
-            audio_source: PulseAudio source for audio capture.
+            config: Immutable application configuration.
             playlist: The playlist instance for preset navigation.
-            preset_duration: Seconds to display each preset.
-            fullscreen: Whether to start in fullscreen mode.
-            client_keybindings: Keybindings for terminal input.
-            renderer_keybindings: Keybindings for renderer window input.
         """
         super().__init__()
-        self.socket_path = socket_path
-        self.audio_source = audio_source
+
+        # Create AppContext which builds dispatch tables in __post_init__
+        self.ctx = AppContext(config=config, playlist=playlist)
+
+        # Backward compatibility: expose attributes directly on app
+        self.socket_path = config.socket_path
+        self.audio_source = config.audio_source
         self.playlist = playlist
-        self.preset_duration = preset_duration
-        self.fullscreen = fullscreen
-        self._client_keybindings = client_keybindings
-        self._renderer_keybindings = renderer_keybindings
-        self._file_browser_keybindings = file_browser_keybindings
+        self.preset_duration = config.preset_duration
+        self.fullscreen = config.fullscreen
+        self._client_keybindings = config.keybindings.client
+        self._renderer_keybindings = config.keybindings.renderer
+        self._file_browser_keybindings = config.keybindings.file_browser
         self._exiting = False
         self._renderer_process = None
         self._renderer_ready = False
         self._client = None
 
-        # Build dispatch tables for file browser and client actions
-        build_app_dispatch_tables(self)
+        # Build dispatch tables for backward compatibility
+        # (These are also available via self.ctx.*_dispatch_table)
+        self.renderer_dispatch_table = self.ctx.renderer_dispatch_table
+        self.client_dispatch_table = self.ctx.client_dispatch_table
+        self.file_browser_dispatch_table = self.ctx.file_browser_dispatch_table
 
 
 
@@ -165,7 +164,7 @@ class PlatyplatyApp(App[None]):
         """
         await dispatch_key_event(event.key, self.client_dispatch_table, self)
 
-    def on_log_message(self, message: LogMessage) -> None:
+    def on_log_message(self, message: "LogMessage") -> None:
         """Handle log messages by writing to the RichLog widget.
 
         Args:
