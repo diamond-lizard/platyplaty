@@ -88,3 +88,21 @@ async def cleanup_on_startup_failure(ctx: "AppContext") -> None:
         await ctx.renderer_process.wait()
     if ctx.client is not None:
         ctx.client.close()
+
+
+async def on_mount_handler(ctx: "AppContext", app: "PlatyplatyApp") -> None:
+    """Handle app mount event with startup and error handling.
+
+    Sets up signal handlers and performs startup sequence. On failure,
+    cleans up resources and exits the app with an error message.
+
+    Args:
+        ctx: The AppContext instance with runtime state.
+        app: The PlatyplatyApp instance.
+    """
+    setup_signal_handlers(app)
+    try:
+        await perform_startup(ctx, app)
+    except Exception as e:
+        await cleanup_on_startup_failure(ctx)
+        app.exit(message=str(e))

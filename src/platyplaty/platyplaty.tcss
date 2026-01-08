@@ -1,0 +1,6 @@
+#file_browser {
+    height: 70%;
+}
+#log {
+    height: 30%;
+}
