@@ -59,14 +59,14 @@ async def perform_startup(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     ctx.renderer_ready = True
 
     # Load initial preset
-    if not await load_preset_with_retry(app):
+    if not await load_preset_with_retry(ctx, app):
         app.post_message(
             LogMessage("All presets failed to load", level="warning")
         )
 
     # Stage B: Start workers
-    app.run_worker(stderr_monitor_task(app), name="stderr_monitor")
-    app.run_worker(auto_advance_loop(app), name="auto_advance")
+    app.run_worker(stderr_monitor_task(ctx, app), name="stderr_monitor")
+    app.run_worker(auto_advance_loop(ctx, app), name="auto_advance")
 
     # Stage C: Send final startup commands
     await ctx.client.send_command("SHOW WINDOW")

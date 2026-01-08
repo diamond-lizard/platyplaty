@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
+    from platyplaty.app_context import AppContext
 
 
 from platyplaty.dispatch_tables import DispatchTable
@@ -17,6 +18,7 @@ from platyplaty.dispatch_tables import DispatchTable
 async def dispatch_key_event(
     key: str,
     table: DispatchTable,
+    ctx: "AppContext",
     app: "PlatyplatyApp",
 ) -> bool:
     """Dispatch a key event using the given dispatch table.
@@ -38,7 +40,7 @@ async def dispatch_key_event(
     try:
         await app.run_action(action_name)
     except ConnectionError:
-        if not app._exiting:
-            app._exiting = True
+        if not ctx.exiting:
+            ctx.exiting = True
             app.exit()
     return True

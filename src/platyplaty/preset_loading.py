@@ -12,10 +12,14 @@ from platyplaty.socket_exceptions import RendererError
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
+    from platyplaty.app_context import AppContext
 
 
 async def _process_one_advance_step(
-    app: "PlatyplatyApp", consecutive_failures: int, max_failures: int
+    ctx: "AppContext",
+    app: "PlatyplatyApp",
+    consecutive_failures: int,
+    max_failures: int,
 ) -> tuple[str, int, float]:
     """Process one step of auto-advance.
 
@@ -28,20 +32,20 @@ async def _process_one_advance_step(
         Tuple of (action, new_failure_count, sleep_time).
         Action is "break" or "sleep".
     """
-    path = app.playlist.next()
+    path = ctx.playlist.next()
     if path is None:
         return ("break", consecutive_failures, 0.0)
 
     try:
-        success = await _try_load_preset(app)
+        success = await _try_load_preset(ctx, app)
     except ConnectionError:
-        if not app._exiting:
-            app._exiting = True
+        if not ctx.exiting:
+            ctx.exiting = True
             app.exit()
         return ("break", consecutive_failures, 0.0)
 
     if success:
-        return ("sleep", 0, app.preset_duration)
+        return ("sleep", 0, ctx.config.preset_duration)
 
     new_failures = consecutive_failures + 1
     if new_failures >= max_failures:
@@ -53,7 +57,7 @@ async def _process_one_advance_step(
 
 
 async def _run_advance_loop(
-    app: "PlatyplatyApp", max_failures: int
+    ctx: "AppContext", app: "PlatyplatyApp", max_failures: int
 ) -> None:
     """Run the inner advance loop.
 
@@ -66,17 +70,17 @@ async def _run_advance_loop(
     """
     consecutive_failures = 0
     while True:
-        if app._exiting:
+        if ctx.exiting:
             break
         action, consecutive_failures, sleep_time = await _process_one_advance_step(
-            app, consecutive_failures, max_failures
+            ctx, app, consecutive_failures, max_failures
         )
         if action == "break":
             break
         await asyncio.sleep(sleep_time)
 
 
-async def _try_load_preset(app: "PlatyplatyApp") -> bool:
+async def _try_load_preset(ctx: "AppContext", app: "PlatyplatyApp") -> bool:
     """Try to load the current preset.
 
     Args:
@@ -85,11 +89,11 @@ async def _try_load_preset(app: "PlatyplatyApp") -> bool:
     Returns:
         True if successful, False otherwise.
     """
-    preset_path = app.playlist.current()
-    if not app._client:
+    preset_path = ctx.playlist.current()
+    if not ctx.client:
         return False
     try:
-        await app._client.send_command("LOAD PRESET", path=str(preset_path))
+        await ctx.client.send_command("LOAD PRESET", path=str(preset_path))
         return True
     except RendererError as e:
         app.post_message(

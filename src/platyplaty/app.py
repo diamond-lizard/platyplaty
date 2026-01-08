@@ -144,12 +144,12 @@ class PlatyplatyApp(App[None]):
 
     async def action_next_preset(self) -> None:
         """Advance to the next preset in the playlist."""
-        await load_preset_by_direction(self.ctx, self, self.playlist.next, "next")
+        await load_preset_by_direction(self.ctx, self, self.ctx.playlist.next, "next")
 
     async def action_previous_preset(self) -> None:
         """Go back to the previous preset in the playlist."""
         await load_preset_by_direction(
-            self.ctx, self, self.playlist.previous, "previous"
+            self.ctx, self, self.ctx.playlist.previous, "previous"
         )
 
     async def graceful_shutdown(self) -> None:
@@ -164,7 +164,9 @@ class PlatyplatyApp(App[None]):
         Args:
             event: The key event from Textual.
         """
-        await dispatch_key_event(event.key, self.client_dispatch_table, self)
+        await dispatch_key_event(
+            event.key, self.ctx.client_dispatch_table, self.ctx, self
+        )
 
     def on_log_message(self, message: "LogMessage") -> None:
         """Handle log messages by writing to the RichLog widget.

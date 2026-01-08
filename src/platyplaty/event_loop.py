@@ -16,9 +16,11 @@ from platyplaty.types import StderrEvent
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
+    from platyplaty.app_context import AppContext
 
 async def process_stderr_line(
     line: str,
+    ctx: "AppContext",
     app: "PlatyplatyApp",
 ) -> None:
     """Process a single stderr line, detecting PLATYPLATY events.
@@ -32,11 +34,12 @@ async def process_stderr_line(
         app.post_message(LogMessage(line.rstrip(), level="debug"))
         return
 
-    await _handle_stderr_event(event, app)
+    await _handle_stderr_event(event, ctx, app)
 
 
 async def _handle_stderr_event(
     event: StderrEvent,
+    ctx: "AppContext",
     app: "PlatyplatyApp",
 ) -> None:
     """Handle a parsed PLATYPLATY stderr event.
@@ -46,8 +49,8 @@ async def _handle_stderr_event(
         app: The Textual application instance.
     """
     if event.event == "QUIT" or event.event == "DISCONNECT":
-        if not app._exiting:
-            app._exiting = True
+        if not ctx.exiting:
+            ctx.exiting = True
             app.exit()
     elif event.event == "AUDIO_ERROR":
         msg = f"Audio error: {event.reason}, visualization continues silently"
@@ -55,12 +58,13 @@ async def _handle_stderr_event(
     elif event.event == "KEY_PRESSED":
         await dispatch_key_event(
             event.key,
-            app.renderer_dispatch_table,
+            ctx.renderer_dispatch_table,
+            ctx,
             app,
         )
 
 
-async def stderr_monitor_task(app: "PlatyplatyApp") -> None:
+async def stderr_monitor_task(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     """Monitor renderer stderr for events.
 
     Runs as a Textual worker. Uses CancelledError for shutdown.
@@ -68,18 +72,18 @@ async def stderr_monitor_task(app: "PlatyplatyApp") -> None:
     Args:
         app: The Textual application instance.
     """
-    process = app._renderer_process
+    process = ctx.renderer_process
     if process is None or process.stderr is None:
         return
 
     try:
         async for payload in read_netstrings_from_stderr(process.stderr):
-            await process_stderr_line(payload, app)
+            await process_stderr_line(payload, ctx, app)
     except asyncio.CancelledError:
         pass  # Normal shutdown via Textual worker cancellation
 
     # Renderer process exited - trigger shutdown
-    if not app._exiting:
-        app._exiting = True
+    if not ctx.exiting:
+        ctx.exiting = True
         app.exit()
 
