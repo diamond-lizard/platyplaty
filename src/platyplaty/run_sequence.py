@@ -5,12 +5,10 @@ This module contains the functions for running the startup sequence
 after configuration has been loaded and validated.
 """
 
-from pathlib import Path
-
 from platyplaty.app import PlatyplatyApp
 from platyplaty.errors import InaccessibleDirectoryError, StartupError
-from platyplaty.paths import UndefinedEnvVarError, expand_path, resolve_path
 from platyplaty.playlist import Playlist
+from platyplaty.preset_dirs import expand_preset_dirs, validate_preset_dirs
 from platyplaty.preset_scanner import (
     NoPresetsFoundError,
     scan_preset_dirs,
@@ -28,42 +26,6 @@ from platyplaty.socket_path import (
 )
 from platyplaty.types import Config
 from platyplaty.types.app_config import AppConfig
-
-
-def expand_preset_dirs(preset_dirs: list[str]) -> list[str]:
-    """Expand and resolve preset directory paths.
-
-    Args:
-        preset_dirs: List of directory paths from config.
-
-    Returns:
-        List of absolute paths.
-
-    Raises:
-        StartupError: If an environment variable is undefined.
-    """
-    result: list[str] = []
-    for path in preset_dirs:
-        try:
-            expanded = expand_path(path)
-        except UndefinedEnvVarError as e:
-            raise StartupError(str(e)) from None
-        result.append(resolve_path(expanded))
-    return result
-
-
-def validate_preset_dirs(preset_dirs: list[str]) -> None:
-    """Validate that all preset directories exist.
-
-    Args:
-        preset_dirs: List of absolute directory paths.
-
-    Raises:
-        StartupError: If any directory does not exist.
-    """
-    for path in preset_dirs:
-        if not Path(path).is_dir():
-            raise StartupError(f"Preset directory not found: {path}")
 
 
 def run_startup_sequence(config: Config) -> None:
