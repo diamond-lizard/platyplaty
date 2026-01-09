@@ -7,6 +7,7 @@ $VISUAL -> $EDITOR -> sensible-editor -> vi
 """
 
 import os
+import shlex
 import shutil
 import subprocess
 from typing import TYPE_CHECKING
@@ -16,6 +17,27 @@ if TYPE_CHECKING:
 
 from platyplaty.errors import NoEditorFoundError
 
+
+def _command_exists(cmd: str) -> bool:
+    """Check if the executable in a command string exists.
+
+    Parses the command string to extract the executable (first token)
+    and checks if it exists in PATH or as an absolute path.
+
+    Args:
+        cmd: A command string that may include arguments (e.g., "emacsclient -t").
+
+    Returns:
+        True if the executable exists, False otherwise.
+    """
+    try:
+        tokens = shlex.split(cmd)
+    except ValueError:
+        return False
+    if not tokens:
+        return False
+    executable = tokens[0]
+    return shutil.which(executable) is not None
 
 def get_editor_command() -> str | None:
     """Determine the editor command to use.
@@ -28,12 +50,12 @@ def get_editor_command() -> str | None:
     """
     # Try $VISUAL first
     visual = os.environ.get("VISUAL")
-    if visual:
+    if visual and _command_exists(visual):
         return visual
 
     # Try $EDITOR second
     editor = os.environ.get("EDITOR")
-    if editor:
+    if editor and _command_exists(editor):
         return editor
 
     # Try sensible-editor (Debian/Ubuntu standard)
@@ -80,4 +102,4 @@ async def open_in_editor(app: "App[object]", path: str) -> None:
     """
     editor = require_editor_command()
     with app.suspend():
-        subprocess.run([editor, path])
+        subprocess.run(shlex.split(editor) + [path])

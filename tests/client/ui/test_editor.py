@@ -23,14 +23,20 @@ class TestEditorFallback:
 
     def test_visual_env_var_takes_priority(self) -> None:
         """get_editor_command() returns $VISUAL value when set."""
-        with patch.dict("os.environ", {"VISUAL": "my-visual-editor", "EDITOR": "my-editor"}):
-            result = get_editor_command()
+        def mock_which(cmd: str) -> str | None:
+            return "/usr/bin/my-visual-editor" if cmd == "my-visual-editor" else None
+        with patch("shutil.which", mock_which):
+            with patch.dict("os.environ", {"VISUAL": "my-visual-editor", "EDITOR": "my-editor"}):
+                result = get_editor_command()
         assert result == "my-visual-editor", "should return $VISUAL value"
 
     def test_editor_env_var_when_visual_not_set(self) -> None:
         """get_editor_command() returns $EDITOR value when $VISUAL is not set."""
-        with patch.dict("os.environ", {"EDITOR": "my-editor"}, clear=True):
-            result = get_editor_command()
+        def mock_which(cmd: str) -> str | None:
+            return "/usr/bin/my-editor" if cmd == "my-editor" else None
+        with patch("shutil.which", mock_which):
+            with patch.dict("os.environ", {"EDITOR": "my-editor"}, clear=True):
+                result = get_editor_command()
         assert result == "my-editor", "should return $EDITOR value"
 
     def test_sensible_editor_when_env_vars_not_set(self) -> None:
