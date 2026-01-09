@@ -50,6 +50,7 @@ def sync_from_nav_state(browser: FileBrowser) -> None:
     browser.selected_index = find_entry_index(listing, selected_entry.name)
     browser._nav_state.adjust_scroll(browser.size.height)
     browser._middle_scroll_offset = browser._nav_state.scroll_offset
+    browser._left_scroll_offset = browser._nav_state.get_parent_scroll_offset()
 
 
 def refresh_panes(browser: FileBrowser) -> None:

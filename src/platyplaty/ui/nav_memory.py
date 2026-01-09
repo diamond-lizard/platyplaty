@@ -90,3 +90,22 @@ def restore_scroll_from_memory(state: NavigationState) -> None:
         state.scroll_offset = memory.scroll_offset
         return
     state.scroll_offset = 0
+
+
+def get_scroll_offset_for_directory(
+    state: NavigationState,
+    directory_path: str,
+) -> int:
+    """Get the remembered scroll offset for a directory.
+    
+    Args:
+        state: The navigation state to query.
+        directory_path: The directory path to look up.
+    
+    Returns:
+        The remembered scroll offset, or 0 if not remembered.
+    """
+    memory = state._directory_memory.get(directory_path)
+    if memory:
+        return memory.scroll_offset
+    return 0

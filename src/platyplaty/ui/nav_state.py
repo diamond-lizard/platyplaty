@@ -30,6 +30,9 @@ from platyplaty.ui.nav_listing import (
     refresh_listing as _refresh_listing,
 )
 from platyplaty.ui.nav_memory import set_initial_selection as _set_initial_selection
+from platyplaty.ui.nav_memory import (
+    get_scroll_offset_for_directory as _get_scroll_offset_for_directory,
+)
 from platyplaty.ui.nav_moves import move_down as _move_down
 from platyplaty.ui.nav_moves import move_up as _move_up
 from platyplaty.ui.nav_refresh import refresh_after_editor as _refresh_after_editor
@@ -101,3 +104,14 @@ class NavigationState:
     def adjust_scroll(self, pane_height: int) -> None:
         """Adjust scroll_offset so the selected item is visible."""
         _adjust_scroll(self, pane_height)
+
+    def get_parent_scroll_offset(self) -> int:
+        """Get the remembered scroll offset for the parent directory.
+        
+        Returns:
+            The scroll offset for the parent directory, or 0 if not remembered.
+        """
+        parent = self.current_dir.parent
+        if parent == self.current_dir:
+            return 0
+        return _get_scroll_offset_for_directory(self, str(parent))

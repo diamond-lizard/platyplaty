@@ -35,6 +35,7 @@ class FileBrowser(Widget):
     _nav_state: NavigationState
     _dispatch_table: DispatchTable
     _middle_scroll_offset: int
+    _left_scroll_offset: int
     _left_listing: DirectoryListing | None
     _middle_listing: DirectoryListing | None
     _right_content: RightPaneContent
