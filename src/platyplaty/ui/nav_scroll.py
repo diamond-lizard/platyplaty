@@ -52,3 +52,4 @@ def _clamp_scroll_to_selection(
     visible_end = state.scroll_offset + pane_height
     if index >= visible_end:
         state.scroll_offset = index - pane_height + 1
+    state.scroll_offset = max(0, state.scroll_offset)
