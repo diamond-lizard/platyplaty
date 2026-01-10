@@ -29,10 +29,10 @@ from platyplaty.ui.nav_listing import (
 from platyplaty.ui.nav_listing import (
     refresh_listing as _refresh_listing,
 )
-from platyplaty.ui.nav_memory import set_initial_selection as _set_initial_selection
 from platyplaty.ui.nav_memory import (
     get_scroll_offset_for_directory as _get_scroll_offset_for_directory,
 )
+from platyplaty.ui.nav_memory import set_initial_selection as _set_initial_selection
 from platyplaty.ui.nav_moves import move_down as _move_down
 from platyplaty.ui.nav_moves import move_up as _move_up
 from platyplaty.ui.nav_refresh import refresh_after_editor as _refresh_after_editor

@@ -8,7 +8,7 @@ the path is too long to fit in the available width.
 from rich.text import Text
 
 from platyplaty.ui.path_coloring import render_path_components
-from platyplaty.ui.path_types import PathComponent, PathComponentType
+from platyplaty.ui.path_types import PathComponent
 
 
 def get_rendered_length(text: Text) -> int:

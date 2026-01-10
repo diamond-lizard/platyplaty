@@ -5,8 +5,8 @@ This module provides functions to split paths into components with
 type information for coloring in the path display line.
 """
 
-from pathlib import Path
 import stat
+from pathlib import Path
 
 from platyplaty.ui.path_types import PathComponent, PathComponentType
 
