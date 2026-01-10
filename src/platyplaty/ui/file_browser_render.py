@@ -40,7 +40,8 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
     # Render left pane
     if pane_widths.left > 0:
         left_text = render_pane_line(
-            browser._left_listing, y, pane_widths.left, is_left_pane=True, scroll_offset=browser._left_scroll_offset
+            browser._left_listing, y, pane_widths.left, is_left_pane=True,
+            scroll_offset=browser._left_scroll_offset
         )
         segments.append(Segment(left_text))
         segments.append(Segment(" "))  # Gap

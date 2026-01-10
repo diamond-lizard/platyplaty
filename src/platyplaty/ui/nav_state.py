@@ -107,7 +107,7 @@ class NavigationState:
 
     def get_parent_scroll_offset(self) -> int:
         """Get the remembered scroll offset for the parent directory.
-        
+
         Returns:
             The scroll offset for the parent directory, or 0 if not remembered.
         """

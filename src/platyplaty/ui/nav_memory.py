@@ -97,11 +97,11 @@ def get_scroll_offset_for_directory(
     directory_path: str,
 ) -> int:
     """Get the remembered scroll offset for a directory.
-    
+
     Args:
         state: The navigation state to query.
         directory_path: The directory path to look up.
-    
+
     Returns:
         The remembered scroll offset, or 0 if not remembered.
     """
