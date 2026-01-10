@@ -20,20 +20,14 @@ from pathlib import Path
 
 from platyplaty.ui.directory_types import DirectoryEntry, DirectoryListing
 from platyplaty.ui.nav_left import move_left as _move_left
-from platyplaty.ui.nav_listing import (
-    get_listing as _get_listing,
-)
-from platyplaty.ui.nav_listing import (
-    get_selected_entry as _get_selected_entry,
-)
-from platyplaty.ui.nav_listing import (
-    refresh_listing as _refresh_listing,
-)
-from platyplaty.ui.nav_memory import (
+from platyplaty.ui.nav_listing import get_listing as _get_listing
+from platyplaty.ui.nav_listing import get_selected_entry as _get_selected_entry
+from platyplaty.ui.nav_listing import refresh_listing as _refresh_listing
+from platyplaty.ui.nav_memory import set_initial_selection as _set_initial_selection
+from platyplaty.ui.nav_memory_query import (
     get_scroll_offset_for_directory as _get_scroll_offset_for_directory,
     get_selected_name_for_directory as _get_selected_name_for_directory,
 )
-from platyplaty.ui.nav_memory import set_initial_selection as _set_initial_selection
 from platyplaty.ui.nav_moves import move_down as _move_down
 from platyplaty.ui.nav_moves import move_up as _move_up
 from platyplaty.ui.nav_refresh import refresh_after_editor as _refresh_after_editor
