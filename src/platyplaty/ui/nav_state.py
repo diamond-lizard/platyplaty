@@ -115,10 +115,10 @@ class NavigationState:
 
     def get_selected_name_for_directory(self, directory_path: str) -> str | None:
         """Get the remembered selected name for a directory.
-    
+
         Args:
             directory_path: The directory path to look up.
-    
+
         Returns:
             The remembered selected name, or None if not remembered.
         """
