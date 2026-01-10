@@ -19,7 +19,9 @@ from platyplaty.ui.colors import (
     FILE_COLOR,
     SELECTED_COLOR,
     SYMLINK_COLOR,
+    get_entry_color,
 )
+from platyplaty.ui.directory_types import EntryType
 
 
 class TestColorConstants:
@@ -56,3 +58,27 @@ class TestColorConstants:
     def test_selected_color_is_bright_white(self) -> None:
         """Selected item color should be bright white."""
         assert SELECTED_COLOR == "bright_white"
+
+
+class TestGetEntryColor:
+    """Tests for get_entry_color function (TASK-2310)."""
+
+    def test_directory_returns_blue(self) -> None:
+        """DIRECTORY entry type should return blue."""
+        assert get_entry_color(EntryType.DIRECTORY) == "blue"
+
+    def test_file_returns_white(self) -> None:
+        """FILE entry type should return white."""
+        assert get_entry_color(EntryType.FILE) == "white"
+
+    def test_symlink_to_directory_returns_cyan(self) -> None:
+        """SYMLINK_TO_DIRECTORY entry type should return cyan."""
+        assert get_entry_color(EntryType.SYMLINK_TO_DIRECTORY) == "cyan"
+
+    def test_symlink_to_file_returns_cyan(self) -> None:
+        """SYMLINK_TO_FILE entry type should return cyan."""
+        assert get_entry_color(EntryType.SYMLINK_TO_FILE) == "cyan"
+
+    def test_broken_symlink_returns_magenta(self) -> None:
+        """BROKEN_SYMLINK entry type should return magenta."""
+        assert get_entry_color(EntryType.BROKEN_SYMLINK) == "magenta"
