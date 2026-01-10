@@ -41,3 +41,25 @@ def get_entry_color(entry_type: EntryType) -> str:
         EntryType.BROKEN_SYMLINK: BROKEN_SYMLINK_COLOR,
     }
     return color_map.get(entry_type, FILE_COLOR)
+
+
+def get_inverted_colors(entry_type: EntryType) -> tuple[str, str]:
+    """Return inverted colors (fg, bg) for a selected entry.
+
+    For selection highlighting, colors are inverted: the normal foreground
+    becomes the background, and black text appears on top.
+
+    Args:
+        entry_type: The type of directory entry.
+
+    Returns:
+        A tuple of (foreground, background) color names.
+    """
+    inverted_map = {
+        EntryType.DIRECTORY: ("black", DIRECTORY_COLOR),
+        EntryType.FILE: ("black", FILE_COLOR),
+        EntryType.SYMLINK_TO_DIRECTORY: ("black", SYMLINK_COLOR),
+        EntryType.SYMLINK_TO_FILE: ("black", SYMLINK_COLOR),
+        EntryType.BROKEN_SYMLINK: ("black", BROKEN_SYMLINK_COLOR),
+    }
+    return inverted_map.get(entry_type, ("black", FILE_COLOR))
