@@ -28,6 +28,16 @@ if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
 
 
+def _calc_left_selected_index(browser: FileBrowser) -> int | None:
+    """Calculate selected index for left pane (current dir in parent listing)."""
+    if browser._left_listing is None or not browser._left_listing.entries:
+        return None
+    current_name = browser.current_dir.name
+    for i, entry in enumerate(browser._left_listing.entries):
+        if entry.name == current_name:
+            return i
+    return None
+
 def render_line(browser: FileBrowser, y: int) -> Strip:
     """Render a single line of the file browser.
 
@@ -56,7 +66,8 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
     if pane_widths.left > 0:
         left_segments = render_pane_line(
             browser._left_listing, pane_y, pane_widths.left, is_left_pane=True,
-            scroll_offset=browser._left_scroll_offset
+            scroll_offset=browser._left_scroll_offset,
+            selected_index=_calc_left_selected_index(browser)
         )
         segments.extend(left_segments)
         segments.append(Segment(" ", Style(bgcolor=BACKGROUND_COLOR)))  # Gap
@@ -64,7 +75,8 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
     # Render middle pane
     middle_segments = render_pane_line(
         browser._middle_listing, pane_y, pane_widths.middle,
-        is_left_pane=False, scroll_offset=browser._middle_scroll_offset
+        is_left_pane=False, scroll_offset=browser._middle_scroll_offset,
+        selected_index=browser.selected_index
     )
     segments.extend(middle_segments)
     segments.append(Segment(" ", Style(bgcolor=BACKGROUND_COLOR)))  # Gap
