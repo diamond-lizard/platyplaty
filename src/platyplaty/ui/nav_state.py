@@ -26,6 +26,8 @@ from platyplaty.ui.nav_listing import refresh_listing as _refresh_listing
 from platyplaty.ui.nav_memory import set_initial_selection as _set_initial_selection
 from platyplaty.ui.nav_memory_query import (
     get_scroll_offset_for_directory as _get_scroll_offset_for_directory,
+)
+from platyplaty.ui.nav_memory_query import (
     get_selected_name_for_directory as _get_selected_name_for_directory,
 )
 from platyplaty.ui.nav_moves import move_down as _move_down
