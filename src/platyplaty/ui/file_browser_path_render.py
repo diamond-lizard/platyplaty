@@ -11,15 +11,17 @@ from typing import TYPE_CHECKING
 
 from rich.segment import Segment
 
-from platyplaty.ui.path_orchestrator import render_path
+# Re-exported for file_browser_render.py; ruff sees this as unused but it's intentional
+from platyplaty.ui.path_orchestrator import render_path  # noqa: F401
 
 if TYPE_CHECKING:
-    from platyplaty.ui.file_browser import FileBrowser
     from rich.console import Console
     from rich.text import Text
 
+    from platyplaty.ui.file_browser import FileBrowser
 
-def text_to_segments(text: "Text", console: "Console") -> list[Segment]:
+
+def text_to_segments(text: Text, console: Console) -> list[Segment]:
     """Convert Rich Text to a list of Segments.
 
     Args:
@@ -32,7 +34,7 @@ def text_to_segments(text: "Text", console: "Console") -> list[Segment]:
     return list(text.render(console))
 
 
-def get_display_path(browser: "FileBrowser") -> Path:
+def get_display_path(browser: FileBrowser) -> Path:
     """Get the path to display in the path display line.
 
     If a file or directory is selected, return current_dir + entry name.
@@ -50,7 +52,7 @@ def get_display_path(browser: "FileBrowser") -> Path:
     return browser.current_dir / entry.name
 
 
-def should_mark_selected(browser: "FileBrowser") -> bool:
+def should_mark_selected(browser: FileBrowser) -> bool:
     """Determine if the final path component should be marked as selected.
 
     Returns False when the middle pane is empty or inaccessible (no selectable

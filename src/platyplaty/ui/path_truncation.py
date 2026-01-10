@@ -5,12 +5,14 @@ This module provides functions to truncate the final path component
 when the abbreviated path still exceeds the terminal width.
 """
 
-from platyplaty.ui.path_types import PathComponent
 from platyplaty.ui.path_abbreviation import get_rendered_length
 from platyplaty.ui.path_coloring import render_path_components
+from platyplaty.ui.path_types import PathComponent
 
 
-def truncate_final_component(component: PathComponent, max_length: int) -> PathComponent:
+def truncate_final_component(
+    component: PathComponent, max_length: int
+) -> PathComponent:
     """Truncate a path component to fit within max_length characters.
 
     Uses simple right truncation with tilde (~) indicator.

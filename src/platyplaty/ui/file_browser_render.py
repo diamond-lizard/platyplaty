@@ -16,13 +16,13 @@ from platyplaty.ui.file_browser_pane_render import (
     render_pane_line,
     render_right_pane_line,
 )
-from platyplaty.ui.layout import calculate_pane_widths
 from platyplaty.ui.file_browser_path_render import (
     get_display_path,
     render_path,
     should_mark_selected,
     text_to_segments,
 )
+from platyplaty.ui.layout import calculate_pane_widths
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
@@ -70,7 +70,9 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
     segments.append(Segment(" "))  # Gap
 
     # Render right pane
-    right_text = render_right_pane_line(browser._right_content, pane_y, pane_widths.right)
+    right_text = render_right_pane_line(
+        browser._right_content, pane_y, pane_widths.right
+    )
     segments.append(Segment(right_text))
 
     return Strip(segments)
