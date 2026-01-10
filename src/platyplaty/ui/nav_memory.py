@@ -109,3 +109,22 @@ def get_scroll_offset_for_directory(
     if memory:
         return memory.scroll_offset
     return 0
+
+
+def get_selected_name_for_directory(
+    state: NavigationState,
+    directory_path: str,
+) -> str | None:
+    """Get the remembered selected name for a directory.
+
+    Args:
+        state: The navigation state to query.
+        directory_path: The directory path to look up.
+
+    Returns:
+        The remembered selected name, or None if not remembered.
+    """
+    memory = state._directory_memory.get(directory_path)
+    if memory:
+        return memory.selected_name
+    return None

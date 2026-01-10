@@ -66,6 +66,7 @@ def init_browser(
     browser._left_listing = None
     browser._middle_listing = None
     browser._right_content = None
+    browser._right_selected_index = None
 
     # Navigation state manager
     browser._nav_state = NavigationState(browser.current_dir)

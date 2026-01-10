@@ -31,6 +31,7 @@ from platyplaty.ui.nav_listing import (
 )
 from platyplaty.ui.nav_memory import (
     get_scroll_offset_for_directory as _get_scroll_offset_for_directory,
+    get_selected_name_for_directory as _get_selected_name_for_directory,
 )
 from platyplaty.ui.nav_memory import set_initial_selection as _set_initial_selection
 from platyplaty.ui.nav_moves import move_down as _move_down
@@ -115,3 +116,14 @@ class NavigationState:
         if parent == self.current_dir:
             return 0
         return _get_scroll_offset_for_directory(self, str(parent))
+
+    def get_selected_name_for_directory(self, directory_path: str) -> str | None:
+        """Get the remembered selected name for a directory.
+    
+        Args:
+            directory_path: The directory path to look up.
+    
+        Returns:
+            The remembered selected name, or None if not remembered.
+        """
+        return _get_selected_name_for_directory(self, directory_path)

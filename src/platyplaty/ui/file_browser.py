@@ -38,6 +38,7 @@ class FileBrowser(Widget):
     _left_listing: DirectoryListing | None
     _middle_listing: DirectoryListing | None
     _right_content: RightPaneContent
+    _right_selected_index: int | None
 
     def __init__(
         self,
