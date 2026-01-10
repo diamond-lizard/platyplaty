@@ -10,9 +10,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from rich.segment import Segment
+from rich.style import Style
 from textual.strip import Strip
 
 from platyplaty.ui.file_browser_pane_render import render_pane_line
+from platyplaty.ui.colors import BACKGROUND_COLOR
 from platyplaty.ui.file_browser_path_render import (
     get_display_path,
     render_path,
@@ -57,7 +59,7 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
             scroll_offset=browser._left_scroll_offset
         )
         segments.extend(left_segments)
-        segments.append(Segment(" "))  # Gap
+        segments.append(Segment(" ", Style(bgcolor=BACKGROUND_COLOR)))  # Gap
 
     # Render middle pane
     middle_segments = render_pane_line(
@@ -65,7 +67,7 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
         is_left_pane=False, scroll_offset=browser._middle_scroll_offset
     )
     segments.extend(middle_segments)
-    segments.append(Segment(" "))  # Gap
+    segments.append(Segment(" ", Style(bgcolor=BACKGROUND_COLOR)))  # Gap
 
     # Render right pane
     right_segments = render_right_pane_line(
