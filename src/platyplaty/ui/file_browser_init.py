@@ -5,8 +5,8 @@ FileBrowser widget's state. This is a package-private module.
 """
 
 from __future__ import annotations
-import os
 
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
