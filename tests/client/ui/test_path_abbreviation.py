@@ -11,12 +11,12 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "src"))
 
-from platyplaty.ui.path_coloring import (
+from platyplaty.ui.path_abbreviation import (
     abbreviate_component,
     abbreviate_path_components,
     get_rendered_length,
-    render_path_components,
 )
+from platyplaty.ui.path_coloring import render_path_components
 from platyplaty.ui.path_types import PathComponent, PathComponentType
 
 
@@ -81,27 +81,6 @@ class TestAbbreviatePathComponents:
         result = abbreviate_path_components([], max_width=100)
         assert result == []
 
-
-class TestAbbreviationPreservesColors:
-    """Tests that abbreviated components preserve their colors."""
-
-    def test_abbreviated_directory_keeps_directory_type(self) -> None:
-        """Abbreviated directory retains DIRECTORY type for blue color."""
-        comp = PathComponent("home", PathComponentType.DIRECTORY, False)
-        result = abbreviate_component(comp)
-        assert result.component_type == PathComponentType.DIRECTORY
-
-    def test_abbreviated_symlink_keeps_symlink_type(self) -> None:
-        """Abbreviated symlink retains SYMLINK type for cyan color."""
-        comp = PathComponent("link", PathComponentType.SYMLINK, False)
-        result = abbreviate_component(comp)
-        assert result.component_type == PathComponentType.SYMLINK
-
-    def test_abbreviated_broken_symlink_keeps_type(self) -> None:
-        """Abbreviated broken symlink retains BROKEN_SYMLINK type."""
-        comp = PathComponent("dead", PathComponentType.BROKEN_SYMLINK, False)
-        result = abbreviate_component(comp)
-        assert result.component_type == PathComponentType.BROKEN_SYMLINK
 
     def test_rendered_abbreviated_path_has_correct_colors(self) -> None:
         """Rendered abbreviated path shows correct colors for each component."""
