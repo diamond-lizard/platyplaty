@@ -29,11 +29,16 @@ class TestAbbreviateComponent:
         result = abbreviate_component(comp)
         assert result.name == "p"
 
-    def test_preserves_component_type(self) -> None:
+    @pytest.mark.parametrize("comp_type", [
+        PathComponentType.DIRECTORY,
+        PathComponentType.SYMLINK,
+        PathComponentType.BROKEN_SYMLINK,
+    ])
+    def test_preserves_component_type(self, comp_type: PathComponentType) -> None:
         """Abbreviated component keeps its original type."""
-        comp = PathComponent("symlink", PathComponentType.SYMLINK, False)
+        comp = PathComponent("name", comp_type, False)
         result = abbreviate_component(comp)
-        assert result.component_type == PathComponentType.SYMLINK
+        assert result.component_type == comp_type
 
     def test_preserves_is_selected(self) -> None:
         """Abbreviated component keeps its is_selected flag."""
