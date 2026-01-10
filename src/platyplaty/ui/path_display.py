@@ -7,8 +7,15 @@ type information for coloring in the path display line.
 
 from pathlib import Path
 import stat
+from rich.text import Text
 
 from platyplaty.ui.path_types import PathComponent, PathComponentType
+from platyplaty.ui.colors import (
+    BROKEN_SYMLINK_COLOR,
+    DIRECTORY_COLOR,
+    SELECTED_COLOR,
+    SYMLINK_COLOR,
+)
 
 
 def _get_symlink_type(path: Path) -> PathComponentType:
@@ -77,3 +84,51 @@ def split_path_to_components(
         is_selected = is_last and mark_selected
         components.append(PathComponent(part, comp_type, is_selected))
     return components
+
+
+def _get_component_color(component: PathComponent) -> str:
+    """Get the display color for a path component.
+
+    Args:
+        component: The path component to get a color for.
+
+    Returns:
+        Color string for Rich styling.
+    """
+    if component.is_selected:
+        return SELECTED_COLOR
+    if component.component_type == PathComponentType.SYMLINK:
+        return SYMLINK_COLOR
+    if component.component_type == PathComponentType.BROKEN_SYMLINK:
+        return BROKEN_SYMLINK_COLOR
+    return DIRECTORY_COLOR
+
+
+def render_path_components(components: list[PathComponent]) -> Text:
+    """Render a list of path components to a styled Rich Text.
+
+    Each component is colored according to its type:
+    - Directory: blue
+    - Symlink: cyan
+    - Broken symlink: magenta
+    - Selected (final): bright white
+
+    Slashes between components match the preceding component's color.
+
+    Args:
+        components: List of PathComponent objects to render.
+
+    Returns:
+        Rich Text object with styled path.
+    """
+    result = Text()
+    for i, comp in enumerate(components):
+        color = _get_component_color(comp)
+        if i == 0 and comp.name == "/":
+            result.append("/", style=color)
+        else:
+            if i > 0 and components[i - 1].name != "/":
+                prev_color = _get_component_color(components[i - 1])
+                result.append("/", style=prev_color)
+            result.append(comp.name, style=color)
+    return result
