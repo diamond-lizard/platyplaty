@@ -44,8 +44,8 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
         path = get_display_path(browser)
         mark_selected = should_mark_selected(browser)
         path_text = render_path(path, width, mark_selected)
-        segments = text_to_segments(path_text, browser.app.console)
-        return Strip(segments)
+        path_segments = text_to_segments(path_text, browser.app.console)
+        return Strip(path_segments)
 
     pane_widths = calculate_pane_widths(width)
     pane_y = y - 1  # Panes start at y=1, so subtract 1

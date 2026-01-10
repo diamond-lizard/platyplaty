@@ -14,6 +14,14 @@ from rich.segment import Segment
 # Re-exported for file_browser_render.py; ruff sees this as unused but it's intentional
 from platyplaty.ui.path_orchestrator import render_path  # noqa: F401
 
+__all__ = [
+    "render_path",
+    "text_to_segments",
+    "get_display_path",
+    "should_mark_selected",
+]
+
+
 if TYPE_CHECKING:
     from rich.console import Console
     from rich.text import Text
