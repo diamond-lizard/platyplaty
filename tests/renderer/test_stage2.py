@@ -13,7 +13,7 @@ import time
 
 import pytest
 
-from helpers import send_command, wait_for_socket_ready
+from renderer_helpers import send_command, wait_for_socket_ready
 
 
 @pytest.fixture

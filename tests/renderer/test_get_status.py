@@ -11,7 +11,7 @@ import socket
 
 import pytest
 
-from helpers import send_command
+from renderer_helpers import send_command
 
 
 def test_get_status_before_init(

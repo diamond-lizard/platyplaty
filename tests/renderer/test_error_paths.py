@@ -9,7 +9,7 @@ import socket
 
 import pytest
 
-from helpers import encode_netstring, decode_netstring, send_command
+from renderer_helpers import encode_netstring, decode_netstring, send_command
 
 
 def test_init_without_audio_source(

@@ -12,7 +12,7 @@ from collections.abc import Generator
 
 import pytest
 
-from helpers import wait_for_socket_ready
+from renderer_helpers import wait_for_socket_ready
 
 
 @pytest.fixture
