@@ -16,7 +16,8 @@ from platyplaty.ui.colors import (
     FILE_COLOR,
 )
 from platyplaty.ui.directory_types import DirectoryListing
-from platyplaty.ui.file_browser_pane_render import render_pane_line, render_right_pane_line
+from platyplaty.ui.file_browser_pane_render import render_pane_line
+from platyplaty.ui.file_browser_right_pane_render import render_right_pane_line
 from platyplaty.ui.file_browser_types import RightPaneFilePreview
 
 

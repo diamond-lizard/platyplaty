@@ -12,16 +12,14 @@ from typing import TYPE_CHECKING
 from rich.segment import Segment
 from textual.strip import Strip
 
-from platyplaty.ui.file_browser_pane_render import (
-    render_pane_line,
-    render_right_pane_line,
-)
+from platyplaty.ui.file_browser_pane_render import render_pane_line
 from platyplaty.ui.file_browser_path_render import (
     get_display_path,
     render_path,
     should_mark_selected,
     text_to_segments,
 )
+from platyplaty.ui.file_browser_right_pane_render import render_right_pane_line
 from platyplaty.ui.layout import calculate_pane_widths
 
 if TYPE_CHECKING:
