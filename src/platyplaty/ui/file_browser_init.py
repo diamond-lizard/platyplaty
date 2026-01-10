@@ -5,6 +5,7 @@ FileBrowser widget's state. This is a package-private module.
 """
 
 from __future__ import annotations
+import os
 
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -36,9 +37,18 @@ def init_browser(
     """
     browser._dispatch_table = dispatch_table
     if starting_dir is None:
-        browser.current_dir = Path.cwd()
+        # Use PWD to preserve the logical path through symlinks.
+        # Path.cwd() uses getcwd(3) which returns the resolved physical path,
+        # losing symlink information. PWD is maintained by the shell and
+        # contains the logical path the user navigated.
+        pwd = os.environ.get('PWD')
+        if pwd:
+            browser.current_dir = Path(pwd)
+        else:
+            browser.current_dir = Path.cwd()
     else:
-        browser.current_dir = starting_dir.resolve()
+        # Use absolute() instead of resolve() to preserve symlinks in the path
+        browser.current_dir = starting_dir.absolute()
 
     # Check if directory is accessible
     if not browser.current_dir.is_dir():
