@@ -3,7 +3,7 @@
 
 This module tests:
 - get_selected_name_for_directory() returns remembered name or None
-- _calc_right_selection() returns remembered index or 0 if not found
+- calc_right_selection() returns remembered index or 0 if not found
 """
 
 import sys
@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "src"))
 
 from platyplaty.ui.nav_state import NavigationState
 from platyplaty.ui.file_browser import FileBrowser
-from platyplaty.ui.file_browser_refresh import _calc_right_selection
+from platyplaty.ui.file_browser_preview import calc_right_selection
 from platyplaty.ui.file_browser_types import RightPaneDirectory
 from platyplaty.ui.directory import list_directory
 
@@ -76,7 +76,7 @@ class TestGetSelectedNameForDirectory:
 
 
 class TestCalcRightSelection:
-    """Tests for _calc_right_selection()."""
+    """Tests for calc_right_selection()."""
 
     def test_returns_zero_if_never_visited(self, tmp_path: Path) -> None:
         """Directory never visited returns index 0."""
@@ -96,7 +96,7 @@ class TestCalcRightSelection:
         browser._right_content = RightPaneDirectory(list_directory(subdir))
 
         # Never visited subdir, so remembered selection is None
-        result = _calc_right_selection(browser, str(subdir))
+        result = calc_right_selection(browser, str(subdir))
 
         assert result == 0, "should return 0 for unvisited directory"
 
@@ -120,7 +120,7 @@ class TestCalcRightSelection:
         browser._right_content = RightPaneDirectory(list_directory(subdir))
 
         # Query should return index of "beta.milk" which is 1
-        result = _calc_right_selection(browser, str(subdir))
+        result = calc_right_selection(browser, str(subdir))
 
         assert result == 1, "should return index of remembered name"
 
@@ -148,6 +148,6 @@ class TestCalcRightSelection:
         browser._right_content = RightPaneDirectory(list_directory(subdir))
 
         # Query should return 0 since beta no longer exists
-        result = _calc_right_selection(browser, str(subdir))
+        result = calc_right_selection(browser, str(subdir))
 
         assert result == 0, "should return 0 when remembered name not found"
