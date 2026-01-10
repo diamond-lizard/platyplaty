@@ -7,10 +7,13 @@ extracted to reduce nesting depth in the Pane class.
 from typing import TYPE_CHECKING
 
 from rich.text import Text
+from rich.style import Style
 from textual.strip import Strip
+from platyplaty.ui.colors import BACKGROUND_COLOR, get_entry_color
 
 if TYPE_CHECKING:
     from rich.console import Console
+    from platyplaty.ui.directory_types import DirectoryEntry
 
 
 def render_empty_message(
@@ -39,17 +42,19 @@ def render_empty_message(
     return Strip(list(text.render(console)))
 
 
-def render_entry(name: str, width: int, console: "Console") -> Strip:
-    """Render a single directory entry.
+def render_entry(entry: "DirectoryEntry", width: int, console: "Console") -> Strip:
+    """Render a single directory entry with appropriate colors.
 
     Args:
-        name: The entry name to display.
+        entry: The directory entry to display.
         width: Width to constrain rendering to, in characters.
         console: Rich console for rendering.
 
     Returns:
-        A Strip containing the rendered entry.
+        A Strip containing the rendered entry with color styling.
     """
-    text = Text(name)
+    color = get_entry_color(entry.entry_type)
+    style = Style(color=color, bgcolor=BACKGROUND_COLOR)
+    text = Text(entry.name, style=style)
     text.truncate(width)
     return Strip(list(text.render(console)))

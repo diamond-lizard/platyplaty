@@ -72,7 +72,7 @@ class Pane(Widget):
             )
         if y < len(self.entries):
             return render_entry(
-                self.entries[y].name, self._width, self.app.console
+                self.entries[y], self._width, self.app.console
             )
         return Strip([])
 
