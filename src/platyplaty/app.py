@@ -45,6 +45,15 @@ class PlatyplatyApp(App[None]):
             playlist: The playlist instance for preset navigation.
         """
         super().__init__()
+        # Use ANSI color codes directly instead of Textual's theme-based color
+        # conversion. Without this, Textual converts named colors like "blue" to
+        # RGB values from its theme palette (e.g., textual-dark), which can map
+        # to completely different terminal colors. Setting ansi_color=True makes
+        # Textual emit standard ANSI escape codes (e.g., \x1b[34m for blue),
+        # allowing the terminal to use its configured color palette. This must
+        # be set after super().__init__() to properly trigger Textual's reactive
+        # attribute system.
+        self.ansi_color = True
 
         # Create AppContext which builds dispatch tables in __post_init__
         self.ctx = AppContext(config=config, playlist=playlist)
