@@ -5,6 +5,8 @@ This module defines color constants used throughout the file browser
 for consistent styling of different item types.
 """
 
+from platyplaty.ui.directory_types import EntryType
+
 # Item type colors (foreground)
 DIRECTORY_COLOR = "blue"
 FILE_COLOR = "white"
@@ -20,3 +22,22 @@ EMPTY_MESSAGE_FG = "white"
 
 # Selected item color (path display)
 SELECTED_COLOR = "bright_white"
+
+
+def get_entry_color(entry_type: EntryType) -> str:
+    """Return the foreground color for a given entry type.
+
+    Args:
+        entry_type: The type of directory entry.
+
+    Returns:
+        A color name string suitable for Rich/Textual styling.
+    """
+    color_map = {
+        EntryType.DIRECTORY: DIRECTORY_COLOR,
+        EntryType.FILE: FILE_COLOR,
+        EntryType.SYMLINK_TO_DIRECTORY: SYMLINK_COLOR,
+        EntryType.SYMLINK_TO_FILE: SYMLINK_COLOR,
+        EntryType.BROKEN_SYMLINK: BROKEN_SYMLINK_COLOR,
+    }
+    return color_map.get(entry_type, FILE_COLOR)
