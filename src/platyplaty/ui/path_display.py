@@ -1,38 +1,14 @@
 #!/usr/bin/env python3
-"""Path display model for file browser.
+"""Path display functions for file browser.
 
-This module provides data types for representing path components
-with type information for coloring in the path display line.
+This module provides functions to split paths into components with
+type information for coloring in the path display line.
 """
 
 from pathlib import Path
 import stat
-from dataclasses import dataclass
-from enum import Enum, auto
 
-
-class PathComponentType(Enum):
-    """Type of path component for coloring purposes."""
-
-    DIRECTORY = auto()
-    SYMLINK = auto()
-    BROKEN_SYMLINK = auto()
-    FILE = auto()
-
-
-@dataclass(frozen=True)
-class PathComponent:
-    """A single component of a path for display purposes.
-
-    Attributes:
-        name: The component name (directory or file name).
-        component_type: The type of component for coloring.
-        is_selected: True if this is the selected (final) component.
-    """
-
-    name: str
-    component_type: PathComponentType
-    is_selected: bool = False
+from platyplaty.ui.path_types import PathComponent, PathComponentType
 
 
 def _get_symlink_type(path: Path) -> PathComponentType:
@@ -49,6 +25,7 @@ def _get_symlink_type(path: Path) -> PathComponentType:
         return PathComponentType.SYMLINK
     except OSError:
         return PathComponentType.BROKEN_SYMLINK
+
 
 def _get_component_type(path: Path) -> PathComponentType:
     """Determine the type of a path component using lstat.
@@ -71,6 +48,7 @@ def _get_component_type(path: Path) -> PathComponentType:
     if stat.S_ISDIR(st.st_mode):
         return PathComponentType.DIRECTORY
     return PathComponentType.FILE
+
 
 def split_path_to_components(
     path: Path | str, mark_selected: bool = True
