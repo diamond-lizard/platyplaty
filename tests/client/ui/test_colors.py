@@ -20,6 +20,7 @@ from platyplaty.ui.colors import (
     SELECTED_COLOR,
     SYMLINK_COLOR,
     get_entry_color,
+    get_inverted_colors,
 )
 from platyplaty.ui.directory_types import EntryType
 
@@ -82,3 +83,27 @@ class TestGetEntryColor:
     def test_broken_symlink_returns_magenta(self) -> None:
         """BROKEN_SYMLINK entry type should return magenta."""
         assert get_entry_color(EntryType.BROKEN_SYMLINK) == "magenta"
+
+
+class TestGetInvertedColors:
+    """Tests for get_inverted_colors function (TASK-0650)."""
+
+    def test_directory_returns_black_on_blue(self) -> None:
+        """DIRECTORY entry type should return black foreground on blue background."""
+        assert get_inverted_colors(EntryType.DIRECTORY) == ("black", "blue")
+
+    def test_file_returns_black_on_white(self) -> None:
+        """FILE entry type should return black foreground on white background."""
+        assert get_inverted_colors(EntryType.FILE) == ("black", "white")
+
+    def test_symlink_to_directory_returns_black_on_cyan(self) -> None:
+        """SYMLINK_TO_DIRECTORY entry type should return black foreground on cyan background."""
+        assert get_inverted_colors(EntryType.SYMLINK_TO_DIRECTORY) == ("black", "cyan")
+
+    def test_symlink_to_file_returns_black_on_cyan(self) -> None:
+        """SYMLINK_TO_FILE entry type should return black foreground on cyan background."""
+        assert get_inverted_colors(EntryType.SYMLINK_TO_FILE) == ("black", "cyan")
+
+    def test_broken_symlink_returns_black_on_magenta(self) -> None:
+        """BROKEN_SYMLINK entry type should return black foreground on magenta background."""
+        assert get_inverted_colors(EntryType.BROKEN_SYMLINK) == ("black", "magenta")
