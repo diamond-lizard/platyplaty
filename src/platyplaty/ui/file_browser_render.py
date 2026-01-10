@@ -13,8 +13,8 @@ from rich.segment import Segment
 from rich.style import Style
 from textual.strip import Strip
 
-from platyplaty.ui.file_browser_pane_render import render_pane_line
 from platyplaty.ui.colors import BACKGROUND_COLOR
+from platyplaty.ui.file_browser_pane_render import render_pane_line
 from platyplaty.ui.file_browser_path_render import (
     get_display_path,
     render_path,
