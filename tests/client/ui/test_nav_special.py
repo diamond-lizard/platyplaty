@@ -161,5 +161,8 @@ class TestInaccessibleDirectoryRendering:
         # Render line 0 (the message line)
         result = render_pane_line(listing, y=0, width=30, is_left_pane=False)
         
-        assert "inaccessible directory" in result, "should contain message"
-        assert len(result) == 30, "should be padded to width"
+        # Result is now list[Segment], check first segment text
+        assert len(result) == 1, "should have one segment"
+        segment_text = result[0].text
+        assert "inaccessible directory" in segment_text, "should contain message"
+        assert len(segment_text) == 30, "should be padded to width"

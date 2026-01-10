@@ -4,6 +4,16 @@ This module provides functions for rendering individual pane lines
 in the file browser. These are package-private functions.
 """
 
+from rich.segment import Segment
+from rich.style import Style
+
+from platyplaty.ui.colors import (
+    BACKGROUND_COLOR,
+    EMPTY_MESSAGE_BG,
+    EMPTY_MESSAGE_FG,
+    FILE_COLOR,
+    get_entry_color,
+)
 from platyplaty.ui.directory_types import DirectoryListing
 from platyplaty.ui.file_browser_types import (
     RightPaneContent,
@@ -18,7 +28,7 @@ def render_pane_line(
     width: int,
     is_left_pane: bool,
     scroll_offset: int = 0,
-) -> str:
+) -> list[Segment]:
     """Render a single line of a pane.
 
     Args:
@@ -29,10 +39,11 @@ def render_pane_line(
         scroll_offset: Offset into the listing for scrolling (default 0).
 
     Returns:
-        A string padded to the pane width.
+        A list of Segments with appropriate styling.
     """
+    bg_style = Style(bgcolor=BACKGROUND_COLOR)
     if listing is None:
-        return " " * width
+        return [Segment(" " * width, bg_style)]
 
     # Handle empty listing
     if not listing.entries:
@@ -40,19 +51,22 @@ def render_pane_line(
 
     # Render entry
     if y + scroll_offset < len(listing.entries):
-        name = listing.entries[y + scroll_offset].name
-        return name.ljust(width)[:width]
+        entry = listing.entries[y + scroll_offset]
+        text = entry.name.ljust(width)[:width]
+        color = get_entry_color(entry.entry_type)
+        style = Style(color=color, bgcolor=BACKGROUND_COLOR)
+        return [Segment(text, style)]
 
-    return " " * width
-
+    return [Segment(" " * width, bg_style)]
 
 def _render_empty_listing(
     listing: DirectoryListing, y: int, width: int, is_left_pane: bool
-) -> str:
+) -> list[Segment]:
     """Render a line for an empty listing."""
+    bg_style = Style(bgcolor=BACKGROUND_COLOR)
     if is_left_pane and listing.was_empty:
         # At filesystem root - left pane is truly empty
-        return " " * width
+        return [Segment(" " * width, bg_style)]
     if y == 0:
         if listing.permission_denied:
             msg = "inaccessible directory"
@@ -60,11 +74,15 @@ def _render_empty_listing(
             msg = "empty"
         else:
             msg = "no .milk files"
-        return msg.ljust(width)[:width]
-    return " " * width
+        text = msg.ljust(width)[:width]
+        style = Style(color=EMPTY_MESSAGE_FG, bgcolor=EMPTY_MESSAGE_BG)
+        return [Segment(text, style)]
+    return [Segment(" " * width, bg_style)]
 
 
-def render_right_pane_line(content: RightPaneContent, y: int, width: int) -> str:
+def render_right_pane_line(
+    content: RightPaneContent, y: int, width: int
+) -> list[Segment]:
     """Render a single line of the right pane.
 
     Handles both directory listings and file previews.
@@ -75,10 +93,14 @@ def render_right_pane_line(content: RightPaneContent, y: int, width: int) -> str
         width: The width of the pane.
 
     Returns:
-        A string padded to the pane width.
+        A list of Segments with appropriate styling.
     """
+    bg_style = Style(bgcolor=BACKGROUND_COLOR)
     if content is None:
-        return " " * width
+        return [Segment(" " * width, bg_style)]
     if isinstance(content, RightPaneDirectory):
         return render_pane_line(content.listing, y, width, is_left_pane=False)
-    return render_file_preview_line(content.lines, y, width)
+    # File preview - white text
+    text = render_file_preview_line(content.lines, y, width)
+    style = Style(color=FILE_COLOR, bgcolor=BACKGROUND_COLOR)
+    return [Segment(text, style)]

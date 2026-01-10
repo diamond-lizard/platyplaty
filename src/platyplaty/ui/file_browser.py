@@ -20,7 +20,6 @@ from platyplaty.ui.file_browser_render import render_line as _render_line
 from platyplaty.ui.file_browser_sync import refresh_panes as _refresh_panes
 from platyplaty.ui.file_browser_types import RightPaneContent
 from platyplaty.ui.nav_state import NavigationState
-from platyplaty.ui.pane import Pane  # noqa: F401
 
 
 class FileBrowser(Widget):
