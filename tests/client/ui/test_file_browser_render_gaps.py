@@ -15,6 +15,7 @@ from platyplaty.ui.colors import BACKGROUND_COLOR
 from platyplaty.ui.directory_types import DirectoryEntry, DirectoryListing, EntryType
 from platyplaty.ui.file_browser_render import render_line
 from platyplaty.ui.file_browser_types import RightPaneDirectory
+from platyplaty.ui.layout import calculate_pane_widths
 
 
 def _make_listing(entry: DirectoryEntry) -> DirectoryListing:
@@ -44,23 +45,39 @@ def _make_mock_browser(width: int = 80) -> MagicMock:
     browser.current_dir = Path("/test")
     return browser
 
-def _find_gap_segments(strip):
-    """Find single-space segments that are gaps between panes."""
+def _find_gap_segments(strip, width: int):
+    """Find gap segments between panes using positional detection.
+
+    Gap segments occur at specific positions based on pane layout:
+    - After left pane: at position left_width
+    - After middle pane: at position left_width + 1 + middle_width
+
+    This is more robust than filtering by segment properties, since
+    entry padding segments also have black background.
+    """
+    pane_widths = calculate_pane_widths(width)
+    gap_positions = set()
+    if pane_widths.left > 0:
+        gap_positions.add(pane_widths.left)
+        gap_positions.add(pane_widths.left + 1 + pane_widths.middle)
+    else:
+        gap_positions.add(pane_widths.middle)
     gaps = []
+    pos = 0
     for segment in strip:
-        if segment.text == " " and segment.style and segment.style.bgcolor:
-            if segment.style.bgcolor.name == BACKGROUND_COLOR:
-                gaps.append(segment)
+        if pos in gap_positions:
+            gaps.append(segment)
+        pos += len(segment.text)
     return gaps
 
 class TestRenderLineGapBackgrounds:
     """Tests for gap segment background styling in render_line()."""
-    
+
     def test_gap_segments_have_black_background(self) -> None:
         """Gap segments between panes should have black background."""
         browser = _make_mock_browser(width=80)
         strip = render_line(browser, y=1)
-        gaps = _find_gap_segments(strip)
+        gaps = _find_gap_segments(strip, width=80)
         # Should have 2 gaps: after left pane and after middle pane
         assert len(gaps) == 2
         for gap in gaps:
@@ -74,7 +91,7 @@ class TestRenderLineGapBackgrounds:
         # At width 7, left pane width = int(7 * 1/8) = 0, so left pane disappears
         browser = _make_mock_browser(width=7)
         strip = render_line(browser, y=1)
-        gaps = _find_gap_segments(strip)
+        gaps = _find_gap_segments(strip, width=7)
         # Should have only 1 gap: after middle pane (no left pane)
         assert len(gaps) == 1
         assert gaps[0].style is not None
