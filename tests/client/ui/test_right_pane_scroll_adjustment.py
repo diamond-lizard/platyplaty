@@ -12,7 +12,7 @@ from unittest.mock import MagicMock
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "src"))
 
 from platyplaty.ui.directory_types import DirectoryEntry, DirectoryListing, EntryType
-from platyplaty.ui.file_browser_sync import adjust_right_pane_scroll
+from platyplaty.ui.file_browser_scroll import adjust_right_pane_scroll
 from platyplaty.ui.file_browser_types import RightPaneDirectory, RightPaneFilePreview
 
 

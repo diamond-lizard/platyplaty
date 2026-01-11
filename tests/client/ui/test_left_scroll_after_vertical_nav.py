@@ -67,10 +67,8 @@ class TestLeftScrollAfterVerticalNav:
         The fix should call adjust_left_pane_scroll() after
         sync_from_nav_state() in up/down navigation.
         """
-        from platyplaty.ui.file_browser_sync import (
-            adjust_left_pane_scroll,
-            sync_from_nav_state,
-        )
+        from platyplaty.ui.file_browser_scroll import adjust_left_pane_scroll
+        from platyplaty.ui.file_browser_sync import sync_from_nav_state
 
         # Create a large parent directory (201 items)
         # Current dir "platyplaty" is at index 129
@@ -135,10 +133,8 @@ class TestLeftScrollAfterVerticalNav:
         to 0 without re-adjusting it.
         """
         from platyplaty.ui.file_browser_nav_updown import action_nav_down
-        from platyplaty.ui.file_browser_sync import (
-            adjust_left_pane_scroll,
-            find_entry_index,
-        )
+        from platyplaty.ui.file_browser_scroll import adjust_left_pane_scroll
+        from platyplaty.ui.file_browser_sync import find_entry_index
         from platyplaty.ui.nav_state import NavigationState
 
         # Create a large parent directory (201 items)

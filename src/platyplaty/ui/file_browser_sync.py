@@ -10,9 +10,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from platyplaty.ui.directory_types import DirectoryListing
-from platyplaty.ui.file_browser_types import RightPaneDirectory
 from platyplaty.ui.file_browser_refresh import refresh_listings
-from platyplaty.ui.nav_scroll import calc_safe_zone_scroll
+from platyplaty.ui.file_browser_scroll import (
+    adjust_left_pane_scroll,
+    adjust_right_pane_scroll,
+)
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
@@ -70,53 +72,3 @@ def refresh_panes(browser: FileBrowser) -> None:
     adjust_left_pane_scroll(browser, browser.size.height - 1)
     adjust_right_pane_scroll(browser, browser.size.height - 1)
     browser.refresh()
-
-
-def adjust_left_pane_scroll(browser: FileBrowser, pane_height: int) -> None:
-    """Adjust left pane scroll so the current directory is visible.
-
-    Computes the index of current_dir in _left_listing and applies
-    the safe-zone scroll algorithm to _left_scroll_offset. Safe to
-    call multiple times (idempotent).
-
-    Args:
-        browser: The file browser instance.
-        pane_height: The height of the pane in lines.
-    """
-    if pane_height <= 0:
-        return
-    if browser._left_listing is None or not browser._left_listing.entries:
-        return
-    current_name = browser.current_dir.name
-    index = find_entry_index(browser._left_listing, current_name)
-    item_count = len(browser._left_listing.entries)
-    browser._left_scroll_offset = calc_safe_zone_scroll(
-        index, browser._left_scroll_offset, pane_height, item_count
-    )
-
-
-def adjust_right_pane_scroll(browser: FileBrowser, pane_height: int) -> None:
-    """Adjust right pane scroll so the selection is visible.
-
-    Uses the remembered selection index when showing directory contents.
-    Skips adjustment for file preview/error/empty states.
-
-    Args:
-        browser: The file browser instance.
-        pane_height: The height of the pane in lines.
-    """
-    if pane_height <= 0:
-        return
-    if browser._right_selected_index is None:
-        return
-    content = browser._right_content
-    if content is None or not isinstance(content, RightPaneDirectory):
-        return
-    listing = content.listing
-    if listing is None or not listing.entries:
-        return
-    item_count = len(listing.entries)
-    browser._right_scroll_offset = calc_safe_zone_scroll(
-        browser._right_selected_index, browser._right_scroll_offset,
-        pane_height, item_count,
-    )

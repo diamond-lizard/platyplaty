@@ -10,7 +10,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from platyplaty.ui.file_browser_refresh import refresh_right_pane
-from platyplaty.ui.file_browser_sync import adjust_left_pane_scroll, sync_from_nav_state
+from platyplaty.ui.file_browser_scroll import adjust_left_pane_scroll
+from platyplaty.ui.file_browser_sync import sync_from_nav_state
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
