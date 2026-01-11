@@ -70,11 +70,13 @@ def refresh_right_pane(browser: FileBrowser) -> None:
     if selected.entry_type in (EntryType.DIRECTORY, EntryType.SYMLINK_TO_DIRECTORY):
         selected_path = browser.current_dir / selected.name
         browser._right_content = RightPaneDirectory(list_directory(selected_path))
+        path_str = str(selected_path)
         browser._right_selected_index = calc_right_selection(
-            browser, str(selected_path)
+            browser, path_str
         )
-        browser._right_scroll_offset = browser._nav_state.get_scroll_offset_for_directory(
-            str(selected_path)
+        nav_state = browser._nav_state
+        browser._right_scroll_offset = nav_state.get_scroll_offset_for_directory(
+            path_str
         )
     else:
         # File selected - show file preview
