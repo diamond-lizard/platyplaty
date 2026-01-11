@@ -56,7 +56,8 @@ def refresh_right_pane(browser: FileBrowser) -> None:
         browser._right_scroll_offset = 0
         return
 
-    if (browser.selected_index < 0
+    if (browser.selected_index is None
+            or browser.selected_index < 0
             or browser.selected_index >= len(browser._middle_listing.entries)):
         browser._right_content = None
         browser._right_selected_index = None

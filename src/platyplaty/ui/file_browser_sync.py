@@ -45,11 +45,11 @@ def sync_from_nav_state(browser: FileBrowser) -> None:
     browser.current_dir = browser._nav_state.current_dir
     listing = browser._nav_state.get_listing()
     if listing is None or not listing.entries:
-        browser.selected_index = 0
+        browser.selected_index = None
         return
     selected_entry = browser._nav_state.get_selected_entry()
     if selected_entry is None:
-        browser.selected_index = 0
+        browser.selected_index = None
         return
     browser.selected_index = find_entry_index(listing, selected_entry.name)
     browser._nav_state.adjust_scroll(browser.size.height - 1)

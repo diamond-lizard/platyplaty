@@ -36,7 +36,7 @@ class FileBrowser(Widget):
 
     can_focus = True
     current_dir: Path
-    selected_index: int
+    selected_index: int | None
     _nav_state: NavigationState
     _dispatch_table: DispatchTable
     _middle_scroll_offset: int
@@ -87,7 +87,9 @@ class FileBrowser(Widget):
         if not self._middle_listing or not self._middle_listing.entries:
             return None
         entries = self._middle_listing.entries
-        if self.selected_index < 0 or self.selected_index >= len(entries):
+        if (self.selected_index is None
+                or self.selected_index < 0
+                or self.selected_index >= len(entries)):
             return None
         return self._middle_listing.entries[self.selected_index]
 

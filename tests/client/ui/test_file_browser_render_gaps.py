@@ -38,14 +38,19 @@ def _make_mock_browser(width: int = 80) -> MagicMock:
     browser._right_content = right_content
     browser._left_scroll_offset = 0
     browser._middle_scroll_offset = 0
+    browser._right_scroll_offset = 0
+    browser.selected_index = 0
+    browser._right_selected_index = 0
+    browser.current_dir = Path("/test")
     return browser
 
 def _find_gap_segments(strip):
     """Find single-space segments that are gaps between panes."""
     gaps = []
     for segment in strip:
-        if segment.text == " ":
-            gaps.append(segment)
+        if segment.text == " " and segment.style and segment.style.bgcolor:
+            if segment.style.bgcolor.name == BACKGROUND_COLOR:
+                gaps.append(segment)
     return gaps
 
 class TestRenderLineGapBackgrounds:
