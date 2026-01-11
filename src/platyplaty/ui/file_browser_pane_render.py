@@ -14,7 +14,7 @@ from platyplaty.ui.colors import (
     get_entry_color,
     get_inverted_colors,
 )
-from platyplaty.ui.directory_types import DirectoryListing
+from platyplaty.ui.directory_types import DirectoryEntry, DirectoryListing
 from platyplaty.ui.highlights import calc_highlight_bounds
 
 
@@ -79,7 +79,7 @@ def _render_empty_listing(
     return [Segment(" " * width, bg_style)]
 
 
-def _render_normal_entry(entry, width: int) -> list[Segment]:
+def _render_normal_entry(entry: DirectoryEntry, width: int) -> list[Segment]:
     """Render an entry with normal (non-selected) colors."""
     text = entry.name.ljust(width)[:width]
     color = get_entry_color(entry.entry_type)
@@ -87,7 +87,7 @@ def _render_normal_entry(entry, width: int) -> list[Segment]:
     return [Segment(text, style)]
 
 
-def _render_selected_entry(entry, width: int) -> list[Segment]:
+def _render_selected_entry(entry: DirectoryEntry, width: int) -> list[Segment]:
     """Render an entry with inverted (selected) colors and padding."""
     fg, bg = get_inverted_colors(entry.entry_type)
     left_pad, right_pad = calc_highlight_bounds(len(entry.name), width)
