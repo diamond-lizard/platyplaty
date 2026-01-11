@@ -30,11 +30,9 @@ def count_directory_contents(path: Path) -> int:
         the directory is inaccessible.
     """
     try:
-        count = 0
-        for entry_path in path.iterdir():
-            entry_type = get_entry_type(entry_path)
-            if should_include(entry_path, entry_type):
-                count += 1
-        return count
+        entries = list(path.iterdir())
     except (PermissionError, OSError):
         return 0
+    return sum(
+        1 for p in entries if should_include(p, get_entry_type(p))
+    )
