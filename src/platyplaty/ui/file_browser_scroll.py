@@ -13,10 +13,11 @@ from platyplaty.ui.file_browser_types import RightPaneDirectory
 from platyplaty.ui.nav_scroll import calc_safe_zone_scroll
 
 if TYPE_CHECKING:
+    from platyplaty.ui.directory_types import DirectoryEntry
     from platyplaty.ui.file_browser import FileBrowser
 
 
-def find_entry_index_in_listing(entries: list, name: str) -> int:
+def find_entry_index_in_listing(entries: list[DirectoryEntry], name: str) -> int:
     """Find the index of an entry by name in a list of entries.
 
     Args:
