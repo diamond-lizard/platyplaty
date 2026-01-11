@@ -19,6 +19,8 @@ from platyplaty.ui.file_browser_key import on_key as _on_key
 from platyplaty.ui.file_browser_render import render_line as _render_line
 from platyplaty.ui.file_browser_sync import (
     adjust_left_pane_scroll as _adjust_left_scroll,
+)
+from platyplaty.ui.file_browser_sync import (
     refresh_panes as _refresh_panes,
 )
 from platyplaty.ui.file_browser_types import RightPaneContent
