@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from platyplaty.ui.file_browser_refresh import refresh_right_pane
-from platyplaty.ui.file_browser_sync import sync_from_nav_state
+from platyplaty.ui.file_browser_sync import adjust_left_pane_scroll, sync_from_nav_state
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
@@ -27,6 +27,7 @@ async def action_nav_up(browser: FileBrowser) -> None:
     if not browser._nav_state.move_up():
         return
     sync_from_nav_state(browser)
+    adjust_left_pane_scroll(browser, browser.size.height - 1)
     refresh_right_pane(browser)
     browser.refresh()
 
@@ -42,5 +43,6 @@ async def action_nav_down(browser: FileBrowser) -> None:
     if not browser._nav_state.move_down():
         return
     sync_from_nav_state(browser)
+    adjust_left_pane_scroll(browser, browser.size.height - 1)
     refresh_right_pane(browser)
     browser.refresh()
