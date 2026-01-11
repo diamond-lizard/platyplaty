@@ -3,7 +3,7 @@
 
 import pytest
 
-from platyplaty.ui.indicators import format_file_size
+from platyplaty.ui.size_format import format_file_size
 
 
 class TestFormatFileSizeBytes:
