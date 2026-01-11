@@ -76,7 +76,7 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
     middle_segments = render_pane_line(
         browser._middle_listing, pane_y, pane_widths.middle,
         is_left_pane=False, scroll_offset=browser._middle_scroll_offset,
-        selected_index=browser.selected_index
+        selected_index=browser.selected_index, show_indicators=True
     )
     segments.extend(middle_segments)
     segments.append(Segment(" ", Style(bgcolor=BACKGROUND_COLOR)))  # Gap
