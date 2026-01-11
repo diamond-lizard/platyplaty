@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 
 from platyplaty.ui.directory_types import DirectoryListing
 from platyplaty.ui.file_browser_refresh import refresh_listings
+from platyplaty.ui.nav_scroll import calc_safe_zone_scroll
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
@@ -48,7 +49,7 @@ def sync_from_nav_state(browser: FileBrowser) -> None:
         browser.selected_index = 0
         return
     browser.selected_index = find_entry_index(listing, selected_entry.name)
-    browser._nav_state.adjust_scroll(browser.size.height)
+    browser._nav_state.adjust_scroll(browser.size.height - 1)
     browser._middle_scroll_offset = browser._nav_state.scroll_offset
     browser._left_scroll_offset = browser._nav_state.get_parent_scroll_offset()
 
@@ -65,4 +66,28 @@ def refresh_panes(browser: FileBrowser) -> None:
     """
     sync_from_nav_state(browser)
     refresh_listings(browser)
+    adjust_left_pane_scroll(browser, browser.size.height - 1)
     browser.refresh()
+
+
+def adjust_left_pane_scroll(browser: FileBrowser, pane_height: int) -> None:
+    """Adjust left pane scroll so the current directory is visible.
+
+    Computes the index of current_dir in _left_listing and applies
+    the safe-zone scroll algorithm to _left_scroll_offset. Safe to
+    call multiple times (idempotent).
+
+    Args:
+        browser: The file browser instance.
+        pane_height: The height of the pane in lines.
+    """
+    if pane_height <= 0:
+        return
+    if browser._left_listing is None or not browser._left_listing.entries:
+        return
+    current_name = browser.current_dir.name
+    index = find_entry_index(browser._left_listing, current_name)
+    item_count = len(browser._left_listing.entries)
+    browser._left_scroll_offset = calc_safe_zone_scroll(
+        index, browser._left_scroll_offset, pane_height, item_count
+    )
