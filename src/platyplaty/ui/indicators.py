@@ -5,12 +5,11 @@ for directory entries in the middle pane of the file browser.
 Indicators include directory counts, file sizes, and symlink markers.
 """
 
-import os
 from pathlib import Path
 
 from platyplaty.ui.directory_entry import get_entry_type, should_include
 from platyplaty.ui.directory_types import EntryType
-from platyplaty.ui.size_format import format_file_size
+from platyplaty.ui.size_format import format_file_size, get_file_size, get_symlink_size
 
 
 def count_directory_contents(path: Path) -> int:
@@ -41,37 +40,6 @@ def count_directory_contents(path: Path) -> int:
     )
 
 
-def get_file_size(path: Path) -> int:
-    """Get file size in bytes using os.stat.
-
-    Args:
-        path: Path to the file.
-
-    Returns:
-        File size in bytes, or 0 on error (file deleted, permission denied).
-    """
-    try:
-        return os.stat(path).st_size
-    except (OSError, PermissionError):
-        return 0
-
-
-def get_symlink_size(path: Path) -> int:
-    """Get symlink file size in bytes using os.lstat (does not follow symlinks).
-
-    Args:
-        path: Path to the symlink.
-
-    Returns:
-        Symlink file size in bytes, or 0 on error.
-    """
-    try:
-        return os.lstat(path).st_size
-    except (OSError, PermissionError):
-        return 0
-
-
-
 def format_indicator(entry_type: EntryType, path: Path) -> str:
     """Format indicator string for a directory entry.
 
@@ -94,3 +62,26 @@ def format_indicator(entry_type: EntryType, path: Path) -> str:
     if entry_type == EntryType.BROKEN_SYMLINK:
         return f"-> {format_file_size(get_symlink_size(path))}"
     return ""
+
+
+def calculate_indicator_layout(name: str, indicator: str, pane_width: int) -> str:
+    """Calculate layout for name and indicator within pane width.
+
+    Returns a string with name left-justified and indicator right-justified,
+    separated by at least one space. If the combined length exceeds pane_width,
+    the content overflows (truncation is handled by Part 80).
+
+    Args:
+        name: Entry name to display.
+        indicator: Indicator string (count, size, or arrow prefix with count/size).
+        pane_width: Available width for the line.
+
+    Returns:
+        Formatted line with name and indicator, padded to pane_width if fits.
+    """
+    min_gap = 1
+    total_content = len(name) + min_gap + len(indicator)
+    if total_content <= pane_width:
+        gap = pane_width - len(name) - len(indicator)
+        return f"{name}{' ' * gap}{indicator}"
+    return f"{name} {indicator}"

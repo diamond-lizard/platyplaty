@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from platyplaty.ui.indicators import get_file_size
+from platyplaty.ui.size_format import get_file_size
 
 
 class TestGetFileSizeNormal:

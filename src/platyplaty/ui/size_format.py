@@ -4,6 +4,9 @@ This module provides functions to format file sizes for display
 using base-2 units (B, K, M, G, T).
 """
 
+import os
+from pathlib import Path
+
 
 def format_file_size(size_bytes: int) -> str:
     """Format file size for display.
@@ -37,3 +40,33 @@ def _format_value_with_unit(value: float, unit: str) -> str:
     # Remove trailing zeros and decimal point if not needed
     formatted = formatted.rstrip("0").rstrip(".")
     return f"{formatted} {unit}"
+
+
+def get_file_size(path: Path) -> int:
+    """Get file size in bytes using os.stat.
+
+    Args:
+        path: Path to the file.
+
+    Returns:
+        File size in bytes, or 0 on error (file deleted, permission denied).
+    """
+    try:
+        return os.stat(path).st_size
+    except (OSError, PermissionError):
+        return 0
+
+
+def get_symlink_size(path: Path) -> int:
+    """Get symlink file size in bytes using os.lstat (does not follow symlinks).
+
+    Args:
+        path: Path to the symlink.
+
+    Returns:
+        Symlink file size in bytes, or 0 on error.
+    """
+    try:
+        return os.lstat(path).st_size
+    except (OSError, PermissionError):
+        return 0
