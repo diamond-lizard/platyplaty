@@ -83,7 +83,9 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
 
     # Render right pane
     right_segments = render_right_pane_line(
-        browser._right_content, pane_y, pane_widths.right
+        browser._right_content, pane_y, pane_widths.right,
+        scroll_offset=browser._right_scroll_offset,
+        selected_index=browser._right_selected_index,
     )
     segments.extend(right_segments)
 

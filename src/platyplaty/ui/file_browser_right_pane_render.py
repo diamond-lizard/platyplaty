@@ -17,7 +17,8 @@ from platyplaty.ui.file_browser_types import (
 
 
 def render_right_pane_line(
-    content: RightPaneContent, y: int, width: int
+    content: RightPaneContent, y: int, width: int,
+    scroll_offset: int = 0, selected_index: int | None = None,
 ) -> list[Segment]:
     """Render a single line of the right pane.
 
@@ -27,6 +28,8 @@ def render_right_pane_line(
         content: The right pane content to render.
         y: The line number to render (0-indexed).
         width: The width of the pane.
+        scroll_offset: Offset into the listing for scrolling (default 0).
+        selected_index: Index of selected item for highlighting (None for no selection).
 
     Returns:
         A list of Segments with appropriate styling.
@@ -35,7 +38,10 @@ def render_right_pane_line(
     if content is None:
         return [Segment(" " * width, bg_style)]
     if isinstance(content, RightPaneDirectory):
-        return render_pane_line(content.listing, y, width, is_left_pane=False)
+        return render_pane_line(
+            content.listing, y, width, is_left_pane=False,
+            scroll_offset=scroll_offset, selected_index=selected_index,
+        )
     # File preview - white text
     text = render_file_preview_line(content.lines, y, width)
     style = Style(color=FILE_COLOR, bgcolor=BACKGROUND_COLOR)

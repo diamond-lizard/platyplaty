@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from platyplaty.ui.directory_types import DirectoryListing
+from platyplaty.ui.file_browser_types import RightPaneDirectory
 from platyplaty.ui.file_browser_refresh import refresh_listings
 from platyplaty.ui.nav_scroll import calc_safe_zone_scroll
 
@@ -67,6 +68,7 @@ def refresh_panes(browser: FileBrowser) -> None:
     sync_from_nav_state(browser)
     refresh_listings(browser)
     adjust_left_pane_scroll(browser, browser.size.height - 1)
+    adjust_right_pane_scroll(browser, browser.size.height - 1)
     browser.refresh()
 
 
@@ -90,4 +92,31 @@ def adjust_left_pane_scroll(browser: FileBrowser, pane_height: int) -> None:
     item_count = len(browser._left_listing.entries)
     browser._left_scroll_offset = calc_safe_zone_scroll(
         index, browser._left_scroll_offset, pane_height, item_count
+    )
+
+
+def adjust_right_pane_scroll(browser: FileBrowser, pane_height: int) -> None:
+    """Adjust right pane scroll so the selection is visible.
+
+    Uses the remembered selection index when showing directory contents.
+    Skips adjustment for file preview/error/empty states.
+
+    Args:
+        browser: The file browser instance.
+        pane_height: The height of the pane in lines.
+    """
+    if pane_height <= 0:
+        return
+    if browser._right_selected_index is None:
+        return
+    content = browser._right_content
+    if content is None or not isinstance(content, RightPaneDirectory):
+        return
+    listing = content.listing
+    if listing is None or not listing.entries:
+        return
+    item_count = len(listing.entries)
+    browser._right_scroll_offset = calc_safe_zone_scroll(
+        browser._right_selected_index, browser._right_scroll_offset,
+        pane_height, item_count,
     )

@@ -61,6 +61,7 @@ def init_browser(
     browser.selected_index = 0
     browser._middle_scroll_offset = 0
     browser._left_scroll_offset = 0
+    browser._right_scroll_offset = 0
 
     # Cache for directory listings
     browser._left_listing = None

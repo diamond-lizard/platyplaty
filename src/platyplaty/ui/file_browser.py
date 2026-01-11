@@ -19,6 +19,7 @@ from platyplaty.ui.file_browser_key import on_key as _on_key
 from platyplaty.ui.file_browser_render import render_line as _render_line
 from platyplaty.ui.file_browser_sync import (
     adjust_left_pane_scroll as _adjust_left_scroll,
+    adjust_right_pane_scroll as _adjust_right_scroll,
 )
 from platyplaty.ui.file_browser_sync import (
     refresh_panes as _refresh_panes,
@@ -40,6 +41,7 @@ class FileBrowser(Widget):
     _dispatch_table: DispatchTable
     _middle_scroll_offset: int
     _left_scroll_offset: int
+    _right_scroll_offset: int
     _left_listing: DirectoryListing | None
     _middle_listing: DirectoryListing | None
     _right_content: RightPaneContent
@@ -72,11 +74,13 @@ class FileBrowser(Widget):
     def on_resize(self, event: Resize) -> None:
         """Handle terminal resize events."""
         _adjust_left_scroll(self, self.size.height - 1)
+        _adjust_right_scroll(self, self.size.height - 1)
         self.refresh()
 
     def on_mount(self) -> None:
         """Handle mount event to adjust scroll when size becomes valid."""
         _adjust_left_scroll(self, self.size.height - 1)
+        _adjust_right_scroll(self, self.size.height - 1)
 
     def get_selected_entry(self) -> DirectoryEntry | None:
         """Get the currently selected entry."""

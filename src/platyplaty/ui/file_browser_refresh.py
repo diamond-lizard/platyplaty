@@ -53,12 +53,14 @@ def refresh_right_pane(browser: FileBrowser) -> None:
     if not browser._middle_listing or not browser._middle_listing.entries:
         browser._right_content = None
         browser._right_selected_index = None
+        browser._right_scroll_offset = 0
         return
 
     if (browser.selected_index < 0
             or browser.selected_index >= len(browser._middle_listing.entries)):
         browser._right_content = None
         browser._right_selected_index = None
+        browser._right_scroll_offset = 0
         return
 
     selected = browser._middle_listing.entries[browser.selected_index]
@@ -70,9 +72,13 @@ def refresh_right_pane(browser: FileBrowser) -> None:
         browser._right_selected_index = calc_right_selection(
             browser, str(selected_path)
         )
+        browser._right_scroll_offset = browser._nav_state.get_scroll_offset_for_directory(
+            str(selected_path)
+        )
     else:
         # File selected - show file preview
         browser._right_content = make_file_preview(browser, selected)
         browser._right_selected_index = None
+        browser._right_scroll_offset = 0
 
 

@@ -123,3 +123,14 @@ class NavigationState:
             The remembered selected name, or None if not remembered.
         """
         return _get_selected_name_for_directory(self, directory_path)
+
+    def get_scroll_offset_for_directory(self, directory_path: str) -> int:
+        """Get the remembered scroll offset for a directory.
+
+        Args:
+            directory_path: The directory path to look up.
+
+        Returns:
+            The remembered scroll offset, or 0 if not remembered.
+        """
+        return _get_scroll_offset_for_directory(self, directory_path)
