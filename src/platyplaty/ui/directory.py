@@ -78,7 +78,7 @@ def list_directory(directory: Path) -> DirectoryListing:
     for path in all_entries:
         entry_type = get_entry_type(path)
         if should_include(path, entry_type):
-            filtered_entries.append(DirectoryEntry(path.name, entry_type))
+            filtered_entries.append(DirectoryEntry(path.name, entry_type, path))
 
     had_filtered_entries = len(filtered_entries) < len(all_entries)
 

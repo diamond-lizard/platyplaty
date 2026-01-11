@@ -35,8 +35,8 @@ class TestRenderNonSelectedItems:
     def test_non_selected_directory_has_normal_colors(self) -> None:
         """Non-selected directory should have blue on black."""
         entries = [
-            DirectoryEntry("first", EntryType.DIRECTORY),
-            DirectoryEntry("second", EntryType.DIRECTORY),
+            DirectoryEntry("first", EntryType.DIRECTORY, Path("/dummy")),
+            DirectoryEntry("second", EntryType.DIRECTORY, Path("/dummy")),
         ]
         listing = make_listing(entries)
         # Select index 1, render index 0 (non-selected)
@@ -53,8 +53,8 @@ class TestRenderNonSelectedItems:
     def test_non_selected_file_has_normal_colors(self) -> None:
         """Non-selected file should have white on black."""
         entries = [
-            DirectoryEntry("first.milk", EntryType.FILE),
-            DirectoryEntry("second.milk", EntryType.FILE),
+            DirectoryEntry("first.milk", EntryType.FILE, Path("/dummy")),
+            DirectoryEntry("second.milk", EntryType.FILE, Path("/dummy")),
         ]
         listing = make_listing(entries)
         segments = render_pane_line(listing, 0, 20, False, selected_index=1)

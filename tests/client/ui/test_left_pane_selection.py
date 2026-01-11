@@ -40,8 +40,8 @@ class TestCalcLeftSelectedIndex:
     def test_finds_current_dir_at_first_position(self) -> None:
         """Returns 0 when current dir is first in parent listing."""
         entries = [
-            DirectoryEntry("current", EntryType.DIRECTORY),
-            DirectoryEntry("other", EntryType.DIRECTORY),
+            DirectoryEntry("current", EntryType.DIRECTORY, Path("/dummy")),
+            DirectoryEntry("other", EntryType.DIRECTORY, Path("/dummy")),
         ]
         listing = make_listing(entries)
         browser = make_mock_browser(listing, "current")
@@ -50,10 +50,10 @@ class TestCalcLeftSelectedIndex:
     def test_finds_current_dir_at_middle_position(self) -> None:
         """Returns correct index when current dir is in middle."""
         entries = [
-            DirectoryEntry("aaa", EntryType.DIRECTORY),
-            DirectoryEntry("bbb", EntryType.DIRECTORY),
-            DirectoryEntry("current", EntryType.DIRECTORY),
-            DirectoryEntry("ddd", EntryType.DIRECTORY),
+            DirectoryEntry("aaa", EntryType.DIRECTORY, Path("/dummy")),
+            DirectoryEntry("bbb", EntryType.DIRECTORY, Path("/dummy")),
+            DirectoryEntry("current", EntryType.DIRECTORY, Path("/dummy")),
+            DirectoryEntry("ddd", EntryType.DIRECTORY, Path("/dummy")),
         ]
         listing = make_listing(entries)
         browser = make_mock_browser(listing, "current")
@@ -62,8 +62,8 @@ class TestCalcLeftSelectedIndex:
     def test_finds_current_dir_at_last_position(self) -> None:
         """Returns last index when current dir is last in listing."""
         entries = [
-            DirectoryEntry("aaa", EntryType.DIRECTORY),
-            DirectoryEntry("zzz", EntryType.DIRECTORY),
+            DirectoryEntry("aaa", EntryType.DIRECTORY, Path("/dummy")),
+            DirectoryEntry("zzz", EntryType.DIRECTORY, Path("/dummy")),
         ]
         listing = make_listing(entries)
         browser = make_mock_browser(listing, "zzz")
@@ -83,8 +83,8 @@ class TestCalcLeftSelectedIndex:
     def test_returns_none_when_current_dir_not_found(self) -> None:
         """Returns None when current dir name not in listing."""
         entries = [
-            DirectoryEntry("other1", EntryType.DIRECTORY),
-            DirectoryEntry("other2", EntryType.DIRECTORY),
+            DirectoryEntry("other1", EntryType.DIRECTORY, Path("/dummy")),
+            DirectoryEntry("other2", EntryType.DIRECTORY, Path("/dummy")),
         ]
         listing = make_listing(entries)
         browser = make_mock_browser(listing, "missing")

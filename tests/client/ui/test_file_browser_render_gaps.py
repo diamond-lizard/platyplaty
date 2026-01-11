@@ -28,7 +28,7 @@ def _make_listing(entry: DirectoryEntry) -> DirectoryListing:
 
 def _make_mock_browser(width: int = 80) -> MagicMock:
     """Create a mock browser with minimal attributes for render_line testing."""
-    entry = DirectoryEntry(name="test.milk", entry_type=EntryType.FILE)
+    entry = DirectoryEntry(name="test.milk", entry_type=EntryType.FILE, path=Path("/dummy"))
     listing = _make_listing(entry)
     right_content = RightPaneDirectory(listing=listing)
     browser = MagicMock()

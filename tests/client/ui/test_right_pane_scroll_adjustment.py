@@ -44,7 +44,7 @@ class TestAdjustRightPaneScroll:
 
     def test_zero_pane_height_no_change(self) -> None:
         """Zero pane height returns early without changing offset."""
-        entries = [DirectoryEntry("file.milk", EntryType.FILE)]
+        entries = [DirectoryEntry("file.milk", EntryType.FILE, Path("/dummy"))]
         listing = make_listing(entries)
         content = RightPaneDirectory(listing)
         browser = make_mock_browser(content, 0, 5)
@@ -53,7 +53,7 @@ class TestAdjustRightPaneScroll:
 
     def test_negative_pane_height_no_change(self) -> None:
         """Negative pane height returns early without changing offset."""
-        entries = [DirectoryEntry("file.milk", EntryType.FILE)]
+        entries = [DirectoryEntry("file.milk", EntryType.FILE, Path("/dummy"))]
         listing = make_listing(entries)
         content = RightPaneDirectory(listing)
         browser = make_mock_browser(content, 0, 5)
@@ -90,7 +90,7 @@ class TestAdjustRightPaneScroll:
 
     def test_adjusts_when_selection_offscreen(self) -> None:
         """Adjusts scroll when selection would be off-screen."""
-        entries = [DirectoryEntry(f"file{i}.milk", EntryType.FILE) for i in range(50)]
+        entries = [DirectoryEntry(f"file{i}.milk", EntryType.FILE, Path("/dummy")) for i in range(50)]
         listing = make_listing(entries)
         content = RightPaneDirectory(listing)
         browser = make_mock_browser(content, 40, 0)
@@ -100,7 +100,7 @@ class TestAdjustRightPaneScroll:
 
     def test_idempotent_when_already_visible(self) -> None:
         """Returns same offset when selection is already visible."""
-        entries = [DirectoryEntry(f"file{i}.milk", EntryType.FILE) for i in range(20)]
+        entries = [DirectoryEntry(f"file{i}.milk", EntryType.FILE, Path("/dummy")) for i in range(20)]
         listing = make_listing(entries)
         content = RightPaneDirectory(listing)
         browser = make_mock_browser(content, 5, 0)

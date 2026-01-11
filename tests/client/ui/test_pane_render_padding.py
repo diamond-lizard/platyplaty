@@ -45,7 +45,7 @@ class TestSelectionPadding:
 
     def test_selected_entry_has_left_padding(self) -> None:
         """Selected entry should include left padding space."""
-        entries = [DirectoryEntry("test", EntryType.FILE)]
+        entries = [DirectoryEntry("test", EntryType.FILE, Path("/dummy"))]
         listing = make_listing(entries)
         # Width 20, name "test" is 4 chars, should have room for padding
         segments = render_pane_line(listing, 0, 20, False, selected_index=0)
@@ -54,7 +54,7 @@ class TestSelectionPadding:
 
     def test_selected_entry_has_right_padding(self) -> None:
         """Selected entry should include right padding space."""
-        entries = [DirectoryEntry("test", EntryType.FILE)]
+        entries = [DirectoryEntry("test", EntryType.FILE, Path("/dummy"))]
         listing = make_listing(entries)
         segments = render_pane_line(listing, 0, 20, False, selected_index=0)
         # Last segment should be a space (right padding)
@@ -62,7 +62,7 @@ class TestSelectionPadding:
 
     def test_padding_has_inverted_style(self) -> None:
         """Padding spaces should have the same inverted style as content."""
-        entries = [DirectoryEntry("test.milk", EntryType.FILE)]
+        entries = [DirectoryEntry("test.milk", EntryType.FILE, Path("/dummy"))]
         listing = make_listing(entries)
         segments = render_pane_line(listing, 0, 20, False, selected_index=0)
         # All segments should have black foreground on white background

@@ -6,6 +6,7 @@ and listing results in the file browser.
 
 from dataclasses import dataclass
 from enum import Enum, auto
+from pathlib import Path
 
 
 class EntryType(Enum):
@@ -25,10 +26,12 @@ class DirectoryEntry:
     Attributes:
         name: The entry name (filename or directory name).
         entry_type: The type of entry (directory, file, symlink, etc.).
+        path: The absolute path to this entry.
     """
 
     name: str
     entry_type: EntryType
+    path: Path
 
 
 @dataclass(frozen=True)

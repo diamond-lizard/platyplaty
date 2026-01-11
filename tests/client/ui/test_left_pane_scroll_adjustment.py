@@ -44,7 +44,7 @@ class TestAdjustLeftPaneScroll:
 
     def test_zero_pane_height_no_change(self) -> None:
         """Zero pane height returns early without changing offset."""
-        entries = [DirectoryEntry("current", EntryType.DIRECTORY)]
+        entries = [DirectoryEntry("current", EntryType.DIRECTORY, Path("/dummy"))]
         listing = make_listing(entries)
         browser = make_mock_browser(listing, "current", 5)
         adjust_left_pane_scroll(browser, 0)
@@ -52,7 +52,7 @@ class TestAdjustLeftPaneScroll:
 
     def test_negative_pane_height_no_change(self) -> None:
         """Negative pane height returns early without changing offset."""
-        entries = [DirectoryEntry("current", EntryType.DIRECTORY)]
+        entries = [DirectoryEntry("current", EntryType.DIRECTORY, Path("/dummy"))]
         listing = make_listing(entries)
         browser = make_mock_browser(listing, "current", 5)
         adjust_left_pane_scroll(browser, -1)
@@ -74,8 +74,8 @@ class TestAdjustLeftPaneScroll:
     def test_adjusts_when_selection_offscreen(self) -> None:
         """Adjusts scroll when selection would be off-screen."""
         # 50 entries, current dir is at index 40
-        entries = [DirectoryEntry(f"dir{i}", EntryType.DIRECTORY) for i in range(50)]
-        entries[40] = DirectoryEntry("current", EntryType.DIRECTORY)
+        entries = [DirectoryEntry(f"dir{i}", EntryType.DIRECTORY, Path("/dummy")) for i in range(50)]
+        entries[40] = DirectoryEntry("current", EntryType.DIRECTORY, Path("/dummy"))
         listing = make_listing(entries)
         # Scroll offset 0, pane height 16: visible range 0-15
         # Index 40 is not visible, should adjust
@@ -87,8 +87,8 @@ class TestAdjustLeftPaneScroll:
 
     def test_idempotent_when_already_visible(self) -> None:
         """Returns same offset when selection is already visible."""
-        entries = [DirectoryEntry(f"dir{i}", EntryType.DIRECTORY) for i in range(20)]
-        entries[5] = DirectoryEntry("current", EntryType.DIRECTORY)
+        entries = [DirectoryEntry(f"dir{i}", EntryType.DIRECTORY, Path("/dummy")) for i in range(20)]
+        entries[5] = DirectoryEntry("current", EntryType.DIRECTORY, Path("/dummy"))
         listing = make_listing(entries)
         # Index 5 is visible with scroll_offset=0, pane_height=16
         browser = make_mock_browser(listing, "current", 0)
@@ -99,7 +99,7 @@ class TestAdjustLeftPaneScroll:
 
     def test_item_not_found_uses_zero(self) -> None:
         """When current dir not found, index 0 is used."""
-        entries = [DirectoryEntry(f"dir{i}", EntryType.DIRECTORY) for i in range(10)]
+        entries = [DirectoryEntry(f"dir{i}", EntryType.DIRECTORY, Path("/dummy")) for i in range(10)]
         listing = make_listing(entries)
         browser = make_mock_browser(listing, "notfound", 5)
         adjust_left_pane_scroll(browser, 16)

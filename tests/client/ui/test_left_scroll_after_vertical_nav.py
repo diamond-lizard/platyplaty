@@ -73,16 +73,16 @@ class TestLeftScrollAfterVerticalNav:
         # Create a large parent directory (201 items)
         # Current dir "platyplaty" is at index 129
         left_entries = [
-            DirectoryEntry(f"dir{i:03d}", EntryType.DIRECTORY) for i in range(201)
+            DirectoryEntry(f"dir{i:03d}", EntryType.DIRECTORY, Path("/dummy")) for i in range(201)
         ]
-        left_entries[129] = DirectoryEntry("platyplaty", EntryType.DIRECTORY)
+        left_entries[129] = DirectoryEntry("platyplaty", EntryType.DIRECTORY, Path("/dummy"))
         left_listing = make_listing(left_entries)
 
         # Create a small middle directory (just a few items)
         middle_entries = [
-            DirectoryEntry("file1.milk", EntryType.FILE),
-            DirectoryEntry("file2.milk", EntryType.FILE),
-            DirectoryEntry("file3.milk", EntryType.FILE),
+            DirectoryEntry("file1.milk", EntryType.FILE, Path("/dummy")),
+            DirectoryEntry("file2.milk", EntryType.FILE, Path("/dummy")),
+            DirectoryEntry("file3.milk", EntryType.FILE, Path("/dummy")),
         ]
         middle_listing = make_listing(middle_entries)
 
@@ -140,16 +140,16 @@ class TestLeftScrollAfterVerticalNav:
         # Create a large parent directory (201 items)
         # Current dir "current_dir" is at index 129
         left_entries = [
-            DirectoryEntry(f"dir{i:03d}", EntryType.DIRECTORY) for i in range(201)
+            DirectoryEntry(f"dir{i:03d}", EntryType.DIRECTORY, Path("/dummy")) for i in range(201)
         ]
-        left_entries[129] = DirectoryEntry("current_dir", EntryType.DIRECTORY)
+        left_entries[129] = DirectoryEntry("current_dir", EntryType.DIRECTORY, Path("/dummy"))
         left_listing = make_listing(left_entries)
 
         # Create middle directory with items to navigate
         middle_entries = [
-            DirectoryEntry("file1.milk", EntryType.FILE),
-            DirectoryEntry("file2.milk", EntryType.FILE),
-            DirectoryEntry("file3.milk", EntryType.FILE),
+            DirectoryEntry("file1.milk", EntryType.FILE, Path("/dummy")),
+            DirectoryEntry("file2.milk", EntryType.FILE, Path("/dummy")),
+            DirectoryEntry("file3.milk", EntryType.FILE, Path("/dummy")),
         ]
         middle_listing = make_listing(middle_entries)
 
