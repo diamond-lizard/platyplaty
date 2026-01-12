@@ -3,6 +3,7 @@ name = "platyplaty"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
+    "cachetools>=6.2.4",
     "click>=8.3.1",
     "pydantic>=2.12.5",
     "textual>=7.0.0",
