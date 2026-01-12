@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from platyplaty.ui.nav_listing import get_selected_index, is_empty_or_inaccessible
-from platyplaty.ui.indicators import refresh_indicator_cache
+from platyplaty.ui.indicator_cache import refresh_indicator_cache
 
 if TYPE_CHECKING:
     from platyplaty.ui.nav_state import NavigationState

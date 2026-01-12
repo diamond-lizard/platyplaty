@@ -7,11 +7,8 @@ import cachetools
 import pytest
 
 from platyplaty.ui.directory_types import EntryType
-from platyplaty.ui.indicators import (
-    count_directory_contents,
-    directory_count_cache,
-    refresh_indicator_cache,
-)
+from platyplaty.ui.indicator_cache import refresh_indicator_cache
+from platyplaty.ui.indicators import count_directory_contents, directory_count_cache
 from platyplaty.ui.size_format import (
     file_size_cache,
     get_file_size,

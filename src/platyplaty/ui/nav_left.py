@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from platyplaty.ui.nav_access import check_directory_accessible
-from platyplaty.ui.indicators import refresh_indicator_cache
+from platyplaty.ui.indicator_cache import refresh_indicator_cache
 from platyplaty.ui.nav_listing import get_selected_entry, refresh_listing
 from platyplaty.ui.nav_memory import (
     restore_scroll_from_memory,
