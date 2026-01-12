@@ -17,7 +17,7 @@ from platyplaty.ui.indicators import calculate_indicator_layout, format_indicato
 
 
 def render_normal_entry(
-    entry: DirectoryEntry, width: int, show_indicators: bool = False
+    entry: DirectoryEntry, width: int, show_indicators: bool = True
 ) -> list[Segment]:
     """Render an entry with normal (non-selected) colors and 1-char indent."""
     bg_style = Style(bgcolor=BACKGROUND_COLOR)
@@ -43,7 +43,7 @@ def render_normal_entry(
 
 
 def render_selected_entry(
-    entry: DirectoryEntry, width: int, show_indicators: bool = False
+    entry: DirectoryEntry, width: int, show_indicators: bool = True
 ) -> list[Segment]:
     """Render an entry with inverted (selected) colors and padding."""
     fg, bg = get_inverted_colors(entry.entry_type)

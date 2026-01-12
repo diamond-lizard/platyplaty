@@ -26,7 +26,7 @@ def render_pane_line(
     is_left_pane: bool,
     scroll_offset: int = 0,
     selected_index: int | None = None,
-    show_indicators: bool = False,
+    show_indicators: bool = True,
 ) -> list[Segment]:
     """Render a single line of a pane.
 

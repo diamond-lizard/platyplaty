@@ -67,7 +67,8 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
         left_segments = render_pane_line(
             browser._left_listing, pane_y, pane_widths.left, is_left_pane=True,
             scroll_offset=browser._left_scroll_offset,
-            selected_index=_calc_left_selected_index(browser)
+            selected_index=_calc_left_selected_index(browser),
+            show_indicators=False
         )
         segments.extend(left_segments)
         segments.append(Segment(" ", Style(bgcolor=BACKGROUND_COLOR)))  # Gap

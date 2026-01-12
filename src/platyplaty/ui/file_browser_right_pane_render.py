@@ -41,6 +41,7 @@ def render_right_pane_line(
         return render_pane_line(
             content.listing, y, width, is_left_pane=False,
             scroll_offset=scroll_offset, selected_index=selected_index,
+            show_indicators=False,
         )
     # File preview - white text
     text = render_file_preview_line(content.lines, y, width)
