@@ -1,3 +1,7 @@
+Screen {
+    overflow: hidden;
+}
+
 #file_browser {
     height: 70%;
 }
