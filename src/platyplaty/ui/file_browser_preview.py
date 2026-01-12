@@ -12,13 +12,10 @@ from typing import TYPE_CHECKING
 from platyplaty.ui.file_browser_types import (
     RightPaneContent,
     RightPaneDirectory,
-    RightPaneFilePreview,
     RightPaneEmpty,
     RightPaneNoMilk,
-    RightPaneBinaryFile,
-    read_file_preview_lines,
-    BinaryFileError,
 )
+from platyplaty.ui.file_browser_file_preview import make_file_preview
 
 from platyplaty.ui.directory_types import EntryType
 from platyplaty.ui.directory import list_directory
@@ -28,7 +25,6 @@ if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
 
 
-FILE_SIZE_LIMIT = 10 * 1024 * 1024  # 10 MB
 
 def calc_right_selection(browser: FileBrowser, dir_path: str) -> int:
     """Calculate the selected index for the right pane directory.
@@ -52,35 +48,6 @@ def calc_right_selection(browser: FileBrowser, dir_path: str) -> int:
     gen = (i for i, e in enumerate(listing.entries) if e.name == remembered_name)
     return next(gen, 0)
 
-
-def make_file_preview(browser: FileBrowser, entry: DirectoryEntry) -> RightPaneContent:
-    """Create file preview content for an entry.
-
-    Args:
-        browser: The file browser instance.
-        entry: The directory entry to preview.
-
-    Returns:
-        RightPaneFilePreview with file lines, or None if unreadable.
-    """
-    file_path = browser.current_dir / entry.name
-    # Check file size: empty or too large files trigger collapsed state
-    try:
-        file_size = file_path.stat().st_size
-    except OSError:
-        return None
-    if file_size == 0 or file_size > FILE_SIZE_LIMIT:
-        return None
-    # Read file content, handling race conditions (file vanished after listing)
-    try:
-        lines = read_file_preview_lines(file_path)
-    except (PermissionError, FileNotFoundError):
-        return None
-    except BinaryFileError:
-        return RightPaneBinaryFile()
-    if lines is None:
-        return None
-    return RightPaneFilePreview(lines)
 
 
 def get_right_pane_content(
