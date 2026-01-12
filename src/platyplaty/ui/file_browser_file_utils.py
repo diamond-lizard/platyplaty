@@ -9,6 +9,20 @@ from pathlib import Path
 from platyplaty.ui.file_browser_types import BinaryFileError
 
 
+def _read_lines_from_file(f, max_lines: int | None) -> tuple[str, ...]:
+    """Read lines from an open file handle.
+
+    Args:
+        f: Open file handle to read from.
+        max_lines: Maximum number of lines to read, or None for all.
+
+    Returns:
+        Tuple of lines stripped of trailing newlines.
+    """
+    if max_lines is None:
+        return tuple(line.rstrip('\n\r') for line in f.readlines())
+    return tuple(line.rstrip('\n\r') for _, line in zip(range(max_lines), f))
+
 def read_file_preview_lines(path: Path, max_lines: int | None = None) -> tuple[str, ...] | None:
     """Read lines from a file for preview.
 
@@ -21,9 +35,7 @@ def read_file_preview_lines(path: Path, max_lines: int | None = None) -> tuple[s
     """
     try:
         with path.open('r', encoding='utf-8') as f:
-            if max_lines is None:
-                return tuple(line.rstrip('\n\r') for line in f.readlines())
-            return tuple(line.rstrip('\n\r') for _, line in zip(range(max_lines), f))
+            return _read_lines_from_file(f, max_lines)
     except UnicodeDecodeError as e:
         raise BinaryFileError(str(path)) from e
     except OSError:
