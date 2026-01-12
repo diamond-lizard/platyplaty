@@ -24,7 +24,41 @@ class RightPaneFilePreview:
     lines: tuple[str, ...]
 
 
-RightPaneContent = RightPaneDirectory | RightPaneFilePreview | None
+@dataclass
+class RightPaneEmpty:
+    """Right pane content showing the 'empty' message."""
+
+    pass
+
+
+@dataclass
+class RightPaneNoMilk:
+    """Right pane content showing the 'no .milk files' message."""
+
+    pass
+
+
+@dataclass
+class RightPaneBinaryFile:
+    """Right pane content showing the 'BINARY FILE' message."""
+
+    pass
+
+
+class BinaryFileError(Exception):
+    """Raised when a file cannot be decoded as UTF-8."""
+
+    pass
+
+
+RightPaneContent = (
+    RightPaneDirectory
+    | RightPaneFilePreview
+    | RightPaneEmpty
+    | RightPaneNoMilk
+    | RightPaneBinaryFile
+    | None
+)
 
 
 def read_file_preview_lines(path: Path) -> tuple[str, ...] | None:
@@ -37,8 +71,10 @@ def read_file_preview_lines(path: Path) -> tuple[str, ...] | None:
         Tuple of lines from the file, or None if file cannot be read.
     """
     try:
-        with path.open('r', encoding='utf-8', errors='replace') as f:
+        with path.open('r', encoding='utf-8') as f:
             return tuple(f.readlines())
+    except UnicodeDecodeError as e:
+        raise BinaryFileError(str(path)) from e
     except OSError:
         return None
 
