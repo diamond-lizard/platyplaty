@@ -10,7 +10,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from platyplaty.ui.nav_access import check_directory_accessible
-from platyplaty.ui.nav_listing import refresh_listing
+from platyplaty.ui.indicators import refresh_indicator_cache
+from platyplaty.ui.nav_listing import get_selected_entry, refresh_listing
 from platyplaty.ui.nav_memory import (
     restore_scroll_from_memory,
     save_current_memory,
@@ -44,4 +45,7 @@ def move_left(state: NavigationState) -> bool:
     refresh_listing(state)
     state.selected_name = came_from
     restore_scroll_from_memory(state)
+    entry = get_selected_entry(state)
+    if entry is not None:
+        refresh_indicator_cache(entry.entry_type, entry.path)
     return True

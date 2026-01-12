@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 
 from platyplaty.ui.directory_types import DirectoryEntry, EntryType
 from platyplaty.ui.nav_access import check_directory_accessible
+from platyplaty.ui.indicators import refresh_indicator_cache
 from platyplaty.ui.nav_listing import (
     get_selected_entry,
     is_empty_or_inaccessible,
@@ -85,3 +86,6 @@ def _navigate_into_directory(state: NavigationState, name: str) -> None:
     state.current_dir = state.current_dir / name
     refresh_listing(state)
     restore_memory(state)
+    entry = get_selected_entry(state)
+    if entry is not None:
+        refresh_indicator_cache(entry.entry_type, entry.path)

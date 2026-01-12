@@ -7,6 +7,11 @@ using base-2 units (B, K, M, G, T).
 import os
 from pathlib import Path
 
+import cachetools
+
+file_size_cache: cachetools.LRUCache[tuple, int] = cachetools.LRUCache(maxsize=10000)
+symlink_size_cache: cachetools.LRUCache[tuple, int] = cachetools.LRUCache(maxsize=10000)
+
 
 def format_file_size(size_bytes: int) -> str:
     """Format file size for display.
@@ -42,6 +47,7 @@ def _format_value_with_unit(value: float, unit: str) -> str:
     return f"{formatted} {unit}"
 
 
+@cachetools.cached(file_size_cache)
 def get_file_size(path: Path) -> int:
     """Get file size in bytes using os.stat.
 
@@ -57,6 +63,7 @@ def get_file_size(path: Path) -> int:
         return 0
 
 
+@cachetools.cached(symlink_size_cache)
 def get_symlink_size(path: Path) -> int:
     """Get symlink file size in bytes using os.lstat (does not follow symlinks).
 
