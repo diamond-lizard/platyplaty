@@ -12,8 +12,8 @@ from platyplaty.ui.file_browser_pane_render import render_pane_line
 from platyplaty.ui.file_browser_types import (
     RightPaneContent,
     RightPaneDirectory,
-    render_file_preview_line,
 )
+from platyplaty.ui.file_browser_file_utils import render_file_preview_line
 
 
 def render_right_pane_line(

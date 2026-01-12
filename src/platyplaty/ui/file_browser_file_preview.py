@@ -12,9 +12,9 @@ from platyplaty.ui.file_browser_types import (
     RightPaneContent,
     RightPaneFilePreview,
     RightPaneBinaryFile,
-    read_file_preview_lines,
     BinaryFileError,
 )
+from platyplaty.ui.file_browser_file_utils import read_file_preview_lines
 
 if TYPE_CHECKING:
     from platyplaty.ui.directory_types import DirectoryEntry
@@ -45,8 +45,9 @@ def make_file_preview(
     if file_size == 0 or file_size > FILE_SIZE_LIMIT:
         return None
     # Read file content, handling race conditions (file vanished after listing)
+    pane_height = max(1, browser.size.height - 1)
     try:
-        lines = read_file_preview_lines(file_path)
+        lines = read_file_preview_lines(file_path, pane_height)
     except (PermissionError, FileNotFoundError):
         return None
     except BinaryFileError:
