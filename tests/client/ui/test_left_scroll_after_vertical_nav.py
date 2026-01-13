@@ -182,9 +182,9 @@ class TestLeftScrollAfterVerticalNav:
         assert visible_start <= current_dir_index <= visible_end, \
             "Precondition: current dir should be visible initially"
 
-        # Patch make_file_preview to avoid mock path issues
+        # Patch get_right_pane_content to avoid mock path issues
         with patch(
-            "platyplaty.ui.file_browser_refresh.make_file_preview",
+            "platyplaty.ui.file_browser_refresh.get_right_pane_content",
             return_value=None,
         ):
             await action_nav_down(browser)

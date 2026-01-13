@@ -10,8 +10,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from platyplaty.ui.directory import list_directory
-from platyplaty.ui.directory_types import DirectoryListing, EntryType
-from platyplaty.ui.file_browser_preview import calc_right_selection, make_file_preview
+from platyplaty.ui.directory_types import DirectoryListing
+from platyplaty.ui.file_browser_preview import calc_right_selection, get_right_pane_content
 from platyplaty.ui.file_browser_types import RightPaneDirectory
 
 if TYPE_CHECKING:
@@ -66,22 +66,17 @@ def refresh_right_pane(browser: FileBrowser) -> None:
 
     selected = browser._middle_listing.entries[browser.selected_index]
 
-    # Only show directory contents for directories
-    if selected.entry_type in (EntryType.DIRECTORY, EntryType.SYMLINK_TO_DIRECTORY):
-        selected_path = browser.current_dir / selected.name
-        browser._right_content = RightPaneDirectory(list_directory(selected_path))
-        path_str = str(selected_path)
-        browser._right_selected_index = calc_right_selection(
-            browser, path_str
-        )
+    browser._right_content = get_right_pane_content(browser, selected)
+
+    # Directory content: calculate selection and scroll position
+    if isinstance(browser._right_content, RightPaneDirectory):
+        path_str = str(browser.current_dir / selected.name)
+        browser._right_selected_index = calc_right_selection(browser, path_str)
         nav_state = browser._nav_state
         browser._right_scroll_offset = nav_state.get_scroll_offset_for_directory(
             path_str
         )
     else:
-        # File selected - show file preview
-        browser._right_content = make_file_preview(browser, selected)
         browser._right_selected_index = None
         browser._right_scroll_offset = 0
-
 
