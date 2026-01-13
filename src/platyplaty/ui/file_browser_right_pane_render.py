@@ -7,14 +7,38 @@ in the right pane. These are package-private functions.
 from rich.segment import Segment
 from rich.style import Style
 
-from platyplaty.ui.colors import BACKGROUND_COLOR, FILE_COLOR
+from platyplaty.ui.colors import (
+    BACKGROUND_COLOR, EMPTY_MESSAGE_BG, EMPTY_MESSAGE_FG, FILE_COLOR,
+)
 from platyplaty.ui.file_browser_pane_render import render_pane_line
 from platyplaty.ui.file_browser_types import (
+    RightPaneBinaryFile,
     RightPaneContent,
     RightPaneDirectory,
+    RightPaneEmpty,
+    RightPaneNoMilk,
 )
 from platyplaty.ui.file_browser_file_utils import render_file_preview_line
 
+
+def _render_special_message(
+    content: RightPaneEmpty | RightPaneNoMilk | RightPaneBinaryFile,
+    y: int,
+    width: int,
+) -> list[Segment]:
+    """Render special message (empty, no milk, binary) for right pane."""
+    bg_style = Style(bgcolor=BACKGROUND_COLOR)
+    if y != 0:
+        return [Segment(" " * width, bg_style)]
+    if isinstance(content, RightPaneEmpty):
+        msg = "empty"
+    elif isinstance(content, RightPaneNoMilk):
+        msg = "no .milk files"
+    else:
+        msg = "BINARY FILE"
+    text = msg.ljust(width)[:width]
+    style = Style(color=EMPTY_MESSAGE_FG, bgcolor=EMPTY_MESSAGE_BG)
+    return [Segment(text, style)]
 
 def render_right_pane_line(
     content: RightPaneContent, y: int, width: int,
@@ -43,6 +67,8 @@ def render_right_pane_line(
             scroll_offset=scroll_offset, selected_index=selected_index,
             show_indicators=False,
         )
+    if isinstance(content, (RightPaneEmpty, RightPaneNoMilk, RightPaneBinaryFile)):
+        return _render_special_message(content, y, width)
     # File preview - white text
     text = render_file_preview_line(content.lines, y, width)
     style = Style(color=FILE_COLOR, bgcolor=BACKGROUND_COLOR)

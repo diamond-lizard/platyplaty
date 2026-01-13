@@ -28,6 +28,8 @@ def make_browser(current_dir: Path) -> MagicMock:
     browser.current_dir = current_dir
     browser._nav_state = MagicMock()
     browser._nav_state.get_selected_name_for_directory.return_value = None
+    browser.size = MagicMock()
+    browser.size.height = 32
     return browser
 
 

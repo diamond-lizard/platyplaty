@@ -12,7 +12,7 @@ down in the parent directory listing.
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock, AsyncMock, patch
 
 import pytest
 
@@ -182,8 +182,12 @@ class TestLeftScrollAfterVerticalNav:
         assert visible_start <= current_dir_index <= visible_end, \
             "Precondition: current dir should be visible initially"
 
-        # Now call action_nav_down
-        await action_nav_down(browser)
+        # Patch make_file_preview to avoid mock path issues
+        with patch(
+            "platyplaty.ui.file_browser_refresh.make_file_preview",
+            return_value=None,
+        ):
+            await action_nav_down(browser)
 
         # After navigation, current dir should STILL be visible
         visible_start = browser._left_scroll_offset
