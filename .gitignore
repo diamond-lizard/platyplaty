@@ -1,3 +1,7 @@
 .github
 reference
 build/
+bin
+conf
+debug
+plan
