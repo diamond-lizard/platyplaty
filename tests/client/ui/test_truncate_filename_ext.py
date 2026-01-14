@@ -2,7 +2,7 @@
 """Unit tests for truncate_filename_with_extension."""
 
 
-from platyplaty.ui.truncation import truncate_filename_with_extension
+from platyplaty.ui.truncation_filename import truncate_filename_with_extension
 
 
 class TestTruncateFilenameStage1:
