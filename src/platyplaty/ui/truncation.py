@@ -96,3 +96,28 @@ def truncate_filename_with_extension(name: str, ext: str, width: int) -> str:
     # Stage 5: Absolute minimum (width == 3)
     # Return v~~ (first char + tilde for base + tilde for ext, dot omitted)
     return (name[0] if name else (ext[1] if len(ext) > 1 else "~")) + "~~"
+
+def truncate_filename_no_extension(name: str, width: int) -> str:
+    """Truncate a filename without extension using simple right truncation.
+
+    For files without extensions, truncate from the right with a single tilde.
+    Minimum is 2 characters (first letter + tilde).
+
+    Args:
+        name: The filename (without extension).
+        width: Maximum width in characters.
+
+    Returns:
+        The truncated filename. Edge cases:
+        - width=0: returns empty string
+        - width=1: returns first char (or tilde if name is empty)
+        - If name fits: returns as-is
+        - If name too long: returns first (width-1) chars + tilde
+    """
+    if width <= 0:
+        return ""
+    if width == 1:
+        return name[0] if name else "~"
+    if len(name) <= width:
+        return name
+    return name[: width - 1] + "~"
