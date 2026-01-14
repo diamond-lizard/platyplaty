@@ -4,9 +4,10 @@ This module provides functions for rendering individual directory entries
 with normal or selected (inverted) styling. These are package-private functions.
 """
 
+from pathlib import Path
+
 from rich.segment import Segment
 from rich.style import Style
-from pathlib import Path
 
 from platyplaty.ui.colors import (
     BACKGROUND_COLOR,
