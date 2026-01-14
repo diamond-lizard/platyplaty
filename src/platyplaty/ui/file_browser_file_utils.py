@@ -5,6 +5,7 @@ content. These are package-private functions.
 """
 
 from pathlib import Path
+from typing import TextIO
 
 from platyplaty.ui.file_browser_types import BinaryFileError
 
@@ -43,7 +44,7 @@ def truncate_line(line: str, width: int) -> str:
         current_width += char_width
     return ''.join(result)
 
-def _read_lines_from_file(f, max_lines: int | None) -> tuple[str, ...]:
+def _read_lines_from_file(f: TextIO, max_lines: int | None) -> tuple[str, ...]:
     """Read lines from an open file handle.
 
     Args:

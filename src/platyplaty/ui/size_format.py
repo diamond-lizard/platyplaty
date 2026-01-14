@@ -9,8 +9,12 @@ from pathlib import Path
 
 import cachetools
 
-file_size_cache: cachetools.LRUCache[tuple, int] = cachetools.LRUCache(maxsize=10000)
-symlink_size_cache: cachetools.LRUCache[tuple, int] = cachetools.LRUCache(maxsize=10000)
+file_size_cache: cachetools.LRUCache[tuple[Path], int] = (
+    cachetools.LRUCache(maxsize=10000)
+)
+symlink_size_cache: cachetools.LRUCache[tuple[Path], int] = (
+    cachetools.LRUCache(maxsize=10000)
+)
 
 
 def format_file_size(size_bytes: int) -> str:
