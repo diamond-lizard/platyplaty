@@ -11,7 +11,10 @@ from typing import TYPE_CHECKING
 
 from platyplaty.ui.directory import list_directory
 from platyplaty.ui.directory_types import DirectoryListing
-from platyplaty.ui.file_browser_preview import calc_right_selection, get_right_pane_content
+from platyplaty.ui.file_browser_preview import (
+    calc_right_selection,
+    get_right_pane_content,
+)
 from platyplaty.ui.file_browser_types import RightPaneDirectory
 
 if TYPE_CHECKING:

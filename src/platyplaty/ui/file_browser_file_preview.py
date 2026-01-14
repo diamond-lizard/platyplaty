@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from platyplaty.ui.file_browser_file_utils import read_file_preview_lines
 from platyplaty.ui.file_browser_types import (
+    BinaryFileError,
+    RightPaneBinaryFile,
     RightPaneContent,
     RightPaneFilePreview,
-    RightPaneBinaryFile,
-    BinaryFileError,
 )
-from platyplaty.ui.file_browser_file_utils import read_file_preview_lines
 
 if TYPE_CHECKING:
     from platyplaty.ui.directory_types import DirectoryEntry

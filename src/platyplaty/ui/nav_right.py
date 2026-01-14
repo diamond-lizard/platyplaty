@@ -10,8 +10,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from platyplaty.ui.directory_types import DirectoryEntry, EntryType
-from platyplaty.ui.nav_access import check_directory_accessible
 from platyplaty.ui.indicator_cache import refresh_indicator_cache
+from platyplaty.ui.nav_access import check_directory_accessible
 from platyplaty.ui.nav_listing import (
     get_selected_entry,
     is_empty_or_inaccessible,

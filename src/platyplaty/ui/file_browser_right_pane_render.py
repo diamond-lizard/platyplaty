@@ -8,8 +8,12 @@ from rich.segment import Segment
 from rich.style import Style
 
 from platyplaty.ui.colors import (
-    BACKGROUND_COLOR, EMPTY_MESSAGE_BG, EMPTY_MESSAGE_FG, FILE_COLOR,
+    BACKGROUND_COLOR,
+    EMPTY_MESSAGE_BG,
+    EMPTY_MESSAGE_FG,
+    FILE_COLOR,
 )
+from platyplaty.ui.file_browser_file_utils import render_file_preview_line
 from platyplaty.ui.file_browser_pane_render import render_pane_line
 from platyplaty.ui.file_browser_types import (
     RightPaneBinaryFile,
@@ -18,7 +22,6 @@ from platyplaty.ui.file_browser_types import (
     RightPaneEmpty,
     RightPaneNoMilk,
 )
-from platyplaty.ui.file_browser_file_utils import render_file_preview_line
 
 
 def _render_special_message(

@@ -9,16 +9,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from platyplaty.ui.directory import list_directory
+from platyplaty.ui.directory_types import EntryType
+from platyplaty.ui.file_browser_file_preview import make_file_preview
 from platyplaty.ui.file_browser_types import (
     RightPaneContent,
     RightPaneDirectory,
     RightPaneEmpty,
     RightPaneNoMilk,
 )
-from platyplaty.ui.file_browser_file_preview import make_file_preview
-
-from platyplaty.ui.directory_types import EntryType
-from platyplaty.ui.directory import list_directory
 
 if TYPE_CHECKING:
     from platyplaty.ui.directory_types import DirectoryEntry
