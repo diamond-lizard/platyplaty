@@ -28,7 +28,7 @@ def _make_listing(entry: DirectoryEntry) -> DirectoryListing:
 class TestMiddlePaneIndicators:
     """Tests verifying indicators appear only in middle pane."""
 
-    @patch("platyplaty.ui.indicators.count_directory_contents", return_value=42)
+    @patch("platyplaty.ui.file_browser_entry_render.count_directory_contents", return_value=42)
     def test_middle_pane_shows_indicator(self, mock_count) -> None:
         """Middle pane with show_indicators=True shows indicator."""
         entry = DirectoryEntry(
@@ -42,7 +42,7 @@ class TestMiddlePaneIndicators:
         content = "".join(seg.text for seg in result)
         assert "42" in content, f"Indicator '42' not found in content: {content!r}"
 
-    @patch("platyplaty.ui.indicators.count_directory_contents", return_value=42)
+    @patch("platyplaty.ui.file_browser_entry_render.count_directory_contents", return_value=42)
     def test_left_pane_no_indicator(self, mock_count) -> None:
         """Left pane (show_indicators=False) should not show indicator."""
         entry = DirectoryEntry(
@@ -55,7 +55,7 @@ class TestMiddlePaneIndicators:
         content = "".join(seg.text for seg in result)
         assert "42" not in content, f"Indicator '42' found in left pane: {content!r}"
 
-    @patch("platyplaty.ui.indicators.count_directory_contents", return_value=42)
+    @patch("platyplaty.ui.file_browser_entry_render.count_directory_contents", return_value=42)
     def test_default_show_indicators_is_true(self, mock_count) -> None:
         """Default show_indicators=True does show indicator."""
         entry = DirectoryEntry(
