@@ -13,7 +13,9 @@ from platyplaty.ui.directory_entry import get_entry_type, should_include
 from platyplaty.ui.directory_types import EntryType
 from platyplaty.ui.size_format import format_file_size, get_file_size, get_symlink_size
 
-directory_count_cache: cachetools.LRUCache[tuple, int] = cachetools.LRUCache(maxsize=10000)
+directory_count_cache: cachetools.LRUCache[tuple, int] = (
+    cachetools.LRUCache(maxsize=10000)
+)
 
 
 @cachetools.cached(directory_count_cache)

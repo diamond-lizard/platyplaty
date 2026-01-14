@@ -55,9 +55,14 @@ def _read_lines_from_file(f, max_lines: int | None) -> tuple[str, ...]:
     """
     if max_lines is None:
         return tuple(line.rstrip('\n\r') for line in f.readlines())
-    return tuple(line.rstrip('\n\r') for _, line in zip(range(max_lines), f))
+    return tuple(
+        line.rstrip('\n\r')
+        for _, line in zip(range(max_lines), f, strict=False)
+    )
 
-def read_file_preview_lines(path: Path, max_lines: int | None = None) -> tuple[str, ...] | None:
+def read_file_preview_lines(
+    path: Path, max_lines: int | None = None,
+) -> tuple[str, ...] | None:
     """Read lines from a file for preview.
 
     Args:
