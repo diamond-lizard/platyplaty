@@ -13,7 +13,15 @@ from platyplaty.ui.colors import (
     get_inverted_colors,
 )
 from platyplaty.ui.directory_types import DirectoryEntry
-from platyplaty.ui.indicators import calculate_indicator_layout, format_indicator
+from platyplaty.ui.indicators import count_directory_contents, format_indicator
+from platyplaty.ui.truncation_entry import truncate_entry
+
+
+def _get_indicator_value(entry_type, path):
+    """Get indicator value in format expected by truncate_entry."""
+    if entry_type.name == "DIRECTORY":
+        return count_directory_contents(path)
+    return format_indicator(entry_type, path)
 
 
 def render_normal_entry(
@@ -25,12 +33,11 @@ def render_normal_entry(
     fg_style = Style(color=color, bgcolor=BACKGROUND_COLOR)
     # Reserve 1 char left and right for alignment with selected items
     content_width = max(0, width - 2)
-    if show_indicators:
-        indicator = format_indicator(entry.entry_type, entry.path)
-        display_text = calculate_indicator_layout(entry.name, indicator, content_width)
-    else:
-        display_text = entry.name
-    content_text = display_text[:content_width].ljust(content_width)
+    indicator = _get_indicator_value(entry.entry_type, entry.path) if show_indicators else None
+    display_text = truncate_entry(
+        entry.name, entry.entry_type, indicator, content_width, show_indicators
+    )
+    content_text = display_text.ljust(content_width)
     # Build segments: left space + content + right space
     segments = []
     if width > 0:
@@ -50,12 +57,11 @@ def render_selected_entry(
     style = Style(color=fg, bgcolor=bg)
     # Reserve 1 char left and right for selection padding
     content_width = max(0, width - 2)
-    if show_indicators:
-        indicator = format_indicator(entry.entry_type, entry.path)
-        display_text = calculate_indicator_layout(entry.name, indicator, content_width)
-    else:
-        display_text = entry.name
-    content_text = display_text[:content_width].ljust(content_width)
+    indicator = _get_indicator_value(entry.entry_type, entry.path) if show_indicators else None
+    display_text = truncate_entry(
+        entry.name, entry.entry_type, indicator, content_width, show_indicators
+    )
+    content_text = display_text.ljust(content_width)
     # Build segments: left pad + content + right pad (all highlighted)
     segments = []
     if width > 0:
