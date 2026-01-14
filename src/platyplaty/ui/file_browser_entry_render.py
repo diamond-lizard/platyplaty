@@ -33,7 +33,10 @@ def render_normal_entry(
     fg_style = Style(color=color, bgcolor=BACKGROUND_COLOR)
     # Reserve 1 char left and right for alignment with selected items
     content_width = max(0, width - 2)
-    indicator = _get_indicator_value(entry.entry_type, entry.path) if show_indicators else None
+    if show_indicators:
+        indicator = _get_indicator_value(entry.entry_type, entry.path)
+    else:
+        indicator = None
     display_text = truncate_entry(
         entry.name, entry.entry_type, indicator, content_width, show_indicators
     )
@@ -57,7 +60,10 @@ def render_selected_entry(
     style = Style(color=fg, bgcolor=bg)
     # Reserve 1 char left and right for selection padding
     content_width = max(0, width - 2)
-    indicator = _get_indicator_value(entry.entry_type, entry.path) if show_indicators else None
+    if show_indicators:
+        indicator = _get_indicator_value(entry.entry_type, entry.path)
+    else:
+        indicator = None
     display_text = truncate_entry(
         entry.name, entry.entry_type, indicator, content_width, show_indicators
     )
