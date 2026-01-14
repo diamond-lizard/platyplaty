@@ -41,20 +41,6 @@ class TestEmptyFile:
         result = get_right_pane_content(browser, entry)
         assert result is None
 
-
-class TestLargeFile:
-    """Tests for large file handling (TASK-0850)."""
-
-    def test_large_file_returns_none(self, tmp_path: Path) -> None:
-        """File larger than 10 MB returns None (collapsed state)."""
-        large_file = tmp_path / "large.milk"
-        large_file.write_bytes(b"x" * (10 * 1024 * 1024 + 1))
-        browser = make_browser(tmp_path)
-        entry = make_entry("large.milk", EntryType.FILE, large_file)
-        result = get_right_pane_content(browser, entry)
-        assert result is None
-
-
 class TestPermissionDenied:
     """Tests for permission denied handling (TASK-0860)."""
 

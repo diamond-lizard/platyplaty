@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
 
 
-FILE_SIZE_LIMIT = 10 * 1024 * 1024  # 10 MB
 
 
 def make_file_preview(
@@ -37,12 +36,12 @@ def make_file_preview(
         RightPaneFilePreview with file lines, or None if unreadable.
     """
     file_path = browser.current_dir / entry.name
-    # Check file size: empty or too large files trigger collapsed state
+    # Check file size: empty files trigger collapsed state
     try:
         file_size = file_path.stat().st_size
     except OSError:
         return None
-    if file_size == 0 or file_size > FILE_SIZE_LIMIT:
+    if file_size == 0:
         return None
     # Read file content, handling race conditions (file vanished after listing)
     pane_height = max(1, browser.size.height - 1)
