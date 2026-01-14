@@ -6,18 +6,19 @@ with normal or selected (inverted) styling. These are package-private functions.
 
 from rich.segment import Segment
 from rich.style import Style
+from pathlib import Path
 
 from platyplaty.ui.colors import (
     BACKGROUND_COLOR,
     get_entry_color,
     get_inverted_colors,
 )
-from platyplaty.ui.directory_types import DirectoryEntry
+from platyplaty.ui.directory_types import DirectoryEntry, EntryType
 from platyplaty.ui.indicators import count_directory_contents, format_indicator
 from platyplaty.ui.truncation_entry import truncate_entry
 
 
-def _get_indicator_value(entry_type, path):
+def _get_indicator_value(entry_type: EntryType, path: Path) -> int | str:
     """Get indicator value in format expected by truncate_entry."""
     if entry_type.name == "DIRECTORY":
         return count_directory_contents(path)
