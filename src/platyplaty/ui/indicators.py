@@ -70,25 +70,3 @@ def format_indicator(entry_type: EntryType, path: Path) -> str:
         return f"-> {format_file_size(get_symlink_size(path))}"
     return ""
 
-
-def calculate_indicator_layout(name: str, indicator: str, pane_width: int) -> str:
-    """Calculate layout for name and indicator within pane width.
-
-    Returns a string with name left-justified and indicator right-justified,
-    separated by at least one space. If the combined length exceeds pane_width,
-    the content overflows (truncation is handled by Part 80).
-
-    Args:
-        name: Entry name to display.
-        indicator: Indicator string (count, size, or arrow prefix with count/size).
-        pane_width: Available width for the line.
-
-    Returns:
-        Formatted line with name and indicator, padded to pane_width if fits.
-    """
-    min_gap = 1
-    total_content = len(name) + min_gap + len(indicator)
-    if total_content <= pane_width:
-        gap = pane_width - len(name) - len(indicator)
-        return f"{name}{' ' * gap}{indicator}"
-    return f"{name} {indicator}"
