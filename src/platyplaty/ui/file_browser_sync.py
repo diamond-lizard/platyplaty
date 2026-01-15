@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from platyplaty.ui.directory_types import DirectoryListing
+from platyplaty.ui.directory_types import DirectoryEntry, DirectoryListing
 from platyplaty.ui.file_browser_refresh import refresh_listings
 from platyplaty.ui.file_browser_scroll import (
     adjust_left_pane_scroll,
@@ -72,3 +72,21 @@ def refresh_panes(browser: FileBrowser) -> None:
     adjust_left_pane_scroll(browser, browser.size.height - 1)
     adjust_right_pane_scroll(browser, browser.size.height - 1)
     browser.refresh()
+
+
+def get_selected_entry(browser: FileBrowser) -> DirectoryEntry | None:
+    """Get the currently selected entry from the middle pane.
+
+    Args:
+        browser: The file browser instance.
+
+    Returns:
+        The selected DirectoryEntry, or None if no valid selection.
+    """
+    if not browser._middle_listing or not browser._middle_listing.entries:
+        return None
+    entries = browser._middle_listing.entries
+    idx = browser.selected_index
+    if idx is None or idx < 0 or idx >= len(entries):
+        return None
+    return entries[idx]
