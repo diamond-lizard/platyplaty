@@ -14,6 +14,7 @@ from platyplaty.dispatch_tables import DispatchTable
 from platyplaty.errors import InaccessibleDirectoryError
 from platyplaty.ui.file_browser_refresh import refresh_listings
 from platyplaty.ui.nav_state import NavigationState
+from platyplaty.ui.layout_state import LayoutState
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
@@ -68,6 +69,7 @@ def init_browser(
     browser._middle_listing = None
     browser._right_content = None
     browser._right_selected_index = None
+    browser._layout_state = LayoutState.STANDARD
 
     # Navigation state manager
     browser._nav_state = NavigationState(browser.current_dir)

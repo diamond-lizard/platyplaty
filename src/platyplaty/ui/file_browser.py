@@ -28,6 +28,7 @@ from platyplaty.ui.file_browser_sync import (
 )
 from platyplaty.ui.file_browser_types import RightPaneContent
 from platyplaty.ui.nav_state import NavigationState
+from platyplaty.ui.layout_state import LayoutState
 
 
 class FileBrowser(Widget):
@@ -48,6 +49,7 @@ class FileBrowser(Widget):
     _middle_listing: DirectoryListing | None
     _right_content: RightPaneContent
     _right_selected_index: int | None
+    _layout_state: LayoutState
 
     def __init__(
         self,

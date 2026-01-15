@@ -16,6 +16,7 @@ from platyplaty.ui.file_browser_preview import (
     get_right_pane_content,
 )
 from platyplaty.ui.file_browser_types import RightPaneDirectory
+from platyplaty.ui.layout_state import get_layout_state
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
@@ -55,6 +56,7 @@ def refresh_right_pane(browser: FileBrowser) -> None:
     """
     if not browser._middle_listing or not browser._middle_listing.entries:
         browser._right_content = None
+        browser._layout_state = get_layout_state(browser._right_content)
         browser._right_selected_index = None
         browser._right_scroll_offset = 0
         return
@@ -63,6 +65,7 @@ def refresh_right_pane(browser: FileBrowser) -> None:
             or browser.selected_index < 0
             or browser.selected_index >= len(browser._middle_listing.entries)):
         browser._right_content = None
+        browser._layout_state = get_layout_state(browser._right_content)
         browser._right_selected_index = None
         browser._right_scroll_offset = 0
         return
@@ -70,6 +73,7 @@ def refresh_right_pane(browser: FileBrowser) -> None:
     selected = browser._middle_listing.entries[browser.selected_index]
 
     browser._right_content = get_right_pane_content(browser, selected)
+    browser._layout_state = get_layout_state(browser._right_content)
 
     # Directory content: calculate selection and scroll position
     if isinstance(browser._right_content, RightPaneDirectory):
