@@ -7,12 +7,6 @@ panes. The right pane absorbs remaining space.
 """
 
 from dataclasses import dataclass
-from enum import Enum, auto
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from platyplaty.ui.file_browser_types import RightPaneContent
-
 
 @dataclass(frozen=True)
 class PaneWidths:
@@ -30,14 +24,6 @@ class PaneWidths:
     left: int
     middle: int
     right: int
-
-
-class LayoutState(Enum):
-    """Layout states for the file browser panes."""
-
-    STANDARD = auto()
-    STRETCHED = auto()
-
 
 def calculate_pane_widths(terminal_width: int) -> PaneWidths:
     """Calculate pane widths from terminal width using 1:3:4 ratio.
@@ -87,17 +73,3 @@ def calculate_pane_widths(terminal_width: int) -> PaneWidths:
 
     return PaneWidths(left=left_width, middle=middle_width, right=right_width)
 
-
-def get_layout_state(content: "RightPaneContent") -> LayoutState:
-    """Determine layout state based on right pane content.
-
-    Args:
-        content: The right pane content, or None if collapsed.
-
-    Returns:
-        STANDARD if content should be displayed.
-        STRETCHED if right pane should collapse.
-    """
-    if content is None:
-        return LayoutState.STRETCHED
-    return LayoutState.STANDARD

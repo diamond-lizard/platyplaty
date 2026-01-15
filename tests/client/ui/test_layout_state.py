@@ -14,7 +14,7 @@ from platyplaty.ui.file_browser_types import (
     RightPaneFilePreview,
     RightPaneNoMilk,
 )
-from platyplaty.ui.layout import LayoutState, get_layout_state
+from platyplaty.ui.layout_state import LayoutState, get_layout_state
 
 
 def test_standard_for_directory() -> None:
