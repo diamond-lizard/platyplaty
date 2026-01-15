@@ -38,11 +38,13 @@ def test_stretched_widths_100_chars() -> None:
 
 def test_stretched_widths_fills_terminal() -> None:
     """Verify that stretched layout fills terminal width exactly."""
-    for width in [40, 60, 80, 100, 120, 160, 200]:
+    # Include narrow widths to test left pane disappearance
+    for width in list(range(1, 20)) + [40, 60, 80, 100, 120, 160, 200]:
         result = calculate_stretched_widths(width)
-        # left_content + gap + middle_content + gap + right = terminal
-        total = result.left + 1 + result.middle + 1 + result.right
-        assert total == width, f"Width {width}: {total} != {width}"
+        # Account for gaps only when pane exists
+        left_with_gap = result.left + 1 if result.left > 0 else 0
+        total = left_with_gap + result.middle + 1 + result.right
+        assert total == width, f"Width {width}: total {total} != {width}"
 
 
 def test_stretched_widths_zero() -> None:
@@ -75,3 +77,15 @@ def test_stretched_middle_larger_than_standard() -> None:
         standard = calculate_standard_widths(width)
         stretched = calculate_stretched_widths(width)
         assert stretched.middle > standard.middle
+
+
+def test_stretched_left_pane_disappearance() -> None:
+    """Test that left pane disappears when left_raw is zero.
+
+    Same rule as standard layout: when int(width * 0.125) = 0,
+    the left pane width should be 0 (disappears entirely).
+    """
+    # At width 7: left_raw = int(7 * 0.125) = 0
+    result = calculate_stretched_widths(7)
+    assert result.left == 0
+
