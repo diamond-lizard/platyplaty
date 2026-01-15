@@ -70,8 +70,8 @@ def test_stretched_widths_minimum_enforcement() -> None:
 
 def test_stretched_middle_larger_than_standard() -> None:
     """Verify stretched middle pane is larger than standard layout."""
-    from platyplaty.ui.layout import calculate_pane_widths
+    from platyplaty.ui.layout import calculate_standard_widths
     for width in [80, 100, 120]:
-        standard = calculate_pane_widths(width)
+        standard = calculate_standard_widths(width)
         stretched = calculate_stretched_widths(width)
         assert stretched.middle > standard.middle

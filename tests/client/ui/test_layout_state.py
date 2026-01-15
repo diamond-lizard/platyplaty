@@ -61,3 +61,22 @@ def test_stretched_for_none_inaccessible() -> None:
 def test_stretched_for_none_empty_file() -> None:
     """TASK-1600: get_layout_state returns STRETCHED for None (empty file)."""
     assert get_layout_state(None) == LayoutState.STRETCHED
+
+
+def test_calculate_pane_widths_standard_state() -> None:
+    """TASK-3800: calculate_pane_widths dispatches to standard for STANDARD state."""
+    from platyplaty.ui.layout import calculate_pane_widths, calculate_standard_widths
+    width = 100
+    result = calculate_pane_widths(width, LayoutState.STANDARD)
+    expected = calculate_standard_widths(width)
+    assert result == expected
+
+
+def test_calculate_pane_widths_stretched_state() -> None:
+    """TASK-3800: calculate_pane_widths dispatches to stretched for STRETCHED state."""
+    from platyplaty.ui.layout import calculate_pane_widths
+    from platyplaty.ui.layout_stretched import calculate_stretched_widths
+    width = 100
+    result = calculate_pane_widths(width, LayoutState.STRETCHED)
+    expected = calculate_stretched_widths(width)
+    assert result == expected

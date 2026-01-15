@@ -8,6 +8,8 @@ panes. The right pane absorbs remaining space.
 
 from dataclasses import dataclass
 
+from platyplaty.ui.layout_state import LayoutState
+
 @dataclass(frozen=True)
 class PaneWidths:
     """Container for calculated pane widths.
@@ -25,7 +27,7 @@ class PaneWidths:
     middle: int
     right: int
 
-def calculate_pane_widths(terminal_width: int) -> PaneWidths:
+def calculate_standard_widths(terminal_width: int) -> PaneWidths:
     """Calculate pane widths from terminal width using 1:3:4 ratio.
 
     The algorithm:
@@ -73,3 +75,21 @@ def calculate_pane_widths(terminal_width: int) -> PaneWidths:
 
     return PaneWidths(left=left_width, middle=middle_width, right=right_width)
 
+
+def calculate_pane_widths(terminal_width: int, layout_state: LayoutState) -> PaneWidths:
+    """Calculate pane widths based on terminal width and layout state.
+
+    This is the unified entry point for layout calculation. It dispatches
+    to either standard (1:3:4) or stretched calculation based on state.
+
+    Args:
+        terminal_width: Total terminal width in characters.
+        layout_state: STANDARD or STRETCHED layout state.
+
+    Returns:
+        PaneWidths with calculated widths for each pane.
+    """
+    if layout_state == LayoutState.STRETCHED:
+        from platyplaty.ui.layout_stretched import calculate_stretched_widths
+        return calculate_stretched_widths(terminal_width)
+    return calculate_standard_widths(terminal_width)

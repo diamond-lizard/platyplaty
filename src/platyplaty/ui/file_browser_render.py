@@ -22,7 +22,7 @@ from platyplaty.ui.file_browser_path_render import (
     text_to_segments,
 )
 from platyplaty.ui.file_browser_right_pane_render import render_right_pane_line
-from platyplaty.ui.layout import calculate_pane_widths
+from platyplaty.ui.layout import calculate_standard_widths
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
@@ -57,7 +57,7 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
         path_segments = text_to_segments(path_text, browser.app.console)
         return Strip(path_segments)
 
-    pane_widths = calculate_pane_widths(width)
+    pane_widths = calculate_standard_widths(width)
     pane_y = y - 1  # Panes start at y=1, so subtract 1
 
     segments: list[Segment] = []
