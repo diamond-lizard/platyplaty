@@ -6,7 +6,8 @@ layout state where the right pane is collapsed.
 
 import pytest
 
-from platyplaty.ui.layout import PaneWidths, calculate_stretched_widths
+from platyplaty.ui.layout import PaneWidths
+from platyplaty.ui.layout_stretched import calculate_stretched_widths
 
 
 def test_stretched_widths_80_chars() -> None:
