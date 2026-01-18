@@ -11,6 +11,7 @@ from platyplaty.types.key_constants import (
     SPECIAL_KEYS,
 )
 
+
 def is_valid_key_name(key: str) -> bool:
     """Check if a key name is valid.
 
