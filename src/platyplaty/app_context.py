@@ -9,9 +9,7 @@ from typing import TYPE_CHECKING
 
 from platyplaty.dispatch_tables import (
     DispatchTable,
-    build_client_dispatch_table,
     build_file_browser_dispatch_table,
-    build_renderer_dispatch_table,
 )
 
 if TYPE_CHECKING:
@@ -51,30 +49,13 @@ class AppContext:
     file_browser_dispatch_table: DispatchTable = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        """Build dispatch tables from keybindings.
-
-        Called automatically after dataclass initialization. Builds all three
-        dispatch tables from the keybindings in config.
-        """
+        """Build dispatch tables from keybindings."""
         kb = self.config.keybindings
-
-        # Build renderer dispatch table
-        self.renderer_dispatch_table = build_renderer_dispatch_table(
-            next_preset_key=kb.renderer.next_preset,
-            previous_preset_key=kb.renderer.previous_preset,
-            quit_key=kb.renderer.quit,
-        )
-
-        # Build client dispatch table
-        self.client_dispatch_table = build_client_dispatch_table(
-            quit_key=kb.client.quit,
-        )
-        self.client_dispatch_table["ctrl+c"] = "quit"
 
         # Build file browser dispatch table
         self.file_browser_dispatch_table = build_file_browser_dispatch_table(
-            nav_up_keys=kb.file_browser.nav_up,
-            nav_down_keys=kb.file_browser.nav_down,
-            nav_left_keys=kb.file_browser.nav_left,
-            nav_right_keys=kb.file_browser.nav_right,
+            nav_up_keys=kb.globals.navigate_up,
+            nav_down_keys=kb.globals.navigate_down,
+            nav_left_keys=kb.file_browser.open_parent,
+            nav_right_keys=kb.globals.open_selected,
         )

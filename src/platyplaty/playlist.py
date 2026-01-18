@@ -40,10 +40,14 @@ class Playlist:
 
     def current(self) -> Path:
         """Return the current preset path."""
+        if self._playing_index is None:
+            raise ValueError("No preset is currently playing")
         return self.presets[self._playing_index]
 
     def at_end(self) -> bool:
         """Return True if at the last preset."""
+        if self._playing_index is None:
+            return True
         return self._playing_index >= len(self.presets) - 1
 
     def next(self) -> Path | None:
@@ -52,6 +56,8 @@ class Playlist:
         Returns:
             The next preset path, or None if at end and loop is False.
         """
+        if self._playing_index is None:
+            return None
         if self.at_end() and not self.loop:
             return None
         if self.at_end():
@@ -66,6 +72,8 @@ class Playlist:
         Returns:
             The previous preset path, or None if at start and loop is False.
         """
+        if self._playing_index is None:
+            return None
         if self._playing_index == 0 and not self.loop:
             return None
         if self._playing_index == 0:
