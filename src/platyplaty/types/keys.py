@@ -1,35 +1,15 @@
 #!/usr/bin/env python3
-"""Valid key names for keybindings configuration.
+"""Key validation functions for keybindings configuration."""
 
-Key names follow the Textual naming convention.
-"""
-
-import re
 import sys
 
-# Single character keys (letters and digits)
-_LETTER_KEYS = set("abcdefghijklmnopqrstuvwxyz")
-_DIGIT_KEYS = set("0123456789")
-
-# Special keys
-_SPECIAL_KEYS = frozenset({
-    "escape", "enter", "tab", "space", "backspace", "delete",
-    "up", "down", "left", "right",
-    "home", "end", "pageup", "pagedown", "insert",
-    "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10",
-    "f11", "f12", "f13", "f14", "f15", "f16", "f17", "f18", "f19", "f20",
-    "f21", "f22", "f23", "f24",
-})
-
-# Valid modifier prefixes (full names only)
-_MODIFIER_PREFIXES = frozenset({"ctrl+", "shift+", "alt+"})
-
-# Abbreviated modifier prefixes (rejected with fatal error)
-_ABBREVIATED_PREFIXES = frozenset({"c-", "s-", "a-"})
-
-# Pattern for abbreviated modifiers at start
-_ABBREVIATED_PATTERN = re.compile(r"^(c-|s-|a-)")
-
+from platyplaty.types.key_constants import (
+    ABBREVIATED_PATTERN,
+    DIGIT_KEYS,
+    LETTER_KEYS,
+    MODIFIER_PREFIXES,
+    SPECIAL_KEYS,
+)
 
 def is_valid_key_name(key: str) -> bool:
     """Check if a key name is valid.
@@ -42,16 +22,16 @@ def is_valid_key_name(key: str) -> bool:
     """
     # Strip modifiers and validate base key
     base_key = key
-    for prefix in _MODIFIER_PREFIXES:
+    for prefix in MODIFIER_PREFIXES:
         while base_key.startswith(prefix):
             base_key = base_key[len(prefix):]
 
     # Base key must be a letter, digit, or special key
-    if base_key in _LETTER_KEYS:
+    if base_key in LETTER_KEYS:
         return True
-    if base_key in _DIGIT_KEYS:
+    if base_key in DIGIT_KEYS:
         return True
-    return base_key in _SPECIAL_KEYS
+    return base_key in SPECIAL_KEYS
 
 
 def has_abbreviated_modifier(key: str) -> bool:
@@ -63,7 +43,7 @@ def has_abbreviated_modifier(key: str) -> bool:
     Returns:
         True if the key uses c-, s-, or a- prefixes.
     """
-    return bool(_ABBREVIATED_PATTERN.match(key))
+    return bool(ABBREVIATED_PATTERN.match(key))
 
 
 def warn_invalid_key(key: str, context: str) -> None:

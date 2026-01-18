@@ -11,6 +11,12 @@ class PlaylistKeybindings(BaseModel):
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
+    _key_fields = (
+        "play_previous", "play_next", "reorder_up", "reorder_down",
+        "delete_from_playlist", "undo", "redo", "save_playlist",
+        "shuffle_playlist", "toggle_autoplay", "page_up", "page_down",
+        "navigate_to_first_preset", "navigate_to_last_preset",
+    )
     play_previous: list[str] = Field(default=["shift+k"], alias="play-previous")
     play_next: list[str] = Field(default=["shift+j"], alias="play-next")
     reorder_up: list[str] = Field(default=["ctrl+k"], alias="reorder-up")
@@ -38,8 +44,6 @@ class PlaylistKeybindings(BaseModel):
     @model_validator(mode="after")
     def validate_keys(self) -> "PlaylistKeybindings":
         """Validate all key names."""
-        for name in type(self).model_fields:
-            value = getattr(self, name)
-            if isinstance(value, list):
-                validate_key_list(value, f"playlist.{name}")
+        for name in self._key_fields:
+            validate_key_list(getattr(self, name), f"playlist.{name}")
         return self
