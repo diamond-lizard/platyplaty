@@ -8,10 +8,6 @@ from platyplaty.types.events import (
     StderrEvent,
 )
 from platyplaty.types.keybindings import Keybindings
-from platyplaty.types.renderer_keybindings import (
-    ClientKeybindings,
-    RendererKeybindings,
-)
 from platyplaty.types.socket import CommandResponse, StatusData
 
 __all__ = [
@@ -21,7 +17,5 @@ __all__ = [
     "StderrEvent",
     "KeyPressedEvent",
     "ReasonEvent",
-    "ClientKeybindings",
     "Keybindings",
-    "RendererKeybindings",
 ]
