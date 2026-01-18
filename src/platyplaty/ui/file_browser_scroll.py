@@ -83,9 +83,9 @@ def adjust_right_pane_scroll(browser: FileBrowser, pane_height: int) -> None:
 
 def adjust_middle_pane_scroll(browser: FileBrowser, pane_height: int) -> None:
     """Adjust middle pane scroll so the selection is visible.
-    
+
     Delegates to nav_state.adjust_scroll and copies the result.
-    
+
     Args:
         browser: The file browser instance.
         pane_height: The height of the pane in lines.
