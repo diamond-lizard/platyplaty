@@ -16,6 +16,6 @@ class ErrorViewKeybindings(BaseModel):
     @model_validator(mode="after")
     def validate_keys(self) -> "ErrorViewKeybindings":
         """Validate all key names."""
-        for name in self.model_fields:
+        for name in type(self).model_fields:
             validate_key_list(getattr(self, name), f"error-view.{name}")
         return self

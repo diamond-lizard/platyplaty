@@ -25,6 +25,6 @@ class FileBrowserKeybindings(BaseModel):
     @model_validator(mode="after")
     def validate_keys(self) -> "FileBrowserKeybindings":
         """Validate all key names."""
-        for name in self.model_fields:
+        for name in type(self).model_fields:
             validate_key_list(getattr(self, name), f"file-browser.{name}")
         return self

@@ -38,7 +38,7 @@ class PlaylistKeybindings(BaseModel):
     @model_validator(mode="after")
     def validate_keys(self) -> "PlaylistKeybindings":
         """Validate all key names."""
-        for name in self.model_fields:
+        for name in type(self).model_fields:
             value = getattr(self, name)
             if isinstance(value, list):
                 validate_key_list(value, f"playlist.{name}")
