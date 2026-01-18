@@ -1,21 +1,15 @@
 #!/usr/bin/env python3
-"""Playlist module for Platyplaty.
-
-Handles playlist navigation.
-"""
+"""Playlist class for managing presets with navigation and state."""
 
 from pathlib import Path
 
-from platyplaty.playlist_file import parse_playlist_file, write_playlist_file
+from platyplaty import playlist_navigation as nav
+from platyplaty import playlist_operations as ops
+from platyplaty import playlist_persistence as persist
 
 
 class Playlist:
-    """Manages a list of presets with navigation.
-
-    Attributes:
-        presets: List of preset paths.
-        loop: Whether to wrap around at the end.
-    """
+    """Manages a list of presets with navigation and state tracking."""
 
     presets: list[Path]
     loop: bool
@@ -25,12 +19,7 @@ class Playlist:
     dirty_flag: bool
 
     def __init__(self, presets: list[Path], loop: bool = True) -> None:
-        """Initialize the playlist.
-
-        Args:
-            presets: List of preset paths.
-            loop: Whether to wrap around when reaching the end.
-        """
+        """Initialize playlist with presets and optional loop setting."""
         self.presets = presets
         self.loop = loop
         self._playing_index = 0
@@ -40,47 +29,27 @@ class Playlist:
 
     def current(self) -> Path:
         """Return the current preset path."""
-        if self._playing_index is None:
-            raise ValueError("No preset is currently playing")
-        return self.presets[self._playing_index]
+        return nav.get_current(self.presets, self._playing_index)
 
     def at_end(self) -> bool:
         """Return True if at the last preset."""
-        if self._playing_index is None:
-            return True
-        return self._playing_index >= len(self.presets) - 1
+        return nav.is_at_end(self.presets, self._playing_index)
 
     def next(self) -> Path | None:
-        """Advance to the next preset.
-
-        Returns:
-            The next preset path, or None if at end and loop is False.
-        """
-        if self._playing_index is None:
+        """Advance to the next preset."""
+        result = nav.advance_next(self.presets, self._playing_index, self.loop)
+        if result is None:
             return None
-        if self.at_end() and not self.loop:
-            return None
-        if self.at_end():
-            self._playing_index = 0
-        else:
-            self._playing_index += 1
-        return self.presets[self._playing_index]
+        self._playing_index, preset = result
+        return preset
 
     def previous(self) -> Path | None:
-        """Move to the previous preset.
-
-        Returns:
-            The previous preset path, or None if at start and loop is False.
-        """
-        if self._playing_index is None:
+        """Move to the previous preset."""
+        result = nav.go_previous(self.presets, self._playing_index, self.loop)
+        if result is None:
             return None
-        if self._playing_index == 0 and not self.loop:
-            return None
-        if self._playing_index == 0:
-            self._playing_index = len(self.presets) - 1
-        else:
-            self._playing_index -= 1
-        return self.presets[self._playing_index]
+        self._playing_index, preset = result
+        return preset
 
     def get_selection(self) -> int:
         """Return the current selection index."""
@@ -100,54 +69,34 @@ class Playlist:
 
     def add_preset(self, path: Path) -> None:
         """Add a preset at the end of the playlist."""
-        self.presets.append(path)
+        ops.add_preset(self.presets, path)
         self.dirty_flag = True
 
     def remove_preset(self, index: int) -> None:
         """Remove the preset at the given index."""
-        del self.presets[index]
+        ops.remove_preset(self.presets, index)
         self.dirty_flag = True
 
     def move_preset_up(self, index: int) -> bool:
         """Move preset at index up by one. Return False if at top."""
-        if index <= 0:
-            return False
-        a, b = self.presets[index - 1], self.presets[index]
-        self.presets[index - 1], self.presets[index] = b, a
-        self.dirty_flag = True
-        return True
+        result = ops.move_preset_up(self.presets, index)
+        self.dirty_flag = self.dirty_flag or result
+        return result
 
     def move_preset_down(self, index: int) -> bool:
         """Move preset at index down by one. Return False if at bottom."""
-        if index >= len(self.presets) - 1:
-            return False
-        a, b = self.presets[index], self.presets[index + 1]
-        self.presets[index], self.presets[index + 1] = b, a
-        self.dirty_flag = True
-        return True
+        result = ops.move_preset_down(self.presets, index)
+        self.dirty_flag = self.dirty_flag or result
+        return result
 
     def clear(self) -> None:
         """Remove all presets and clear associated filename."""
-        self.presets.clear()
-        self.associated_filename = None
-        self._selection_index = 0
-        self._playing_index = None
-        self.dirty_flag = True
+        persist.clear_playlist(self)
 
     def load_from_file(self, filepath: Path) -> None:
         """Load presets from a .platy file, replacing current contents."""
-        self.presets = parse_playlist_file(filepath)
-        self.associated_filename = filepath
-        self._selection_index = 0
-        self._playing_index = 0 if self.presets else None
-        self.dirty_flag = False
+        persist.load_from_file(self, filepath)
 
     def save_to_file(self, filepath: Path | None = None) -> None:
         """Save presets to a .platy file."""
-        if filepath is None:
-            filepath = self.associated_filename
-        if filepath is None:
-            raise ValueError("No file name")
-        write_playlist_file(filepath, self.presets)
-        self.associated_filename = filepath
-        self.dirty_flag = False
+        persist.save_to_file(self, filepath)
