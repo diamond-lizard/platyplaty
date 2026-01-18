@@ -104,7 +104,8 @@ class Playlist:
         """Move preset at index up by one. Return False if at top."""
         if index <= 0:
             return False
-        self.presets[index], self.presets[index - 1] = self.presets[index - 1], self.presets[index]
+        a, b = self.presets[index - 1], self.presets[index]
+        self.presets[index - 1], self.presets[index] = b, a
         self.dirty_flag = True
         return True
 
@@ -112,7 +113,8 @@ class Playlist:
         """Move preset at index down by one. Return False if at bottom."""
         if index >= len(self.presets) - 1:
             return False
-        self.presets[index], self.presets[index + 1] = self.presets[index + 1], self.presets[index]
+        a, b = self.presets[index], self.presets[index + 1]
+        self.presets[index], self.presets[index + 1] = b, a
         self.dirty_flag = True
         return True
 
