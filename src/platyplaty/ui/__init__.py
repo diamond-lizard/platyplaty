@@ -10,7 +10,12 @@ from platyplaty.ui.directory_types import (
     EntryType,
 )
 from platyplaty.ui.file_browser import FileBrowser
-from platyplaty.ui.layout import LayoutState, PaneWidths, calculate_pane_widths, calculate_standard_widths
+from platyplaty.ui.layout import (
+    LayoutState,
+    PaneWidths,
+    calculate_pane_widths,
+    calculate_standard_widths,
+)
 from platyplaty.ui.transient_error import TransientErrorBar
 
 __all__ = [

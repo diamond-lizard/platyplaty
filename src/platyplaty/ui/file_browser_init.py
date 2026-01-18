@@ -13,8 +13,8 @@ from typing import TYPE_CHECKING
 from platyplaty.dispatch_tables import DispatchTable
 from platyplaty.errors import InaccessibleDirectoryError
 from platyplaty.ui.file_browser_refresh import refresh_listings
-from platyplaty.ui.nav_state import NavigationState
 from platyplaty.ui.layout_state import LayoutState
+from platyplaty.ui.nav_state import NavigationState
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser

@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 from platyplaty.ui.layout_state import LayoutState
 
+
 @dataclass(frozen=True)
 class PaneWidths:
     """Container for calculated pane widths.
