@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from platyplaty.dispatch_tables import DispatchTable
+from platyplaty.undo import UndoManager
 from platyplaty.build_dispatch_tables import (
     build_error_view_table,
     build_file_browser_table,
@@ -45,6 +46,7 @@ class AppContext:
         global_dispatch_table: Maps global keys to action names.
         playlist_dispatch_table: Maps playlist keys to action names.
         error_view_dispatch_table: Maps error view keys to action names.
+        undo_manager: Manages undo/redo stacks for playlist operations.
     """
 
     config: AppConfig
@@ -62,6 +64,7 @@ class AppContext:
     global_dispatch_table: DispatchTable = field(default_factory=dict)
     playlist_dispatch_table: DispatchTable = field(default_factory=dict)
     error_view_dispatch_table: DispatchTable = field(default_factory=dict)
+    undo_manager: UndoManager = field(default_factory=UndoManager)
 
     def __post_init__(self) -> None:
         """Build dispatch tables from keybindings."""

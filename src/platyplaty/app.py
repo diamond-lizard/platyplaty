@@ -11,7 +11,7 @@ from platyplaty.app_actions import load_preset_by_direction
 from platyplaty.app_context import AppContext
 from platyplaty.app_shutdown import perform_graceful_shutdown
 from platyplaty.app_startup import on_mount_handler
-from platyplaty.keybinding_dispatch import dispatch_key_event
+from platyplaty.keybinding_dispatch import dispatch_focused_key_event
 from platyplaty.ui import FileBrowser, TransientErrorBar
 
 if TYPE_CHECKING:
@@ -88,15 +88,67 @@ class PlatyplatyApp(App[None]):
             self.ctx, self, self.ctx.playlist.previous, "previous"
         )
 
+    async def action_navigate_up(self) -> None:
+        """Move selection up in current focused section."""
+        from platyplaty.app_playlist_actions import action_navigate_up
+
+        await action_navigate_up(self)
+
+    async def action_navigate_down(self) -> None:
+        """Move selection down in current focused section."""
+        from platyplaty.app_playlist_actions import action_navigate_down
+
+        await action_navigate_down(self)
+
+    async def action_play_next(self) -> None:
+        """Play next preset in playlist."""
+        from platyplaty.app_playlist_actions import action_play_next
+
+        await action_play_next(self)
+
+    async def action_play_previous(self) -> None:
+        """Play previous preset in playlist."""
+        from platyplaty.app_playlist_actions import action_play_previous
+
+        await action_play_previous(self)
+
+    async def action_reorder_up(self) -> None:
+        """Move selected preset up in playlist."""
+        from platyplaty.app_playlist_actions import action_reorder_up
+
+        await action_reorder_up(self)
+
+    async def action_reorder_down(self) -> None:
+        """Move selected preset down in playlist."""
+        from platyplaty.app_playlist_actions import action_reorder_down
+
+        await action_reorder_down(self)
+
+    async def action_delete_from_playlist(self) -> None:
+        """Delete selected preset from playlist."""
+        from platyplaty.app_playlist_actions import action_delete_from_playlist
+
+        await action_delete_from_playlist(self)
+
+    async def action_undo(self) -> None:
+        """Undo the last playlist operation."""
+        from platyplaty.app_playlist_actions import action_undo
+
+        await action_undo(self)
+
+    async def action_redo(self) -> None:
+        """Redo the last undone playlist operation."""
+        from platyplaty.app_playlist_actions import action_redo
+
+        await action_redo(self)
+
     async def graceful_shutdown(self) -> None:
         """Shut down the application gracefully."""
         await perform_graceful_shutdown(self.ctx, self)
 
     async def on_key(self, event: Key) -> None:
         """Handle terminal key events."""
-        await dispatch_key_event(
-            event.key, self.ctx.client_dispatch_table, self.ctx, self
-        )
+        await dispatch_focused_key_event(event.key, self.ctx, self)
 
     def on_log_message(self, message: "LogMessage") -> None:
         """Handle log messages by writing to the RichLog widget."""
