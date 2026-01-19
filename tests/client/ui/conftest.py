@@ -13,7 +13,10 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "src"))
 
+from unittest.mock import MagicMock
+
 from platyplaty.dispatch_tables import DispatchTable
+from platyplaty.ui.directory_types import DirectoryListing
 from platyplaty.ui.nav_state import NavigationState
 
 
@@ -72,3 +75,25 @@ def nav_state(temp_dir_tree: Path) -> Generator[NavigationState, None, None]:
     """
     state = NavigationState(temp_dir_tree)
     yield state
+
+def make_listing(entries: list) -> DirectoryListing:
+    """Create a DirectoryListing from a list of entries."""
+    return DirectoryListing(
+        entries=entries,
+        was_empty=False,
+        had_filtered_entries=False,
+        permission_denied=False,
+    )
+
+
+@pytest.fixture
+def mock_browser() -> MagicMock:
+    """Create a mock FileBrowser for testing."""
+    browser = MagicMock()
+    browser.app = MagicMock()
+    browser.app.ctx = MagicMock()
+    browser.app.ctx.playlist = MagicMock()
+    browser.app.ctx.autoplay_manager = MagicMock()
+    browser._adjust_scroll = MagicMock()
+    browser.refresh = MagicMock()
+    return browser
