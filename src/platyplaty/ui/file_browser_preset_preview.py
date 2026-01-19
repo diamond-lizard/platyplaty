@@ -69,7 +69,11 @@ def _update_playing_indicator(browser: FileBrowser, path) -> None:
         browser: The file browser instance.
         path: Path to the previewed preset.
     """
-    from platyplaty.playlist_action_helpers import refresh_playlist_view, scroll_playlist_to_playing, find_preset_index
+    from platyplaty.playlist_action_helpers import (
+        find_preset_index,
+        refresh_playlist_view,
+        scroll_playlist_to_playing,
+    )
 
     ctx = browser.app.ctx
     playlist = ctx.playlist

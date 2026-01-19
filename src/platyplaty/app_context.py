@@ -7,14 +7,14 @@ import asyncio
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from platyplaty.dispatch_tables import DispatchTable
-from platyplaty.undo import UndoManager
 from platyplaty.build_dispatch_tables import (
     build_error_view_table,
     build_file_browser_table,
     build_global_table,
     build_playlist_table,
 )
+from platyplaty.dispatch_tables import DispatchTable
+from platyplaty.undo import UndoManager
 
 if TYPE_CHECKING:
     from platyplaty.playlist import Playlist
@@ -41,7 +41,8 @@ class AppContext:
         client_dispatch_table: Maps terminal keys to action names.
         file_browser_dispatch_table: Maps file browser keys to action names.
         error_log: List of renderer error messages for later viewing.
-        current_focus: Which section has focus ("file_browser", "playlist", or "error_view").
+        current_focus: Which section has focus ("file_browser",
+            "playlist", or "error_view").
         autoplay_timer_task: The running autoplay timer task, or None.
         global_dispatch_table: Maps global keys to action names.
         playlist_dispatch_table: Maps playlist keys to action names.

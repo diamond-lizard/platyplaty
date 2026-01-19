@@ -14,10 +14,12 @@ if TYPE_CHECKING:
 
 async def page_up(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Move selection up by one page (visible height)."""
-    from platyplaty.ui.playlist_key import is_autoplay_blocking
-    from platyplaty.ui.playlist_key import show_autoplay_blocked_error
-    from platyplaty.ui.playlist_view import PlaylistView
     from platyplaty.playlist_action_helpers import refresh_playlist_view
+    from platyplaty.ui.playlist_key import (
+        is_autoplay_blocking,
+        show_autoplay_blocked_error,
+    )
+    from platyplaty.ui.playlist_view import PlaylistView
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)
@@ -40,10 +42,12 @@ async def page_up(ctx: AppContext, app: PlatyplatyApp) -> None:
 
 async def page_down(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Move selection down by one page (visible height)."""
-    from platyplaty.ui.playlist_key import is_autoplay_blocking
-    from platyplaty.ui.playlist_key import show_autoplay_blocked_error
-    from platyplaty.ui.playlist_view import PlaylistView
     from platyplaty.playlist_action_helpers import refresh_playlist_view
+    from platyplaty.ui.playlist_key import (
+        is_autoplay_blocking,
+        show_autoplay_blocked_error,
+    )
+    from platyplaty.ui.playlist_view import PlaylistView
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)

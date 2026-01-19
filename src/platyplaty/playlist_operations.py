@@ -4,8 +4,8 @@
 Functions for adding, removing, and reordering presets.
 """
 
-from pathlib import Path
 import random
+from pathlib import Path
 
 
 def add_preset(presets: list[Path], path: Path) -> None:

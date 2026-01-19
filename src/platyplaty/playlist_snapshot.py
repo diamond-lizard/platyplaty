@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Helper functions for creating and restoring playlist snapshots."""
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from platyplaty.undo import PlaylistSnapshot

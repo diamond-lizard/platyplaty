@@ -31,8 +31,8 @@ async def load_preset_at_index(ctx: AppContext, index: int) -> None:
 
 def scroll_playlist_to_playing(app: PlatyplatyApp) -> None:
     """Scroll the playlist view to make the playing preset visible."""
-    from platyplaty.ui.playlist_view import PlaylistView
     from platyplaty.ui.playlist_scroll import scroll_to_playing
+    from platyplaty.ui.playlist_view import PlaylistView
 
     try:
         view = app.query_one(PlaylistView)

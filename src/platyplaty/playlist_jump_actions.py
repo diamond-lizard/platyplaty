@@ -14,9 +14,11 @@ if TYPE_CHECKING:
 
 async def navigate_to_first_preset(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Move selection to first preset in playlist."""
-    from platyplaty.ui.playlist_key import is_autoplay_blocking
-    from platyplaty.ui.playlist_key import show_autoplay_blocked_error
     from platyplaty.playlist_action_helpers import refresh_playlist_view
+    from platyplaty.ui.playlist_key import (
+        is_autoplay_blocking,
+        show_autoplay_blocked_error,
+    )
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)
@@ -32,9 +34,11 @@ async def navigate_to_first_preset(ctx: AppContext, app: PlatyplatyApp) -> None:
 
 async def navigate_to_last_preset(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Move selection to last preset in playlist."""
-    from platyplaty.ui.playlist_key import is_autoplay_blocking
-    from platyplaty.ui.playlist_key import show_autoplay_blocked_error
     from platyplaty.playlist_action_helpers import refresh_playlist_view
+    from platyplaty.ui.playlist_key import (
+        is_autoplay_blocking,
+        show_autoplay_blocked_error,
+    )
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)

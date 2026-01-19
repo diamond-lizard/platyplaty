@@ -14,9 +14,11 @@ if TYPE_CHECKING:
 
 async def reorder_up(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Move selected preset up in the playlist."""
-    from platyplaty.ui.playlist_key import is_autoplay_blocking
-    from platyplaty.ui.playlist_key import show_autoplay_blocked_error
     from platyplaty.playlist_action_helpers import refresh_playlist_view
+    from platyplaty.ui.playlist_key import (
+        is_autoplay_blocking,
+        show_autoplay_blocked_error,
+    )
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)
@@ -32,9 +34,11 @@ async def reorder_up(ctx: AppContext, app: PlatyplatyApp) -> None:
 
 async def reorder_down(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Move selected preset down in the playlist."""
-    from platyplaty.ui.playlist_key import is_autoplay_blocking
-    from platyplaty.ui.playlist_key import show_autoplay_blocked_error
     from platyplaty.playlist_action_helpers import refresh_playlist_view
+    from platyplaty.ui.playlist_key import (
+        is_autoplay_blocking,
+        show_autoplay_blocked_error,
+    )
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)
@@ -64,9 +68,9 @@ async def shuffle_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
 
 async def save_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Save playlist to associated filename."""
-    from platyplaty.ui.transient_error import show_transient_error
-    from platyplaty.playlist_persistence import save_to_file
     from platyplaty.playlist_action_helpers import refresh_playlist_view
+    from platyplaty.playlist_persistence import save_to_file
+    from platyplaty.ui.transient_error import show_transient_error
 
     playlist = ctx.playlist
     if playlist.associated_filename is None:

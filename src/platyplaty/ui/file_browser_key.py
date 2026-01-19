@@ -12,12 +12,12 @@ from typing import TYPE_CHECKING, Any
 
 from textual.events import Key
 
+from platyplaty.ui.file_browser_actions import action_add_preset_or_load_playlist
 from platyplaty.ui.file_browser_nav import action_nav_left, action_nav_right
 from platyplaty.ui.file_browser_nav_updown import action_nav_down, action_nav_up
-from platyplaty.ui.file_browser_actions import action_add_preset_or_load_playlist
 from platyplaty.ui.file_browser_play_actions import (
-    action_play_previous_preset,
     action_play_next_preset,
+    action_play_previous_preset,
 )
 
 if TYPE_CHECKING:

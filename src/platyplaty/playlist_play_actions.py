@@ -14,8 +14,10 @@ if TYPE_CHECKING:
 
 async def play_next(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Play next preset (selection and playing indicator move together)."""
-    from platyplaty.ui.playlist_key import is_autoplay_blocking
-    from platyplaty.ui.playlist_key import show_autoplay_blocked_error
+    from platyplaty.ui.playlist_key import (
+        is_autoplay_blocking,
+        show_autoplay_blocked_error,
+    )
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)
@@ -25,8 +27,10 @@ async def play_next(ctx: AppContext, app: PlatyplatyApp) -> None:
 
 async def play_previous(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Play previous preset (selection and playing indicator move together)."""
-    from platyplaty.ui.playlist_key import is_autoplay_blocking
-    from platyplaty.ui.playlist_key import show_autoplay_blocked_error
+    from platyplaty.ui.playlist_key import (
+        is_autoplay_blocking,
+        show_autoplay_blocked_error,
+    )
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)
@@ -54,10 +58,12 @@ async def _play_by_delta(ctx: AppContext, app: PlatyplatyApp, delta: int) -> Non
 
 async def play_selection(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Play the currently selected preset in the playlist."""
-    from platyplaty.ui.playlist_key import is_autoplay_blocking
-    from platyplaty.ui.playlist_key import show_autoplay_blocked_error
     from platyplaty.autoplay_helpers import try_load_preset
     from platyplaty.playlist_action_helpers import refresh_playlist_view
+    from platyplaty.ui.playlist_key import (
+        is_autoplay_blocking,
+        show_autoplay_blocked_error,
+    )
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)

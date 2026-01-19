@@ -11,10 +11,14 @@ if TYPE_CHECKING:
 
 async def delete_from_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Delete selected preset from playlist."""
-    from platyplaty.ui.playlist_key import is_autoplay_blocking
-    from platyplaty.ui.playlist_key import show_autoplay_blocked_error
-    from platyplaty.playlist_action_helpers import refresh_playlist_view
-    from platyplaty.playlist_action_helpers import load_preset_at_index
+    from platyplaty.playlist_action_helpers import (
+        load_preset_at_index,
+        refresh_playlist_view,
+    )
+    from platyplaty.ui.playlist_key import (
+        is_autoplay_blocking,
+        show_autoplay_blocked_error,
+    )
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)
