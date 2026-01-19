@@ -69,3 +69,45 @@ async def action_redo(app: PlatyplatyApp) -> None:
     from platyplaty.playlist_actions import redo
 
     await redo(app.ctx, app)
+
+
+async def action_play_selection(app: PlatyplatyApp) -> None:
+    """Play the currently selected preset in the playlist."""
+    from platyplaty.playlist_actions import play_selection
+
+    await play_selection(app.ctx, app)
+
+
+async def action_open_selected(app: PlatyplatyApp) -> None:
+    """Open the currently selected preset in $EDITOR."""
+    from platyplaty.playlist_actions import open_selected
+
+    await open_selected(app.ctx, app)
+
+
+async def action_page_up(app: PlatyplatyApp) -> None:
+    """Move selection up by one page."""
+    from platyplaty.playlist_actions import page_up
+
+    await page_up(app.ctx, app)
+
+
+async def action_page_down(app: PlatyplatyApp) -> None:
+    """Move selection down by one page."""
+    from platyplaty.playlist_actions import page_down
+
+    await page_down(app.ctx, app)
+
+
+async def action_navigate_to_first_preset(app: PlatyplatyApp) -> None:
+    """Move selection to first preset."""
+    from platyplaty.playlist_actions import navigate_to_first_preset
+
+    await navigate_to_first_preset(app.ctx, app)
+
+
+async def action_navigate_to_last_preset(app: PlatyplatyApp) -> None:
+    """Move selection to last preset."""
+    from platyplaty.playlist_actions import navigate_to_last_preset
+
+    await navigate_to_last_preset(app.ctx, app)

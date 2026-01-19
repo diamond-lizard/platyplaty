@@ -142,6 +142,44 @@ class PlatyplatyApp(App[None]):
 
         await action_redo(self)
 
+    async def action_play_selection(self) -> None:
+        """Play the currently selected preset."""
+        from platyplaty.app_playlist_actions import action_play_selection
+
+        if self.ctx.current_focus == "playlist":
+            await action_play_selection(self)
+
+    async def action_open_selected(self) -> None:
+        """Open selected item - enters directory or opens in editor."""
+        if self.ctx.current_focus == "playlist":
+            from platyplaty.app_playlist_actions import action_open_selected
+
+            await action_open_selected(self)
+
+    async def action_page_up(self) -> None:
+        """Move selection up by one page."""
+        from platyplaty.app_playlist_actions import action_page_up
+
+        await action_page_up(self)
+
+    async def action_page_down(self) -> None:
+        """Move selection down by one page."""
+        from platyplaty.app_playlist_actions import action_page_down
+
+        await action_page_down(self)
+
+    async def action_navigate_to_first_preset(self) -> None:
+        """Move selection to first preset."""
+        from platyplaty.app_playlist_actions import action_navigate_to_first_preset
+
+        await action_navigate_to_first_preset(self)
+
+    async def action_navigate_to_last_preset(self) -> None:
+        """Move selection to last preset."""
+        from platyplaty.app_playlist_actions import action_navigate_to_last_preset
+
+        await action_navigate_to_last_preset(self)
+
     async def graceful_shutdown(self) -> None:
         """Shut down the application gracefully."""
         await perform_graceful_shutdown(self.ctx, self)

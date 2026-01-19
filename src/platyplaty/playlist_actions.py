@@ -199,3 +199,114 @@ async def redo(ctx: AppContext, app: PlatyplatyApp) -> None:
     if next_state is not None:
         restore_snapshot(ctx.playlist, next_state)
         _refresh_playlist_view(app)
+
+
+async def play_selection(ctx: AppContext, app: PlatyplatyApp) -> None:
+    """Play the currently selected preset in the playlist."""
+    from platyplaty.ui.playlist_key import is_autoplay_blocking, show_autoplay_blocked_error
+    from platyplaty.autoplay_helpers import try_load_preset
+
+    if is_autoplay_blocking(ctx):
+        await show_autoplay_blocked_error(app)
+        return
+    playlist = ctx.playlist
+    if not playlist.presets:
+        return
+    current = playlist.get_selection()
+    playlist.set_playing(current)
+    _refresh_playlist_view(app)
+    await try_load_preset(ctx, playlist.presets[current])
+
+
+async def open_selected(ctx: AppContext, app: PlatyplatyApp) -> None:
+    """Open the currently selected preset in $EDITOR."""
+    from platyplaty.ui.editor import open_in_editor
+
+    playlist = ctx.playlist
+    if not playlist.presets:
+        return
+    current = playlist.get_selection()
+    preset_path = playlist.presets[current]
+    await open_in_editor(app, preset_path)
+
+
+async def page_up(ctx: AppContext, app: PlatyplatyApp) -> None:
+    """Move selection up by one page (visible height)."""
+    from platyplaty.ui.playlist_key import is_autoplay_blocking, show_autoplay_blocked_error
+    from platyplaty.ui.playlist_view import PlaylistView
+
+    if is_autoplay_blocking(ctx):
+        await show_autoplay_blocked_error(app)
+        return
+    playlist = ctx.playlist
+    if not playlist.presets:
+        return
+    current = playlist.get_selection()
+    if current == 0:
+        return
+    try:
+        view = app.query_one(PlaylistView)
+        page_size = max(1, view.size.height)
+    except Exception:
+        page_size = 1
+    new_index = max(0, current - page_size)
+    playlist.set_selection(new_index)
+    _refresh_playlist_view(app)
+
+
+async def page_down(ctx: AppContext, app: PlatyplatyApp) -> None:
+    """Move selection down by one page (visible height)."""
+    from platyplaty.ui.playlist_key import is_autoplay_blocking, show_autoplay_blocked_error
+    from platyplaty.ui.playlist_view import PlaylistView
+
+    if is_autoplay_blocking(ctx):
+        await show_autoplay_blocked_error(app)
+        return
+    playlist = ctx.playlist
+    if not playlist.presets:
+        return
+    current = playlist.get_selection()
+    last_index = len(playlist.presets) - 1
+    if current == last_index:
+        return
+    try:
+        view = app.query_one(PlaylistView)
+        page_size = max(1, view.size.height)
+    except Exception:
+        page_size = 1
+    new_index = min(last_index, current + page_size)
+    playlist.set_selection(new_index)
+    _refresh_playlist_view(app)
+
+
+async def navigate_to_first_preset(ctx: AppContext, app: PlatyplatyApp) -> None:
+    """Move selection to first preset in playlist."""
+    from platyplaty.ui.playlist_key import is_autoplay_blocking, show_autoplay_blocked_error
+
+    if is_autoplay_blocking(ctx):
+        await show_autoplay_blocked_error(app)
+        return
+    playlist = ctx.playlist
+    if not playlist.presets:
+        return
+    if playlist.get_selection() == 0:
+        return
+    playlist.set_selection(0)
+    _refresh_playlist_view(app)
+
+
+async def navigate_to_last_preset(ctx: AppContext, app: PlatyplatyApp) -> None:
+    """Move selection to last preset in playlist."""
+    from platyplaty.ui.playlist_key import is_autoplay_blocking, show_autoplay_blocked_error
+
+    if is_autoplay_blocking(ctx):
+        await show_autoplay_blocked_error(app)
+        return
+    playlist = ctx.playlist
+    if not playlist.presets:
+        return
+    last_index = len(playlist.presets) - 1
+    if playlist.get_selection() == last_index:
+        return
+    playlist.set_selection(last_index)
+    _refresh_playlist_view(app)
