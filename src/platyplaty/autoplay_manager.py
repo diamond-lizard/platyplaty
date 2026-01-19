@@ -86,6 +86,14 @@ class AutoplayManager:
             self._timer_task.cancel()
             self._timer_task = None
 
+
+    def stop_autoplay(self) -> None:
+        """Stop autoplay without showing an error message."""
+        if not self._autoplay_enabled:
+            return
+        self._autoplay_enabled = False
+        self._stop_timer()
+
     def stop_autoplay_with_error(self) -> None:
         """Stop autoplay and show error message for no playable presets."""
         self._autoplay_enabled = False

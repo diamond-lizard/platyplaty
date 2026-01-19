@@ -46,6 +46,54 @@ async def _preview_milk_preset(browser: FileBrowser, path) -> None:
     from platyplaty.autoplay_helpers import try_load_preset
 
     ctx = browser.app.ctx
+    _stop_autoplay_if_running(ctx)
     success, error = await try_load_preset(ctx, path)
     if not success and error:
         show_transient_error(browser, error)
+    if success:
+        _update_playing_indicator(browser, path)
+
+def _stop_autoplay_if_running(ctx) -> None:
+    """Stop autoplay if it is currently running."""
+    autoplay_mgr = getattr(ctx, "autoplay_manager", None)
+    if autoplay_mgr is not None:
+        autoplay_mgr.stop_autoplay()
+
+def _update_playing_indicator(browser: FileBrowser, path) -> None:
+    """Update playing indicator when previewing a preset.
+
+    If preset is in playlist, move '* ' indicator to it.
+    If not in playlist, remove '* ' indicator.
+
+    Args:
+        browser: The file browser instance.
+        path: Path to the previewed preset.
+    """
+    from platyplaty.playlist_action_helpers import refresh_playlist_view
+
+    ctx = browser.app.ctx
+    playlist = ctx.playlist
+    index = _find_preset_index(playlist, path)
+    playlist.set_playing(index)
+    refresh_playlist_view(browser.app)
+
+def _find_preset_index(playlist, path) -> int | None:
+    """Find the index of a preset in the playlist.
+
+    If preset appears multiple times, prefer current playing index.
+    Otherwise return first instance.
+
+    Args:
+        playlist: The playlist to search.
+        path: Path to the preset.
+
+    Returns:
+        Index of the preset, or None if not in playlist.
+    """
+    indices = [i for i, p in enumerate(playlist.presets) if p == path]
+    if not indices:
+        return None
+    playing = playlist.get_playing()
+    if playing in indices:
+        return playing
+    return indices[0]
