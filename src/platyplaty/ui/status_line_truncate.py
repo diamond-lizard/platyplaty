@@ -8,7 +8,6 @@ from platyplaty.ui.truncation_filename import (
     truncate_filename_with_extension,
 )
 
-
 DIRTY_PREFIX = "* "
 
 

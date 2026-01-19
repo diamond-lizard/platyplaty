@@ -10,11 +10,9 @@ Styled with black foreground on blue background.
 
 from pathlib import Path
 
-from rich.segment import Segment
 from rich.style import Style
 from textual.strip import Strip
 from textual.widget import Widget
-
 
 # Styling: black foreground on blue background
 STATUS_LINE_STYLE = Style(color="black", bgcolor="blue")

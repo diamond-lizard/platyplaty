@@ -3,7 +3,6 @@
 Handles content formatting and truncation for the status line.
 """
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from rich.segment import Segment

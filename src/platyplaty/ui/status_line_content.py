@@ -7,7 +7,6 @@ from pathlib import Path
 
 from platyplaty.ui.status_line_truncate import format_filename
 
-
 AUTOPLAY_ON = "[autoplay: on]"
 AUTOPLAY_OFF = "[autoplay: off]"
 NO_PLAYLIST = "no playlist file loaded"
