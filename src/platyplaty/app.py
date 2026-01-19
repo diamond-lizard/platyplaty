@@ -186,6 +186,12 @@ class PlatyplatyApp(App[None]):
 
         await action_shuffle_playlist(self)
 
+    async def action_save_playlist(self) -> None:
+        """Save the playlist to its associated filename."""
+        from platyplaty.app_playlist_actions import action_save_playlist
+
+        await action_save_playlist(self)
+
     async def graceful_shutdown(self) -> None:
         """Shut down the application gracefully."""
         await perform_graceful_shutdown(self.ctx, self)

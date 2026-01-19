@@ -323,3 +323,19 @@ async def shuffle_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
     push_undo_snapshot(ctx)
     playlist.shuffle()
     _refresh_playlist_view(app)
+
+async def save_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
+    """Save playlist to associated filename."""
+    from platyplaty.ui.transient_error import show_transient_error
+    from platyplaty.playlist_persistence import save_to_file
+
+    playlist = ctx.playlist
+    if playlist.associated_filename is None:
+        show_transient_error(app, "Error: No file name")
+        return
+    try:
+        save_to_file(playlist)
+    except OSError as e:
+        show_transient_error(app, f"Error: could not save playlist: {e}")
+        return
+    _refresh_playlist_view(app)
