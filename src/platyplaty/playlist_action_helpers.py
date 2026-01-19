@@ -27,3 +27,38 @@ async def load_preset_at_index(ctx: AppContext, index: int) -> None:
     playlist = ctx.playlist
     if 0 <= index < len(playlist.presets):
         await try_load_preset(ctx, playlist.presets[index])
+
+
+def scroll_playlist_to_playing(app: PlatyplatyApp) -> None:
+    """Scroll the playlist view to make the playing preset visible."""
+    from platyplaty.ui.playlist_view import PlaylistView
+    from platyplaty.ui.playlist_scroll import scroll_to_playing
+
+    try:
+        view = app.query_one(PlaylistView)
+        scroll_to_playing(view, view.size.height)
+        view.refresh()
+    except Exception:
+        pass
+
+
+def find_preset_index(playlist, path) -> int | None:
+    """Find the index of a preset in the playlist.
+
+    If preset appears multiple times, prefer current playing index.
+    Otherwise return first instance.
+
+    Args:
+        playlist: The playlist to search.
+        path: Path to the preset.
+
+    Returns:
+        Index of the preset, or None if not in playlist.
+    """
+    indices = [i for i, p in enumerate(playlist.presets) if p == path]
+    if not indices:
+        return None
+    playing = playlist.get_playing()
+    if playing in indices:
+        return playing
+    return indices[0]

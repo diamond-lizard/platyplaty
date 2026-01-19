@@ -36,3 +36,29 @@ def adjust_scroll(widget: PlaylistView, pane_height: int) -> None:
         pane_height,
         item_count,
     )
+
+
+def scroll_to_playing(widget: PlaylistView, pane_height: int) -> None:
+    """Scroll to make the playing preset visible.
+
+    Uses the Safe-Zone Scroll Algorithm from nav_scroll.
+
+    Args:
+        widget: The playlist view widget.
+        pane_height: The height of the pane in lines.
+    """
+    if pane_height <= 0:
+        return
+    playlist = widget._playlist
+    playing_index = playlist.get_playing()
+    if playing_index is None:
+        return
+    if not playlist.presets:
+        return
+    item_count = len(playlist.presets)
+    widget._scroll_offset = calc_safe_zone_scroll(
+        playing_index,
+        widget._scroll_offset,
+        pane_height,
+        item_count,
+    )

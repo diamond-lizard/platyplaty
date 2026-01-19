@@ -69,31 +69,13 @@ def _update_playing_indicator(browser: FileBrowser, path) -> None:
         browser: The file browser instance.
         path: Path to the previewed preset.
     """
-    from platyplaty.playlist_action_helpers import refresh_playlist_view
+    from platyplaty.playlist_action_helpers import refresh_playlist_view, scroll_playlist_to_playing, find_preset_index
 
     ctx = browser.app.ctx
     playlist = ctx.playlist
-    index = _find_preset_index(playlist, path)
+    index = find_preset_index(playlist, path)
     playlist.set_playing(index)
     refresh_playlist_view(browser.app)
+    if index is not None:
+        scroll_playlist_to_playing(browser.app)
 
-def _find_preset_index(playlist, path) -> int | None:
-    """Find the index of a preset in the playlist.
-
-    If preset appears multiple times, prefer current playing index.
-    Otherwise return first instance.
-
-    Args:
-        playlist: The playlist to search.
-        path: Path to the preset.
-
-    Returns:
-        Index of the preset, or None if not in playlist.
-    """
-    indices = [i for i, p in enumerate(playlist.presets) if p == path]
-    if not indices:
-        return None
-    playing = playlist.get_playing()
-    if playing in indices:
-        return playing
-    return indices[0]
