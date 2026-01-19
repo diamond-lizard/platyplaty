@@ -33,7 +33,7 @@ async def action_add_preset_or_load_playlist(browser: FileBrowser) -> None:
     suffix = entry.path.suffix.lower()
     is_file_type = entry.entry_type in (EntryType.FILE, EntryType.SYMLINK_TO_FILE)
     if is_file_type and suffix == ".milk":
-        _handle_add_milk_preset(browser, entry)
+        await _handle_add_milk_preset(browser, entry)
         return
     if is_file_type and suffix == ".platy":
         # TODO: Implement in TASK-22500
@@ -41,7 +41,7 @@ async def action_add_preset_or_load_playlist(browser: FileBrowser) -> None:
     show_transient_error(browser, "Cannot add: not a playlist or preset")
 
 
-def _handle_add_milk_preset(browser: FileBrowser, entry) -> None:
+async def _handle_add_milk_preset(browser: FileBrowser, entry) -> None:
     """Add a .milk preset to the playlist.
 
     Checks readability and adds to playlist if readable.
@@ -56,4 +56,16 @@ def _handle_add_milk_preset(browser: FileBrowser, entry) -> None:
         show_transient_error(browser, "Cannot add: file not readable")
         return
     ctx = browser.app.ctx
+    was_empty = len(ctx.playlist.presets) == 0
     ctx.playlist.add_preset(path)
+    if was_empty:
+        await _autoplay_first_preset(ctx)
+
+
+async def _autoplay_first_preset(ctx) -> None:
+    """Load and play the first preset in the playlist."""
+    from platyplaty.playlist_action_helpers import load_preset_at_index
+    playlist = ctx.playlist
+    playlist.set_selection(0)
+    playlist.set_playing(0)
+    await load_preset_at_index(ctx, 0)
