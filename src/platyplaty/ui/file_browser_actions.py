@@ -1,7 +1,6 @@
 """Playlist-related action functions for the file browser.
 
-This module provides functions for the "a" key (add preset or load playlist),
-ENTER key (preview preset), and J/K keys (play next/previous .milk file).
+This module provides functions for the "a" key (add preset or load playlist).
 """
 
 from __future__ import annotations

@@ -148,6 +148,11 @@ class PlatyplatyApp(App[None]):
 
         if self.ctx.current_focus == "playlist":
             await play_selection(self.ctx, self)
+            return
+        if self.ctx.current_focus == "file_browser":
+            from platyplaty.ui.file_browser_preset_preview import action_preview_preset
+            browser = self.query_one("FileBrowser")
+            await action_preview_preset(browser)
 
     async def action_open_selected(self) -> None:
         """Open selected item - enters directory or opens in editor."""
