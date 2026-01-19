@@ -2,9 +2,8 @@
 """Autoplay manager for toggle-able autoplay with timer management."""
 
 import asyncio
-from contextlib import suppress
-from pathlib import Path
 from platyplaty.autoplay_helpers import find_next_playable, try_load_preset, show_no_playable_error, show_empty_playlist_error
+from platyplaty.autoplay_timer import run_timer_loop
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -35,6 +34,11 @@ class AutoplayManager:
     def autoplay_enabled(self) -> bool:
         """Return whether autoplay is currently enabled."""
         return self._autoplay_enabled
+
+    @property
+    def preset_duration(self) -> float:
+        """Return the preset duration in seconds."""
+        return self._preset_duration
 
     async def toggle_autoplay(self) -> bool:
         """Toggle autoplay on or off.
@@ -76,7 +80,7 @@ class AutoplayManager:
         """Start the autoplay timer task."""
         if self._timer_task is not None:
             self._timer_task.cancel()
-        self._timer_task = asyncio.create_task(self._timer_loop())
+        self._timer_task = asyncio.create_task(run_timer_loop(self))
 
     def _stop_timer(self) -> None:
         """Stop the autoplay timer task."""
@@ -84,50 +88,13 @@ class AutoplayManager:
             self._timer_task.cancel()
             self._timer_task = None
 
-    def _stop_autoplay_with_error(self) -> None:
+    def stop_autoplay_with_error(self) -> None:
         """Stop autoplay and show error message for no playable presets."""
         self._autoplay_enabled = False
         self._stop_timer()
         show_no_playable_error(self._app)
 
-    async def _timer_loop(self) -> None:
-        """Run the autoplay timer loop."""
-        with suppress(asyncio.CancelledError):
-            await self._run_autoplay_cycle()
-
-    async def _run_autoplay_cycle(self) -> None:
-        """Execute the autoplay cycle until disabled or cancelled."""
-        while self._autoplay_enabled and await self._wait_and_advance():
-            pass
-
-    async def _wait_and_advance(self) -> bool:
-        """Wait for preset_duration then advance. Returns False if cancelled."""
-        await asyncio.sleep(self._preset_duration)
-        if not self._autoplay_enabled:
-            return False
-        if not await self.advance_to_next():
-            self._stop_autoplay_with_error()
-            return False
-        return True
-
     async def advance_to_next(self) -> bool:
-        """Advance to the next preset in the playlist.
-
-        Handles looping and skipping of broken presets.
-
-        Returns:
-            True if successfully advanced to a playable preset.
-        """
-        playlist = self._ctx.playlist
-        current_index = playlist.get_playing()
-        if current_index is None:
-            current_index = -1
-        next_index = find_next_playable(playlist.presets, current_index)
-        if next_index is None:
-            return False
-        if next_index == current_index:
-            return True  # Single-preset playlist, don't reload
-        playlist.set_playing(next_index)
-        playlist.set_selection(next_index)
-        await try_load_preset(self._ctx, playlist.presets[next_index])
-        return True
+        """Advance to the next preset in the playlist."""
+        from platyplaty.autoplay_advance import advance_playlist_to_next
+        return await advance_playlist_to_next(self._ctx, self._ctx.playlist)
