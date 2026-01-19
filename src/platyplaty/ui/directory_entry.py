@@ -48,9 +48,9 @@ def should_include(path: Path, entry_type: EntryType) -> bool:
 
     Filter rules:
     - Directories (excluding . and ..): include
-    - .milk files (case-insensitive): include
-    - Symlinks to directories or .milk files: include
-    - Broken symlinks: only if name ends in .milk or has no extension
+    - .milk and .platy files (case-insensitive): include
+    - Symlinks to directories, .milk files, or .platy files: include
+    - Broken symlinks: only if name ends in .milk, .platy, or has no extension
 
     Args:
         path: Path to the entry.
@@ -69,17 +69,18 @@ def should_include(path: Path, entry_type: EntryType) -> bool:
     if entry_type in (EntryType.DIRECTORY, EntryType.SYMLINK_TO_DIRECTORY):
         return True
 
-    # Check for .milk extension (case-insensitive)
+    # Check for .milk and .platy extensions (case-insensitive)
     suffix = path.suffix.lower()
     is_milk = suffix == ".milk"
+    is_platy = suffix == ".platy"
 
-    # Files and symlinks to files: must be .milk
+    # Files and symlinks to files: must be .milk or .platy
     if entry_type in (EntryType.FILE, EntryType.SYMLINK_TO_FILE):
-        return is_milk
+        return is_milk or is_platy
 
-    # Broken symlinks: only if .milk extension or no extension
+    # Broken symlinks: only if .milk or .platy extension, or no extension
     if entry_type == EntryType.BROKEN_SYMLINK:
         has_no_extension = suffix == ""
-        return is_milk or has_no_extension
+        return is_milk or is_platy or has_no_extension
 
     return False

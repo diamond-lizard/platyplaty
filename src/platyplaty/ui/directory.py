@@ -1,7 +1,7 @@
 """Directory listing for the file browser.
 
 This module provides the main function to list directory contents with
-filtering for .milk files, directories, and symlinks.
+filtering for .milk and .platy files, directories, and symlinks.
 """
 
 from pathlib import Path
@@ -42,9 +42,9 @@ def list_directory(directory: Path) -> DirectoryListing:
 
     Lists the contents of a directory, filtering for:
     - Directories (excluding . and ..)
-    - .milk files (case-insensitive extension)
-    - Symlinks to either of the above
-    - Broken symlinks if name ends in .milk or has no extension
+    - .milk and .platy files (case-insensitive extension)
+    - Symlinks to directories, .milk files, or .platy files
+    - Broken symlinks if name ends in .milk, .platy, or has no extension
 
     Results are sorted case-insensitively with directories first.
 

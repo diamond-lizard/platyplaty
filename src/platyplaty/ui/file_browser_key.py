@@ -14,6 +14,7 @@ from textual.events import Key
 
 from platyplaty.ui.file_browser_nav import action_nav_left, action_nav_right
 from platyplaty.ui.file_browser_nav_updown import action_nav_down, action_nav_up
+from platyplaty.ui.file_browser_actions import action_add_preset_or_load_playlist
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
@@ -55,5 +56,6 @@ def _get_action_func(action_name: str) -> ActionFunc | None:
         "nav_down": action_nav_down,
         "nav_left": action_nav_left,
         "nav_right": action_nav_right,
+        "add_preset_or_load_playlist": action_add_preset_or_load_playlist,
     }
     return actions.get(action_name)
