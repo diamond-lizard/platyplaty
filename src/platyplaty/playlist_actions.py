@@ -339,3 +339,14 @@ async def save_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
         show_transient_error(app, f"Error: could not save playlist: {e}")
         return
     _refresh_playlist_view(app)
+
+
+async def toggle_autoplay(ctx: AppContext, app: PlatyplatyApp) -> None:
+    """Toggle autoplay on or off."""
+    if ctx.current_focus != "playlist":
+        return
+    autoplay_mgr = ctx.autoplay_manager
+    if autoplay_mgr is None:
+        return
+    await autoplay_mgr.toggle_autoplay()
+    _refresh_playlist_view(app)

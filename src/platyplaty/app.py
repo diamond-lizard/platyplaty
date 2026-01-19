@@ -192,6 +192,12 @@ class PlatyplatyApp(App[None]):
 
         await action_save_playlist(self)
 
+    async def action_toggle_autoplay(self) -> None:
+        """Toggle autoplay on or off."""
+        from platyplaty.app_playlist_actions import action_toggle_autoplay
+
+        await action_toggle_autoplay(self)
+
     async def graceful_shutdown(self) -> None:
         """Shut down the application gracefully."""
         await perform_graceful_shutdown(self.ctx, self)

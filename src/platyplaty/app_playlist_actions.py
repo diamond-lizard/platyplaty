@@ -124,3 +124,10 @@ async def action_save_playlist(app: PlatyplatyApp) -> None:
     from platyplaty.playlist_actions import save_playlist
 
     await save_playlist(app.ctx, app)
+
+
+async def action_toggle_autoplay(app: PlatyplatyApp) -> None:
+    """Toggle autoplay on or off."""
+    from platyplaty.playlist_actions import toggle_autoplay
+
+    await toggle_autoplay(app.ctx, app)
