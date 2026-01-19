@@ -17,10 +17,10 @@ from platyplaty.dispatch_tables import DispatchTable
 from platyplaty.undo import UndoManager
 
 if TYPE_CHECKING:
+    from platyplaty.autoplay_manager import AutoplayManager
     from platyplaty.playlist import Playlist
     from platyplaty.socket_client import SocketClient
     from platyplaty.types.app_config import AppConfig
-    from platyplaty.autoplay_manager import AutoplayManager
 
 
 @dataclass
