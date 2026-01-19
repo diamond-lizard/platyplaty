@@ -10,7 +10,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from platyplaty.playlist import Playlist
-from platyplaty.playlist_actions import reorder_up, reorder_down
+from platyplaty.playlist_edit_actions import reorder_up, reorder_down
 
 
 @pytest.fixture

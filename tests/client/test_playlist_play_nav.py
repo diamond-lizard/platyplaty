@@ -10,7 +10,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from platyplaty.playlist import Playlist
-from platyplaty.playlist_actions import play_next, play_previous
+from platyplaty.playlist_play_actions import play_next, play_previous
 
 
 @pytest.fixture

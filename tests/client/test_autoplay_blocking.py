@@ -10,10 +10,13 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from platyplaty.playlist import Playlist
-from platyplaty.playlist_actions import (
-    navigate_up, navigate_down, play_next, play_previous,
-    reorder_up, reorder_down, delete_from_playlist,
-    undo, redo, play_selection, page_up, page_down,
+from platyplaty.playlist_nav_actions import navigate_up, navigate_down
+from platyplaty.playlist_play_actions import play_next, play_previous, play_selection
+from platyplaty.playlist_edit_actions import reorder_up, reorder_down
+from platyplaty.playlist_delete_action import delete_from_playlist
+from platyplaty.playlist_undo_actions import undo, redo
+from platyplaty.playlist_page_actions import page_up, page_down
+from platyplaty.playlist_jump_actions import (
     navigate_to_first_preset, navigate_to_last_preset,
 )
 

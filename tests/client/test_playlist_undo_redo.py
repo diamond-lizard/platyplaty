@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 from platyplaty.playlist import Playlist
 from platyplaty.undo import UndoManager
 from platyplaty.playlist_snapshot import create_snapshot, push_undo_snapshot
-from platyplaty.playlist_actions import undo, redo
+from platyplaty.playlist_undo_actions import undo, redo
 
 
 @pytest.fixture
