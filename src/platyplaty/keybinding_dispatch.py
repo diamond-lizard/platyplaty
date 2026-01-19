@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Keybinding dispatch for Platyplaty.
 
-Routes key events from terminal and renderer to their configured actions.
-Terminal events use keybindings.client, renderer events use keybindings.renderer.
+Routes key events to their configured actions based on current focus.
+Global keys work in all sections. Section-specific keys only work when
+that section has focus and are silently ignored otherwise.
 """
 
 from typing import TYPE_CHECKING
@@ -44,3 +45,42 @@ async def dispatch_key_event(
             ctx.exiting = True
             app.exit()
     return True
+
+
+async def dispatch_focused_key_event(
+    key: str,
+    ctx: "AppContext",
+    app: "PlatyplatyApp",
+) -> bool:
+    """Dispatch a key event based on current focus.
+
+    First checks the global dispatch table, then checks the section-specific
+    dispatch table based on ctx.current_focus. Section keys are silently
+    ignored when the wrong section has focus.
+
+    Args:
+        key: The key name from the event.
+        ctx: Application context containing focus state and dispatch tables.
+        app: The Textual application instance.
+
+    Returns:
+        True if key was bound and action invoked, False otherwise.
+    """
+    # Check global keys first
+    if await dispatch_key_event(key, ctx.global_dispatch_table, ctx, app):
+        return True
+
+    # Check section-specific keys based on current focus
+    if ctx.current_focus == "file_browser":
+        return await dispatch_key_event(
+            key, ctx.file_browser_dispatch_table, ctx, app
+        )
+    elif ctx.current_focus == "playlist":
+        return await dispatch_key_event(
+            key, ctx.playlist_dispatch_table, ctx, app
+        )
+    elif ctx.current_focus == "error_view":
+        return await dispatch_key_event(
+            key, ctx.error_view_dispatch_table, ctx, app
+        )
+    return False
