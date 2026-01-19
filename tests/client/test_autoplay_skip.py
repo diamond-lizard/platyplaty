@@ -7,6 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from platyplaty.autoplay_helpers import find_next_playable, is_preset_playable
+from platyplaty.playlist import Playlist
 
 
 class TestIsPresetPlayable:
@@ -47,7 +48,7 @@ class TestFindNextPlayable:
         b = tmp_path / "b.milk"
         a.touch()
         b.touch()
-        result = find_next_playable([a, b], 0)
+        result = find_next_playable(Playlist([a, b]), 0)
         assert result == 1
 
     def test_skip_broken_preset(self, tmp_path: Path) -> None:
@@ -58,7 +59,7 @@ class TestFindNextPlayable:
         a.touch()
         c.touch()
         # broken is not touched, so it doesn't exist
-        result = find_next_playable([a, broken, c], 0)
+        result = find_next_playable(Playlist([a, broken, c]), 0)
         assert result == 2  # Skips index 1 (broken)
 
     def test_returns_none_when_all_broken(self, tmp_path: Path) -> None:
@@ -66,10 +67,10 @@ class TestFindNextPlayable:
         a = tmp_path / "a.milk"
         b = tmp_path / "b.milk"
         # Neither file exists
-        result = find_next_playable([a, b], 0)
+        result = find_next_playable(Playlist([a, b]), 0)
         assert result is None
 
     def test_empty_list_returns_none(self) -> None:
         """find_next_playable returns None for empty list."""
-        result = find_next_playable([], 0)
+        result = find_next_playable(Playlist([]), 0)
         assert result is None

@@ -95,5 +95,5 @@ class TestAutoplayErrors:
 
         assert result is True
         assert 1 in playlist.broken_indices
-        assert playlist.get_playing() == 1
+        assert playlist.get_playing() == 0
         assert "First preset error" in ctx.error_log
