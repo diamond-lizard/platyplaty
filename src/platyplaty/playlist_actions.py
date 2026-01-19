@@ -172,6 +172,11 @@ async def _load_preset_at_index(ctx: AppContext, index: int) -> None:
 async def undo(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Undo the last playlist operation."""
     from platyplaty.playlist_snapshot import create_snapshot, restore_snapshot
+    from platyplaty.ui.playlist_key import is_autoplay_blocking, show_autoplay_blocked_error
+
+    if is_autoplay_blocking(ctx):
+        await show_autoplay_blocked_error(app)
+        return
     from platyplaty.ui.transient_error import show_transient_error
 
     undo_mgr = ctx.undo_manager
@@ -188,6 +193,11 @@ async def undo(ctx: AppContext, app: PlatyplatyApp) -> None:
 async def redo(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Redo the last undone playlist operation."""
     from platyplaty.playlist_snapshot import create_snapshot, restore_snapshot
+    from platyplaty.ui.playlist_key import is_autoplay_blocking, show_autoplay_blocked_error
+
+    if is_autoplay_blocking(ctx):
+        await show_autoplay_blocked_error(app)
+        return
     from platyplaty.ui.transient_error import show_transient_error
 
     undo_mgr = ctx.undo_manager
