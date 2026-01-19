@@ -90,113 +90,113 @@ class PlatyplatyApp(App[None]):
 
     async def action_navigate_up(self) -> None:
         """Move selection up in current focused section."""
-        from platyplaty.app_playlist_actions import action_navigate_up
+        from platyplaty.playlist_nav_actions import navigate_up
 
-        await action_navigate_up(self)
+        await navigate_up(self.ctx, self)
 
     async def action_navigate_down(self) -> None:
         """Move selection down in current focused section."""
-        from platyplaty.app_playlist_actions import action_navigate_down
+        from platyplaty.playlist_nav_actions import navigate_down
 
-        await action_navigate_down(self)
+        await navigate_down(self.ctx, self)
 
     async def action_play_next(self) -> None:
         """Play next preset in playlist."""
-        from platyplaty.app_playlist_actions import action_play_next
+        from platyplaty.playlist_play_actions import play_next
 
-        await action_play_next(self)
+        await play_next(self.ctx, self)
 
     async def action_play_previous(self) -> None:
         """Play previous preset in playlist."""
-        from platyplaty.app_playlist_actions import action_play_previous
+        from platyplaty.playlist_play_actions import play_previous
 
-        await action_play_previous(self)
+        await play_previous(self.ctx, self)
 
     async def action_reorder_up(self) -> None:
         """Move selected preset up in playlist."""
-        from platyplaty.app_playlist_actions import action_reorder_up
+        from platyplaty.playlist_edit_actions import reorder_up
 
-        await action_reorder_up(self)
+        await reorder_up(self.ctx, self)
 
     async def action_reorder_down(self) -> None:
         """Move selected preset down in playlist."""
-        from platyplaty.app_playlist_actions import action_reorder_down
+        from platyplaty.playlist_edit_actions import reorder_down
 
-        await action_reorder_down(self)
+        await reorder_down(self.ctx, self)
 
     async def action_delete_from_playlist(self) -> None:
         """Delete selected preset from playlist."""
-        from platyplaty.app_playlist_actions import action_delete_from_playlist
+        from platyplaty.playlist_delete_action import delete_from_playlist
 
-        await action_delete_from_playlist(self)
+        await delete_from_playlist(self.ctx, self)
 
     async def action_undo(self) -> None:
         """Undo the last playlist operation."""
-        from platyplaty.app_playlist_actions import action_undo
+        from platyplaty.playlist_undo_actions import undo
 
-        await action_undo(self)
+        await undo(self.ctx, self)
 
     async def action_redo(self) -> None:
         """Redo the last undone playlist operation."""
-        from platyplaty.app_playlist_actions import action_redo
+        from platyplaty.playlist_undo_actions import redo
 
-        await action_redo(self)
+        await redo(self.ctx, self)
 
     async def action_play_selection(self) -> None:
         """Play the currently selected preset."""
-        from platyplaty.app_playlist_actions import action_play_selection
+        from platyplaty.playlist_play_actions import play_selection
 
         if self.ctx.current_focus == "playlist":
-            await action_play_selection(self)
+            await play_selection(self.ctx, self)
 
     async def action_open_selected(self) -> None:
         """Open selected item - enters directory or opens in editor."""
         if self.ctx.current_focus == "playlist":
-            from platyplaty.app_playlist_actions import action_open_selected
+            from platyplaty.playlist_play_actions import open_selected
 
-            await action_open_selected(self)
+            await open_selected(self.ctx, self)
 
     async def action_page_up(self) -> None:
         """Move selection up by one page."""
-        from platyplaty.app_playlist_actions import action_page_up
+        from platyplaty.playlist_page_actions import page_up
 
-        await action_page_up(self)
+        await page_up(self.ctx, self)
 
     async def action_page_down(self) -> None:
         """Move selection down by one page."""
-        from platyplaty.app_playlist_actions import action_page_down
+        from platyplaty.playlist_page_actions import page_down
 
-        await action_page_down(self)
+        await page_down(self.ctx, self)
 
     async def action_navigate_to_first_preset(self) -> None:
         """Move selection to first preset."""
-        from platyplaty.app_playlist_actions import action_navigate_to_first_preset
+        from platyplaty.playlist_jump_actions import navigate_to_first_preset
 
-        await action_navigate_to_first_preset(self)
+        await navigate_to_first_preset(self.ctx, self)
 
     async def action_navigate_to_last_preset(self) -> None:
         """Move selection to last preset."""
-        from platyplaty.app_playlist_actions import action_navigate_to_last_preset
+        from platyplaty.playlist_jump_actions import navigate_to_last_preset
 
-        await action_navigate_to_last_preset(self)
+        await navigate_to_last_preset(self.ctx, self)
 
     async def action_shuffle_playlist(self) -> None:
         """Shuffle the playlist in place."""
-        from platyplaty.app_playlist_actions import action_shuffle_playlist
+        from platyplaty.playlist_edit_actions import shuffle_playlist
 
-        await action_shuffle_playlist(self)
+        await shuffle_playlist(self.ctx, self)
 
     async def action_save_playlist(self) -> None:
         """Save the playlist to its associated filename."""
-        from platyplaty.app_playlist_actions import action_save_playlist
+        from platyplaty.playlist_edit_actions import save_playlist
 
-        await action_save_playlist(self)
+        await save_playlist(self.ctx, self)
 
     async def action_toggle_autoplay(self) -> None:
         """Toggle autoplay on or off."""
-        from platyplaty.app_playlist_actions import action_toggle_autoplay
+        from platyplaty.playlist_play_actions import toggle_autoplay
 
-        await action_toggle_autoplay(self)
+        await toggle_autoplay(self.ctx, self)
 
     async def graceful_shutdown(self) -> None:
         """Shut down the application gracefully."""
