@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from platyplaty.socket_exceptions import RendererError
 
 if TYPE_CHECKING:
-    from platyplaty.app import PlatyplatyApp
     from platyplaty.app_context import AppContext
     from platyplaty.playlist import Playlist
 

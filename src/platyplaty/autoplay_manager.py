@@ -5,7 +5,6 @@ import asyncio
 from typing import TYPE_CHECKING
 
 from platyplaty.autoplay_errors import show_empty_playlist_error, show_no_playable_error
-from platyplaty.autoplay_helpers import find_next_playable, try_load_preset
 from platyplaty.autoplay_timer import run_timer_loop
 
 if TYPE_CHECKING:

@@ -3,9 +3,9 @@
 
 from pathlib import Path
 
+from platyplaty import playlist_modify as modify
 from platyplaty import playlist_navigation as nav
 from platyplaty import playlist_persistence as persist
-from platyplaty import playlist_modify as modify
 
 
 class Playlist:
