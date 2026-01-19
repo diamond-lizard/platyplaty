@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from platyplaty.playlist import Playlist
     from platyplaty.socket_client import SocketClient
     from platyplaty.types.app_config import AppConfig
+    from platyplaty.autoplay_manager import AutoplayManager
 
 
 @dataclass
@@ -48,6 +49,7 @@ class AppContext:
         playlist_dispatch_table: Maps playlist keys to action names.
         error_view_dispatch_table: Maps error view keys to action names.
         undo_manager: Manages undo/redo stacks for playlist operations.
+        autoplay_manager: Manages autoplay toggle and timer, or None.
     """
 
     config: AppConfig
@@ -66,6 +68,7 @@ class AppContext:
     playlist_dispatch_table: DispatchTable = field(default_factory=dict)
     error_view_dispatch_table: DispatchTable = field(default_factory=dict)
     undo_manager: UndoManager = field(default_factory=UndoManager)
+    autoplay_manager: AutoplayManager | None = None
 
     def __post_init__(self) -> None:
         """Build dispatch tables from keybindings."""
