@@ -4,8 +4,8 @@
 from pathlib import Path
 
 from platyplaty import playlist_navigation as nav
-from platyplaty import playlist_operations as ops
 from platyplaty import playlist_persistence as persist
+from platyplaty import playlist_modify as modify
 
 
 class Playlist:
@@ -71,30 +71,30 @@ class Playlist:
 
     def add_preset(self, path: Path) -> None:
         """Add a preset at the end of the playlist."""
-        ops.add_preset(self.presets, path)
+        modify.add_preset_to_playlist(self.presets, self.broken_indices, path)
         self.dirty_flag = True
-        self._validate_new_preset(path)
 
     def remove_preset(self, index: int) -> None:
         """Remove the preset at the given index."""
-        ops.remove_preset(self.presets, index)
+        self.broken_indices = modify.remove_preset_from_playlist(
+            self.presets, self.broken_indices, index
+        )
         self.dirty_flag = True
-        self._adjust_broken_indices_after_remove(index)
 
     def move_preset_up(self, index: int) -> bool:
         """Move preset at index up by one. Return False if at top."""
-        result = ops.move_preset_up(self.presets, index)
+        result = modify.move_preset_up_in_playlist(
+            self.presets, self.broken_indices, index
+        )
         self.dirty_flag = self.dirty_flag or result
-        if result:
-            self._swap_broken_indices(index - 1, index)
         return result
 
     def move_preset_down(self, index: int) -> bool:
         """Move preset at index down by one. Return False if at bottom."""
-        result = ops.move_preset_down(self.presets, index)
+        result = modify.move_preset_down_in_playlist(
+            self.presets, self.broken_indices, index
+        )
         self.dirty_flag = self.dirty_flag or result
-        if result:
-            self._swap_broken_indices(index, index + 1)
         return result
 
     def clear(self) -> None:
@@ -108,30 +108,3 @@ class Playlist:
     def save_to_file(self, filepath: Path | None = None) -> None:
         """Save presets to a .platy file."""
         persist.save_to_file(self, filepath)
-
-    def _validate_new_preset(self, path: Path) -> None:
-        """Check if newly added preset is broken and update broken_indices."""
-        from platyplaty.preset_validator import is_valid_preset
-
-        new_index = len(self.presets) - 1
-        if not is_valid_preset(path):
-            self.broken_indices.add(new_index)
-
-    def _adjust_broken_indices_after_remove(self, removed_index: int) -> None:
-        """Adjust broken_indices after a preset is removed."""
-        self.broken_indices.discard(removed_index)
-        self.broken_indices = {
-            i - 1 if i > removed_index else i for i in self.broken_indices
-        }
-
-    def _swap_broken_indices(self, idx1: int, idx2: int) -> None:
-        """Swap positions in broken_indices when presets are swapped."""
-        has_idx1 = idx1 in self.broken_indices
-        has_idx2 = idx2 in self.broken_indices
-        if has_idx1 != has_idx2:
-            if has_idx1:
-                self.broken_indices.discard(idx1)
-                self.broken_indices.add(idx2)
-            else:
-                self.broken_indices.discard(idx2)
-                self.broken_indices.add(idx1)

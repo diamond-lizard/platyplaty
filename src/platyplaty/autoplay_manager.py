@@ -4,12 +4,8 @@
 import asyncio
 from typing import TYPE_CHECKING
 
-from platyplaty.autoplay_helpers import (
-    find_next_playable,
-    show_empty_playlist_error,
-    show_no_playable_error,
-    try_load_preset,
-)
+from platyplaty.autoplay_errors import show_empty_playlist_error, show_no_playable_error
+from platyplaty.autoplay_helpers import find_next_playable, try_load_preset
 from platyplaty.autoplay_timer import run_timer_loop
 
 if TYPE_CHECKING:
@@ -72,23 +68,11 @@ class AutoplayManager:
             self._autoplay_enabled = False
             show_empty_playlist_error(self._app)
             return
-        first_playable = find_next_playable(playlist, -1)
-        if first_playable is None:
+        from platyplaty.autoplay_start import start_from_first_preset
+        if not await start_from_first_preset(self._ctx, playlist):
             self._autoplay_enabled = False
             show_no_playable_error(self._app)
             return
-        playlist.set_playing(first_playable)
-        playlist.set_selection(first_playable)
-        preset_path = playlist.presets[first_playable]
-        success, error = await try_load_preset(self._ctx, preset_path)
-        if not success and error is not None:
-            playlist.broken_indices.add(first_playable)
-            self._ctx.error_log.append(error)
-            from platyplaty.autoplay_advance import advance_playlist_to_next
-            if not await advance_playlist_to_next(self._ctx, playlist):
-                self._autoplay_enabled = False
-                show_no_playable_error(self._app)
-                return
         self._start_timer()
 
     def _start_timer(self) -> None:

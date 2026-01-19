@@ -89,29 +89,3 @@ def find_next_playable(playlist: "Playlist", start_index: int) -> int | None:
         if validate_and_mark_broken(playlist, index):
             return index
     return None
-
-
-NO_PLAYABLE_MESSAGE = "No playable presets in playlist. Stopping autoplay."
-EMPTY_PLAYLIST_MESSAGE = "Playlist is empty"
-
-
-def show_no_playable_error(app: "PlatyplatyApp") -> None:
-    """Show error message when no playable presets are found.
-
-    Args:
-        app: The Textual application instance.
-    """
-    from platyplaty.ui.transient_error import TransientErrorBar
-    error_bar = app.query_one("#transient_error", TransientErrorBar)
-    error_bar.show_error(NO_PLAYABLE_MESSAGE)
-
-
-def show_empty_playlist_error(app: "PlatyplatyApp") -> None:
-    """Show error message when playlist is empty.
-
-    Args:
-        app: The Textual application instance.
-    """
-    from platyplaty.ui.transient_error import TransientErrorBar
-    error_bar = app.query_one("#transient_error", TransientErrorBar)
-    error_bar.show_error(EMPTY_PLAYLIST_MESSAGE)
