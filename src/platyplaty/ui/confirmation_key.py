@@ -37,7 +37,7 @@ async def handle_confirmation_key(
     return False
 
 
-def return_focus_to_widget(app: "App", widget_id: str | None) -> None:
+def return_focus_to_widget(app: "App[object]", widget_id: str | None) -> None:
     """Return focus to a widget by ID.
 
     Args:

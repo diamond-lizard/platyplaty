@@ -32,7 +32,7 @@ async def handle_command_key(key: str, prompt: "CommandPrompt") -> None:
         prompt.input_text += key
 
 
-def return_focus_to_widget(app: "App", widget_id: str | None) -> None:
+def return_focus_to_widget(app: "App[object]", widget_id: str | None) -> None:
     """Return focus to a widget by ID.
 
     Args:
