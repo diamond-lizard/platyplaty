@@ -9,6 +9,7 @@ from platyplaty.socket_exceptions import RendererError
 if TYPE_CHECKING:
     from platyplaty.app_context import AppContext
     from platyplaty.app import PlatyplatyApp
+    from platyplaty.playlist import Playlist
 
 
 def is_preset_playable(path: Path) -> bool:
@@ -20,15 +21,30 @@ def is_preset_playable(path: Path) -> bool:
     Returns:
         True if the file exists, is readable, and is not a broken symlink.
     """
-    try:
-        if path.is_symlink() and not path.exists():
-            return False
-        return path.is_file() and path.exists()
-    except OSError:
+    from platyplaty.preset_validator import is_valid_preset
+    return is_valid_preset(path)
+
+
+
+def validate_and_mark_broken(playlist: "Playlist", index: int) -> bool:
+    """Re-validate preset at index and update broken_indices if needed.
+
+    Args:
+        playlist: The playlist containing the preset.
+        index: Index of the preset to validate.
+
+    Returns:
+        True if preset is valid, False if broken.
+    """
+    if index < 0 or index >= len(playlist.presets):
         return False
+    path = playlist.presets[index]
+    if is_preset_playable(path):
+        return True
+    playlist.broken_indices.add(index)
+    return False
 
-
-async def try_load_preset(ctx: "AppContext", path: Path) -> bool:
+async def try_load_preset(ctx: "AppContext", path: Path) -> tuple[bool, str | None]:
     """Attempt to load a preset into the renderer.
 
     Args:
@@ -36,36 +52,41 @@ async def try_load_preset(ctx: "AppContext", path: Path) -> bool:
         path: Path to the preset file.
 
     Returns:
-        True if loaded successfully, False otherwise.
+        Tuple of (success, error_message). error_message is None on success
+        or validation failure, contains renderer error message on render error.
     """
     if not ctx.client:
-        return False
+        return (False, None)
+    if not is_preset_playable(path):
+        return (False, None)
     try:
         await ctx.client.send_command("LOAD PRESET", path=str(path))
-        return True
-    except RendererError:
-        return False
+        return (True, None)
+    except RendererError as e:
+        return (False, str(e))
 
 
-def find_next_playable(presets: list[Path], start_index: int) -> int | None:
+def find_next_playable(playlist: "Playlist", start_index: int) -> int | None:
     """Find the next playable preset starting from start_index.
-    
+
     Iterates through the playlist starting from start_index + 1,
     wrapping to the beginning and stopping before reaching start_index again.
-    
+    Marks any broken presets in playlist.broken_indices.
+
     Args:
-        presets: List of preset paths.
+        playlist: The playlist to search.
         start_index: Index to start searching from (not included).
-    
+
     Returns:
         Index of the next playable preset, or None if no playable preset found.
     """
+    presets = playlist.presets
     if not presets:
         return None
     count = len(presets)
     for offset in range(1, count + 1):
         index = (start_index + offset) % count
-        if is_preset_playable(presets[index]):
+        if validate_and_mark_broken(playlist, index):
             return index
     return None
 

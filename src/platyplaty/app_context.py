@@ -36,6 +36,7 @@ class AppContext:
         renderer_dispatch_table: Maps renderer window keys to action names.
         client_dispatch_table: Maps terminal keys to action names.
         file_browser_dispatch_table: Maps file browser keys to action names.
+        error_log: List of renderer error messages for later viewing.
     """
 
     config: AppConfig
@@ -47,6 +48,7 @@ class AppContext:
     renderer_dispatch_table: DispatchTable = field(default_factory=dict)
     client_dispatch_table: DispatchTable = field(default_factory=dict)
     file_browser_dispatch_table: DispatchTable = field(default_factory=dict)
+    error_log: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Build dispatch tables from keybindings."""

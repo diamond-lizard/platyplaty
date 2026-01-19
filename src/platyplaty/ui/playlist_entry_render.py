@@ -34,13 +34,14 @@ def render_entry(widget: PlaylistView, index: int) -> Strip:
     is_selected = index == playlist.get_selection()
     is_playing = index == playlist.get_playing()
     is_focused = widget._focused
+    is_broken = index in playlist.broken_indices
 
     display_name = _get_display_name(widget, index)
     prefix = PLAYING_PREFIX if is_playing else NORMAL_PREFIX
     content_width = width - LEFT_MARGIN - RIGHT_MARGIN - len(prefix)
     truncated_name = truncate_simple(display_name, max(0, content_width))
 
-    style = _get_style(is_selected, is_focused)
+    style = _get_style(is_selected, is_focused, is_broken)
     text = _build_line(prefix, truncated_name, width)
 
     return Strip([Segment(text, style)])
@@ -53,8 +54,12 @@ def _get_display_name(widget: PlaylistView, index: int) -> str:
     return widget._playlist.presets[index].name
 
 
-def _get_style(is_selected: bool, is_focused: bool) -> Style:
-    """Get the style for an entry based on selection and focus state."""
+def _get_style(is_selected: bool, is_focused: bool, is_broken: bool) -> Style:
+    """Get the style for an entry based on selection, focus and broken state."""
+    if is_broken:
+        if is_selected and is_focused:
+            return Style(color="red", bgcolor="black")
+        return Style(color="black", bgcolor="red")
     if is_selected and is_focused:
         return Style(color="black", bgcolor="white")
     if is_selected:

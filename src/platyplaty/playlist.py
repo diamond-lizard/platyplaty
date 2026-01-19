@@ -17,6 +17,7 @@ class Playlist:
     _selection_index: int
     associated_filename: Path | None
     dirty_flag: bool
+    broken_indices: set[int]
 
     def __init__(self, presets: list[Path], loop: bool = True) -> None:
         """Initialize playlist with presets and optional loop setting."""
@@ -26,6 +27,7 @@ class Playlist:
         self._selection_index = 0
         self.associated_filename = None
         self.dirty_flag = False
+        self.broken_indices: set[int] = set()
 
     def current(self) -> Path:
         """Return the current preset path."""
@@ -71,22 +73,28 @@ class Playlist:
         """Add a preset at the end of the playlist."""
         ops.add_preset(self.presets, path)
         self.dirty_flag = True
+        self._validate_new_preset(path)
 
     def remove_preset(self, index: int) -> None:
         """Remove the preset at the given index."""
         ops.remove_preset(self.presets, index)
         self.dirty_flag = True
+        self._adjust_broken_indices_after_remove(index)
 
     def move_preset_up(self, index: int) -> bool:
         """Move preset at index up by one. Return False if at top."""
         result = ops.move_preset_up(self.presets, index)
         self.dirty_flag = self.dirty_flag or result
+        if result:
+            self._swap_broken_indices(index - 1, index)
         return result
 
     def move_preset_down(self, index: int) -> bool:
         """Move preset at index down by one. Return False if at bottom."""
         result = ops.move_preset_down(self.presets, index)
         self.dirty_flag = self.dirty_flag or result
+        if result:
+            self._swap_broken_indices(index, index + 1)
         return result
 
     def clear(self) -> None:
@@ -100,3 +108,28 @@ class Playlist:
     def save_to_file(self, filepath: Path | None = None) -> None:
         """Save presets to a .platy file."""
         persist.save_to_file(self, filepath)
+
+    def _validate_new_preset(self, path: Path) -> None:
+        """Check if newly added preset is broken and update broken_indices."""
+        from platyplaty.preset_validator import is_valid_preset
+
+        new_index = len(self.presets) - 1
+        if not is_valid_preset(path):
+            self.broken_indices.add(new_index)
+
+    def _adjust_broken_indices_after_remove(self, removed_index: int) -> None:
+        """Adjust broken_indices after a preset is removed."""
+        self.broken_indices.discard(removed_index)
+        self.broken_indices = {i - 1 if i > removed_index else i for i in self.broken_indices}
+
+    def _swap_broken_indices(self, idx1: int, idx2: int) -> None:
+        """Swap positions in broken_indices when presets are swapped."""
+        has_idx1 = idx1 in self.broken_indices
+        has_idx2 = idx2 in self.broken_indices
+        if has_idx1 != has_idx2:
+            if has_idx1:
+                self.broken_indices.discard(idx1)
+                self.broken_indices.add(idx2)
+            else:
+                self.broken_indices.discard(idx2)
+                self.broken_indices.add(idx1)

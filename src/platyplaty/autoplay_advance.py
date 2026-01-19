@@ -25,12 +25,16 @@ async def advance_playlist_to_next(ctx: "AppContext", playlist: "Playlist") -> b
     current_index = playlist.get_playing()
     if current_index is None:
         current_index = -1
-    next_index = find_next_playable(playlist.presets, current_index)
+    next_index = find_next_playable(playlist, current_index)
     if next_index is None:
         return False
     if next_index == current_index:
         return True  # Single-preset playlist, don't reload
     playlist.set_playing(next_index)
     playlist.set_selection(next_index)
-    await try_load_preset(ctx, playlist.presets[next_index])
-    return True
+    success, error = await try_load_preset(ctx, playlist.presets[next_index])
+    if not success and error is not None:
+        playlist.broken_indices.add(next_index)
+        ctx.error_log.append(error)
+        return await advance_playlist_to_next(ctx, playlist)
+    return success

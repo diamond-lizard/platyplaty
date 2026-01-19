@@ -20,6 +20,7 @@ def clear_playlist(playlist: "Playlist") -> None:
     playlist._selection_index = 0
     playlist._playing_index = None
     playlist.dirty_flag = True
+    playlist.broken_indices = set()
 
 
 def load_from_file(playlist: "Playlist", filepath: Path) -> None:
@@ -29,6 +30,7 @@ def load_from_file(playlist: "Playlist", filepath: Path) -> None:
     playlist._selection_index = 0
     playlist._playing_index = 0 if playlist.presets else None
     playlist.dirty_flag = False
+    playlist.broken_indices = _validate_presets(playlist.presets)
 
 
 def save_to_file(playlist: "Playlist", filepath: Path | None = None) -> None:
@@ -40,3 +42,21 @@ def save_to_file(playlist: "Playlist", filepath: Path | None = None) -> None:
     write_playlist_file(filepath, playlist.presets)
     playlist.associated_filename = filepath
     playlist.dirty_flag = False
+
+
+def _validate_presets(presets: list[Path]) -> set[int]:
+    """Validate presets and return set of broken indices.
+
+    Args:
+        presets: List of preset paths to validate.
+
+    Returns:
+        Set of indices of broken presets.
+    """
+    from platyplaty.preset_validator import is_valid_preset
+
+    broken = set()
+    for i, path in enumerate(presets):
+        if not is_valid_preset(path):
+            broken.add(i)
+    return broken

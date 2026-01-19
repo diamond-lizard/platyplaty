@@ -4,7 +4,6 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from platyplaty.messages import LogMessage
 from platyplaty.socket_exceptions import RendererError
 
 if TYPE_CHECKING:
@@ -39,6 +38,7 @@ async def load_preset_by_direction(
     try:
         await ctx.client.send_command("LOAD PRESET", path=str(path))
     except RendererError as e:
-        app.post_message(
-            LogMessage(f"Failed to load {direction} preset: {e}", level="warning")
-        )
+        from platyplaty.ui.transient_error import TransientErrorBar
+        error_bar = app.query_one("#transient_error", TransientErrorBar)
+        error_bar.show_error(str(e))
+        ctx.error_log.append(str(e))
