@@ -74,3 +74,19 @@ def move_preset_down_in_playlist(
     if result:
         broken.swap_broken_indices(broken_indices, index, index + 1)
     return result
+
+
+def shuffle_playlist(
+    presets: list[Path], broken_indices: set[int]
+) -> set[int]:
+    """Shuffle the playlist in place and clear broken indices.
+
+    Args:
+        presets: List of preset paths (modified in place).
+        broken_indices: Set of broken indices (cleared after shuffle).
+
+    Returns:
+        Empty set (broken indices are invalidated by shuffle).
+    """
+    ops.shuffle_presets(presets)
+    return set()

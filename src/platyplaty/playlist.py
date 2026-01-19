@@ -97,6 +97,14 @@ class Playlist:
         self.dirty_flag = self.dirty_flag or result
         return result
 
+
+    def shuffle(self) -> None:
+        """Shuffle the playlist in place."""
+        self.broken_indices = modify.shuffle_playlist(
+            self.presets, self.broken_indices
+        )
+        self.dirty_flag = True
+
     def clear(self) -> None:
         """Remove all presets and clear associated filename."""
         persist.clear_playlist(self)

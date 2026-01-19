@@ -5,6 +5,7 @@ Functions for adding, removing, and reordering presets.
 """
 
 from pathlib import Path
+import random
 
 
 def add_preset(presets: list[Path], path: Path) -> None:
@@ -57,3 +58,11 @@ def move_preset_down(presets: list[Path], index: int) -> bool:
         return False
     presets[index], presets[index + 1] = presets[index + 1], presets[index]
     return True
+
+def shuffle_presets(presets: list[Path]) -> None:
+    """Shuffle the playlist in place.
+
+    Args:
+        presets: List of preset paths (modified in place).
+    """
+    random.shuffle(presets)

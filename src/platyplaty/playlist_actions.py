@@ -310,3 +310,16 @@ async def navigate_to_last_preset(ctx: AppContext, app: PlatyplatyApp) -> None:
         return
     playlist.set_selection(last_index)
     _refresh_playlist_view(app)
+
+
+async def shuffle_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
+    """Shuffle the playlist in place."""
+    if ctx.current_focus != "playlist":
+        return
+    playlist = ctx.playlist
+    if len(playlist.presets) < 2:
+        return
+    from platyplaty.playlist_snapshot import push_undo_snapshot
+    push_undo_snapshot(ctx)
+    playlist.shuffle()
+    _refresh_playlist_view(app)

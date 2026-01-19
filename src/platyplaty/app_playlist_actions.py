@@ -111,3 +111,10 @@ async def action_navigate_to_last_preset(app: PlatyplatyApp) -> None:
     from platyplaty.playlist_actions import navigate_to_last_preset
 
     await navigate_to_last_preset(app.ctx, app)
+
+
+async def action_shuffle_playlist(app: PlatyplatyApp) -> None:
+    """Shuffle the playlist in place."""
+    from platyplaty.playlist_actions import shuffle_playlist
+
+    await shuffle_playlist(app.ctx, app)

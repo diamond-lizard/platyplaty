@@ -180,6 +180,12 @@ class PlatyplatyApp(App[None]):
 
         await action_navigate_to_last_preset(self)
 
+    async def action_shuffle_playlist(self) -> None:
+        """Shuffle the playlist in place."""
+        from platyplaty.app_playlist_actions import action_shuffle_playlist
+
+        await action_shuffle_playlist(self)
+
     async def graceful_shutdown(self) -> None:
         """Shut down the application gracefully."""
         await perform_graceful_shutdown(self.ctx, self)
