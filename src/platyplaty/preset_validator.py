@@ -28,7 +28,7 @@ def is_readable(path: Path) -> bool:
     try:
         with path.open("rb"):
             return True
-    except (OSError, IOError):
+    except OSError:
         return False
 
 

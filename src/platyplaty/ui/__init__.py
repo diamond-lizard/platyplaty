@@ -16,8 +16,8 @@ from platyplaty.ui.layout import (
     calculate_pane_widths,
     calculate_standard_widths,
 )
-from platyplaty.ui.transient_error import TransientErrorBar
 from platyplaty.ui.playlist_view import PlaylistView
+from platyplaty.ui.transient_error import TransientErrorBar
 
 __all__ = [
     "DirectoryEntry",

@@ -3,7 +3,7 @@
 
 import asyncio
 from contextlib import suppress
-from typing import TYPE_CHECKING, Callable, Awaitable
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from platyplaty.autoplay_manager import AutoplayManager

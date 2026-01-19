@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 from platyplaty.socket_exceptions import RendererError
 
 if TYPE_CHECKING:
-    from platyplaty.app_context import AppContext
     from platyplaty.app import PlatyplatyApp
+    from platyplaty.app_context import AppContext
     from platyplaty.playlist import Playlist
 
 
@@ -97,7 +97,7 @@ EMPTY_PLAYLIST_MESSAGE = "Playlist is empty"
 
 def show_no_playable_error(app: "PlatyplatyApp") -> None:
     """Show error message when no playable presets are found.
-    
+
     Args:
         app: The Textual application instance.
     """
@@ -108,7 +108,7 @@ def show_no_playable_error(app: "PlatyplatyApp") -> None:
 
 def show_empty_playlist_error(app: "PlatyplatyApp") -> None:
     """Show error message when playlist is empty.
-    
+
     Args:
         app: The Textual application instance.
     """

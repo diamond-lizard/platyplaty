@@ -2,13 +2,19 @@
 """Autoplay manager for toggle-able autoplay with timer management."""
 
 import asyncio
-from platyplaty.autoplay_helpers import find_next_playable, try_load_preset, show_no_playable_error, show_empty_playlist_error
-from platyplaty.autoplay_timer import run_timer_loop
 from typing import TYPE_CHECKING
 
+from platyplaty.autoplay_helpers import (
+    find_next_playable,
+    show_empty_playlist_error,
+    show_no_playable_error,
+    try_load_preset,
+)
+from platyplaty.autoplay_timer import run_timer_loop
+
 if TYPE_CHECKING:
-    from platyplaty.app_context import AppContext
     from platyplaty.app import PlatyplatyApp
+    from platyplaty.app_context import AppContext
 
 
 class AutoplayManager:
@@ -42,7 +48,7 @@ class AutoplayManager:
 
     async def toggle_autoplay(self) -> bool:
         """Toggle autoplay on or off.
-        
+
         Returns:
             True if autoplay is now enabled, False if disabled.
         """
@@ -73,7 +79,8 @@ class AutoplayManager:
             return
         playlist.set_playing(first_playable)
         playlist.set_selection(first_playable)
-        success, error = await try_load_preset(self._ctx, playlist.presets[first_playable])
+        preset_path = playlist.presets[first_playable]
+        success, error = await try_load_preset(self._ctx, preset_path)
         if not success and error is not None:
             playlist.broken_indices.add(first_playable)
             self._ctx.error_log.append(error)

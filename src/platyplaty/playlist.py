@@ -120,7 +120,9 @@ class Playlist:
     def _adjust_broken_indices_after_remove(self, removed_index: int) -> None:
         """Adjust broken_indices after a preset is removed."""
         self.broken_indices.discard(removed_index)
-        self.broken_indices = {i - 1 if i > removed_index else i for i in self.broken_indices}
+        self.broken_indices = {
+            i - 1 if i > removed_index else i for i in self.broken_indices
+        }
 
     def _swap_broken_indices(self, idx1: int, idx2: int) -> None:
         """Swap positions in broken_indices when presets are swapped."""
