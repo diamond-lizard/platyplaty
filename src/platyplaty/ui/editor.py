@@ -10,6 +10,7 @@ import os
 import shlex
 import shutil
 import subprocess
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -84,7 +85,7 @@ def require_editor_command() -> str:
     return editor
 
 
-async def open_in_editor(app: "App[object]", path: str) -> None:
+async def open_in_editor(app: "App[None]", path: str | Path) -> None:
     """Open a file in the configured editor.
 
     Suspends the Textual app, runs the editor as a subprocess,
