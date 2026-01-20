@@ -5,9 +5,9 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from platyplaty.commands.load_validation import validate_playlist_path
 from platyplaty.playlist_file import parse_playlist_file
 from platyplaty.playlist_snapshot import push_undo_snapshot
-from platyplaty.commands.load_validation import validate_playlist_path
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
