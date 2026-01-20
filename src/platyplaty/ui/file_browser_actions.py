@@ -37,7 +37,7 @@ async def action_add_preset_or_load_playlist(browser: FileBrowser) -> None:
         await _handle_add_milk_preset(browser, entry)
         return
     if is_file_type and suffix == ".platy":
-        # TODO: Implement in TASK-22500
+        await _handle_load_platy_playlist(browser, entry)
         return
     show_transient_error(browser, "Cannot add: not a playlist or preset")
 
@@ -70,3 +70,28 @@ async def _autoplay_first_preset(ctx: AppContext) -> None:
     playlist.set_selection(0)
     playlist.set_playing(0)
     await load_preset_at_index(ctx, 0)
+
+
+async def _handle_load_platy_playlist(browser: FileBrowser, entry: DirectoryEntry) -> None:
+    """Load a .platy playlist file.
+
+    Checks readability and loads the playlist if readable.
+    Shows error if not readable or if load fails.
+
+    Args:
+        browser: The file browser instance.
+        entry: The directory entry to load.
+    """
+    from platyplaty.commands.load_helpers import perform_load
+    from platyplaty.playlist_snapshot import push_undo_snapshot
+
+    path = entry.path
+    if not is_readable(path):
+        show_transient_error(browser, "Cannot load: file not readable")
+        return
+    ctx = browser.platyplaty_app.ctx
+    app = browser.platyplaty_app
+    push_undo_snapshot(ctx)
+    success, error = await perform_load(path, ctx, app)
+    if not success and error:
+        show_transient_error(browser, error)
