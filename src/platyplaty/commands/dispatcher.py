@@ -32,17 +32,17 @@ async def execute_command(
         Tuple of (success, error_message). error_message is None on success.
     """
     if name == "load":
-        from platyplaty.commands.load_playlist import execute
-        return await execute(args, ctx, app, base_dir)
+        from platyplaty.commands.load_playlist import execute as load_exec
+        return await load_exec(args, ctx, app, base_dir)
     if name == "save":
-        from platyplaty.commands.save_playlist import execute
-        return await execute(args, ctx, app, base_dir)
+        from platyplaty.commands.save_playlist import execute as save_exec
+        return await save_exec(args, ctx, app, base_dir)
     if name == "clear":
-        from platyplaty.commands.clear_playlist import execute
-        return await execute(ctx, app)
+        from platyplaty.commands.clear_playlist import execute as clear_exec
+        return await clear_exec(ctx, app)
     if name == "shuffle":
-        from platyplaty.commands.shuffle_playlist import execute
-        return await execute(ctx)
+        from platyplaty.commands.shuffle_playlist import execute as shuffle_exec
+        return await shuffle_exec(ctx)
     return (False, f"Command not found: '{name}'")
 
 
