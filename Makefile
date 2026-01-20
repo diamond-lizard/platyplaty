@@ -65,7 +65,7 @@ cppcheck-renderer:
 	cppcheck --enable=all --std=c++17 --inline-suppr --suppress=missingIncludeSystem $(SRC_DIR)
 
 test-renderer: cppcheck-renderer
-	uv run pytest tests/renderer/
+	uv run pytest -x tests/renderer/
 
 ruff:
 	uv run ruff check src/
@@ -77,4 +77,4 @@ ruff-fix:
 	uv run ruff check --fix src/
 
 test: ruff mypy
-	uv run pytest tests/
+	uv run pytest -x tests/
