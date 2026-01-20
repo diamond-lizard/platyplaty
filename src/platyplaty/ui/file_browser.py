@@ -6,13 +6,12 @@ file_browser_nav_updown, file_browser_error, file_browser_key.
 """
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from textual.events import Key, Resize
 from textual.geometry import Size
 from textual.strip import Strip
 from textual.widget import Widget
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
