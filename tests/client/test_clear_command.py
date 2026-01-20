@@ -85,3 +85,25 @@ class TestClearWithUnsavedChanges:
         # Simulate user pressing 'n'
         await captured_callback(False)
         mock_ctx.playlist.clear.assert_not_called()
+
+
+class TestClearStopsAutoplay:
+    """Tests for clear stopping autoplay."""
+
+    @pytest.fixture
+    def mock_ctx(self):
+        """Create a mock AppContext."""
+        ctx = MagicMock()
+        ctx.playlist = MagicMock()
+        ctx.autoplay_manager = MagicMock()
+        return ctx
+
+    @pytest.mark.asyncio
+    async def test_clear_stops_autoplay(self, mock_ctx):
+        """Clear stops autoplay when executed."""
+        from platyplaty.commands.clear_playlist import perform_clear
+
+        with patch("platyplaty.commands.clear_playlist.push_undo_snapshot"):
+            await perform_clear(mock_ctx)
+
+        mock_ctx.autoplay_manager.stop_autoplay.assert_called_once()
