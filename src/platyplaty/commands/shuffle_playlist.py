@@ -4,8 +4,8 @@
 Implements the :shuffle command for randomizing playlist order.
 """
 
-from typing import TYPE_CHECKING
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from platyplaty.playlist_snapshot import push_undo_snapshot
 
