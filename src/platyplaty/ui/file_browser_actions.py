@@ -72,7 +72,9 @@ async def _autoplay_first_preset(ctx: AppContext) -> None:
     await load_preset_at_index(ctx, 0)
 
 
-async def _handle_load_platy_playlist(browser: FileBrowser, entry: DirectoryEntry) -> None:
+async def _handle_load_platy_playlist(
+    browser: FileBrowser, entry: DirectoryEntry
+) -> None:
     """Load a .platy playlist file.
 
     Checks readability and loads the playlist if readable.
