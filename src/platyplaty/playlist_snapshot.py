@@ -7,6 +7,7 @@ from platyplaty.undo import PlaylistSnapshot
 
 if TYPE_CHECKING:
     from platyplaty.playlist import Playlist
+    from platyplaty.app_context import AppContext
 
 
 def create_snapshot(playlist: "Playlist") -> PlaylistSnapshot:
@@ -53,3 +54,16 @@ def restore_snapshot(playlist: "Playlist", snapshot: PlaylistSnapshot) -> None:
     playlist.set_playing(snapshot.playing_index)
     playlist.associated_filename = snapshot.associated_filename
     playlist.dirty_flag = snapshot.dirty_flag
+
+
+def push_undo_snapshot(ctx: "AppContext") -> None:
+    """Create a snapshot and push it to the undo stack.
+
+    Convenience function that combines create_snapshot and push_undo.
+    Call this before making modifications to the playlist.
+
+    Args:
+        ctx: Application context with playlist and undo_manager.
+    """
+    snapshot = create_snapshot(ctx.playlist)
+    ctx.undo_manager.push_undo(snapshot)
