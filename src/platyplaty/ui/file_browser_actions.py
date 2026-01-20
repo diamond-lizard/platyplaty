@@ -10,6 +10,8 @@ from typing import TYPE_CHECKING
 from platyplaty.preset_validator import is_readable
 from platyplaty.ui.directory_types import EntryType
 from platyplaty.ui.file_browser_error import show_transient_error
+from platyplaty.playlist_action_helpers import refresh_playlist_view
+from platyplaty.playlist_snapshot import push_undo_snapshot
 
 if TYPE_CHECKING:
     from platyplaty.app_context import AppContext
@@ -58,9 +60,11 @@ async def _handle_add_milk_preset(browser: FileBrowser, entry: DirectoryEntry) -
         return
     ctx = browser.platyplaty_app.ctx
     was_empty = len(ctx.playlist.presets) == 0
+    push_undo_snapshot(ctx)
     ctx.playlist.add_preset(path)
     if was_empty:
         await _autoplay_first_preset(ctx)
+    refresh_playlist_view(browser.platyplaty_app)
 
 
 async def _autoplay_first_preset(ctx: AppContext) -> None:

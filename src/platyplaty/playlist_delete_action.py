@@ -19,6 +19,7 @@ async def delete_from_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
         is_autoplay_blocking,
         show_autoplay_blocked_error,
     )
+    from platyplaty.playlist_snapshot import push_undo_snapshot
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)
@@ -29,6 +30,7 @@ async def delete_from_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
     current = playlist.get_selection()
     playing = playlist.get_playing()
     was_playing = playing == current
+    push_undo_snapshot(ctx)
     playlist.remove_preset(current)
     if not playlist.presets:
         playlist.set_selection(0)
