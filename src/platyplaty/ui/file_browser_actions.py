@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from platyplaty.playlist_action_helpers import refresh_playlist_view
+from platyplaty.playlist_action_helpers import autoplay_first_preset, refresh_playlist_view
 from platyplaty.playlist_snapshot import push_undo_snapshot
 from platyplaty.preset_validator import is_readable
 from platyplaty.ui.directory_types import EntryType
@@ -63,17 +63,10 @@ async def _handle_add_milk_preset(browser: FileBrowser, entry: DirectoryEntry) -
     push_undo_snapshot(ctx)
     ctx.playlist.add_preset(path)
     if was_empty:
-        await _autoplay_first_preset(ctx)
+        await autoplay_first_preset(ctx)
     refresh_playlist_view(browser.platyplaty_app)
 
 
-async def _autoplay_first_preset(ctx: AppContext) -> None:
-    """Load and play the first preset in the playlist."""
-    from platyplaty.playlist_action_helpers import load_preset_at_index
-    playlist = ctx.playlist
-    playlist.set_selection(0)
-    playlist.set_playing(0)
-    await load_preset_at_index(ctx, 0)
 
 
 async def _handle_load_platy_playlist(

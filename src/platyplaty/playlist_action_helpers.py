@@ -65,3 +65,11 @@ def find_preset_index(playlist: Playlist, path: Path) -> int | None:
     if playing in indices:
         return playing
     return indices[0]
+
+
+async def autoplay_first_preset(ctx: AppContext) -> None:
+    """Load and play the first preset in the playlist."""
+    playlist = ctx.playlist
+    playlist.set_selection(0)
+    playlist.set_playing(0)
+    await load_preset_at_index(ctx, 0)
