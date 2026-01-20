@@ -32,7 +32,7 @@ def mock_ctx() -> MagicMock:
         Path("/test/a.milk"),
         Path("/test/b.milk"),
     ])
-    ctx.undo_manager = UndoManager(max_undo=10)
+    ctx.undo_manager = UndoManager()
     ctx.autoplay_manager = MagicMock()
     ctx.autoplay_manager.autoplay_enabled = False
     return ctx
