@@ -15,11 +15,11 @@ async def delete_from_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
         load_preset_at_index,
         refresh_playlist_view,
     )
+    from platyplaty.playlist_snapshot import push_undo_snapshot
     from platyplaty.ui.playlist_key import (
         is_autoplay_blocking,
         show_autoplay_blocked_error,
     )
-    from platyplaty.playlist_snapshot import push_undo_snapshot
 
     if is_autoplay_blocking(ctx):
         await show_autoplay_blocked_error(app)
