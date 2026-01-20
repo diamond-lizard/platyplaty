@@ -13,6 +13,8 @@ from platyplaty.ui.file_browser_error import show_transient_error
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
+    from pathlib import Path
+    from platyplaty.app_context import AppContext
 
 
 async def action_preview_preset(browser: FileBrowser) -> None:
@@ -36,7 +38,7 @@ async def action_preview_preset(browser: FileBrowser) -> None:
     await _preview_milk_preset(browser, entry.path)
 
 
-async def _preview_milk_preset(browser: FileBrowser, path) -> None:
+async def _preview_milk_preset(browser: FileBrowser, path: "Path") -> None:
     """Load a preset into the renderer for preview.
 
     Args:
@@ -53,13 +55,13 @@ async def _preview_milk_preset(browser: FileBrowser, path) -> None:
     if success:
         _update_playing_indicator(browser, path)
 
-def _stop_autoplay_if_running(ctx) -> None:
+def _stop_autoplay_if_running(ctx: "AppContext") -> None:
     """Stop autoplay if it is currently running."""
-    autoplay_mgr = getattr(ctx, "autoplay_manager", None)
+    autoplay_mgr = ctx.autoplay_manager
     if autoplay_mgr is not None:
         autoplay_mgr.stop_autoplay()
 
-def _update_playing_indicator(browser: FileBrowser, path) -> None:
+def _update_playing_indicator(browser: FileBrowser, path: "Path") -> None:
     """Update playing indicator when previewing a preset.
 
     If preset is in playlist, move '* ' indicator to it.
