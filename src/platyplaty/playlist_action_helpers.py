@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
     from platyplaty.app_context import AppContext
+    from pathlib import Path
+    from platyplaty.playlist import Playlist
 
 
 def refresh_playlist_view(app: PlatyplatyApp) -> None:
@@ -42,7 +44,7 @@ def scroll_playlist_to_playing(app: PlatyplatyApp) -> None:
         pass
 
 
-def find_preset_index(playlist, path) -> int | None:
+def find_preset_index(playlist: "Playlist", path: "Path") -> int | None:
     """Find the index of a preset in the playlist.
 
     If preset appears multiple times, prefer current playing index.
