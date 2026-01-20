@@ -114,13 +114,13 @@ class PlatyplatyApp(App[None]):
 
     async def action_reorder_up(self) -> None:
         """Move selected preset up in playlist."""
-        from platyplaty.playlist_edit_actions import reorder_up
+        from platyplaty.playlist_reorder_actions import reorder_up
 
         await reorder_up(self.ctx, self)
 
     async def action_reorder_down(self) -> None:
         """Move selected preset down in playlist."""
-        from platyplaty.playlist_edit_actions import reorder_down
+        from platyplaty.playlist_reorder_actions import reorder_down
 
         await reorder_down(self.ctx, self)
 
