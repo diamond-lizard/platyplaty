@@ -40,6 +40,9 @@ async def execute_command(
     if name == "clear":
         from platyplaty.commands.clear_playlist import execute
         return await execute(ctx, app)
+    if name == "shuffle":
+        from platyplaty.commands.shuffle_playlist import execute
+        return await execute(ctx)
     return (False, f"Command not found: '{name}'")
 
 

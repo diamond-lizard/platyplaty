@@ -61,8 +61,14 @@ async def shuffle_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
     playlist = ctx.playlist
     if len(playlist.presets) < 2:
         return
+    selected_path = playlist.presets[playlist.get_selection()]
+    playing_idx = playlist.get_playing()
+    playing_path = playlist.presets[playing_idx] if playing_idx is not None else None
     push_undo_snapshot(ctx)
     playlist.shuffle()
+    playlist.set_selection(playlist.presets.index(selected_path))
+    if playing_path is not None:
+        playlist.set_playing(playlist.presets.index(playing_path))
     refresh_playlist_view(app)
 
 
