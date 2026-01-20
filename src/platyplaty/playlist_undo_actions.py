@@ -11,7 +11,10 @@ if TYPE_CHECKING:
 
 async def undo(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Undo the last playlist operation."""
-    from platyplaty.playlist_action_helpers import refresh_playlist_view
+    from platyplaty.playlist_action_helpers import (
+        load_preset_at_index,
+        refresh_playlist_view,
+    )
     from platyplaty.playlist_snapshot import create_snapshot, restore_snapshot
     from platyplaty.ui.playlist_key import (
         is_autoplay_blocking,
@@ -30,12 +33,18 @@ async def undo(ctx: AppContext, app: PlatyplatyApp) -> None:
     previous = undo_mgr.undo(current)
     if previous is not None:
         restore_snapshot(ctx.playlist, previous)
+        if ctx.playlist.playing_index is not None:
+            await load_preset_at_index(ctx, ctx.playlist.playing_index)
+        # TODO: Phase 2300 - load idle preset when playing_index is None
         refresh_playlist_view(app)
 
 
 async def redo(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Redo the last undone playlist operation."""
-    from platyplaty.playlist_action_helpers import refresh_playlist_view
+    from platyplaty.playlist_action_helpers import (
+        load_preset_at_index,
+        refresh_playlist_view,
+    )
     from platyplaty.playlist_snapshot import create_snapshot, restore_snapshot
     from platyplaty.ui.playlist_key import (
         is_autoplay_blocking,
@@ -54,4 +63,7 @@ async def redo(ctx: AppContext, app: PlatyplatyApp) -> None:
     next_state = undo_mgr.redo(current)
     if next_state is not None:
         restore_snapshot(ctx.playlist, next_state)
+        if ctx.playlist.playing_index is not None:
+            await load_preset_at_index(ctx, ctx.playlist.playing_index)
+        # TODO: Phase 2300 - load idle preset when playing_index is None
         refresh_playlist_view(app)
