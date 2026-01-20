@@ -42,7 +42,10 @@ async def show_unsaved_changes_prompt(
     from platyplaty.ui.confirmation_prompt import ConfirmationPrompt
 
     prompt = app.query_one(ConfirmationPrompt)
-    msg = "There are unsaved changes in the currently loaded playlist, clear anyway (y/n)?"
+    msg = (
+        "There are unsaved changes in the currently loaded playlist, "
+        "clear anyway (y/n)?"
+    )
 
     async def on_response(confirmed: bool) -> None:
         if confirmed:
