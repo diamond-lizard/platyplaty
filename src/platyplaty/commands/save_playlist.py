@@ -45,7 +45,7 @@ async def save_to_path(
 ) -> tuple[bool, str | None]:
     """Save to the specified path."""
     filepath = expand_command_path(path_arg, base_dir)
-    if not filepath.suffix.lower() == ".platy":
+    if filepath.suffix.lower() != ".platy":
         return (False, "Error: a playlist filename must end with .platy")
     return perform_save(ctx, filepath)
 
