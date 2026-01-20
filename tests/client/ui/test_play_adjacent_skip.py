@@ -28,13 +28,16 @@ class TestSkipPlatyFiles:
             DirectoryEntry("playlist.platy", EntryType.FILE, Path("/playlist.platy")),
             DirectoryEntry("b.milk", EntryType.FILE, Path("/b.milk")),
         ]
-        mock_browser._state = MagicMock()
-        mock_browser._state.listing = make_listing(entries)
-        mock_browser._state.selected_index = 0
+        mock_browser.selected_index = 0
+        mock_browser._middle_listing = make_listing(entries)
+        mock_browser._nav_state = MagicMock()
+        mock_browser._nav_state.scroll_offset = 0
+        mock_browser.size = MagicMock()
+        mock_browser.size.height = 20
         mock_browser.get_selected_entry.return_value = entries[2]
         with patch("platyplaty.ui.file_browser_preset_preview._preview_milk_preset"):
             await action_play_next_preset(mock_browser)
-        assert mock_browser._state.selected_index == 2
+        assert mock_browser.selected_index == 2
 
 
 class TestSkipSymlinkToDir:
@@ -51,13 +54,16 @@ class TestSkipSymlinkToDir:
             DirectoryEntry("link", EntryType.SYMLINK_TO_DIRECTORY, Path("/link")),
             DirectoryEntry("b.milk", EntryType.FILE, Path("/b.milk")),
         ]
-        mock_browser._state = MagicMock()
-        mock_browser._state.listing = make_listing(entries)
-        mock_browser._state.selected_index = 0
+        mock_browser.selected_index = 0
+        mock_browser._middle_listing = make_listing(entries)
+        mock_browser._nav_state = MagicMock()
+        mock_browser._nav_state.scroll_offset = 0
+        mock_browser.size = MagicMock()
+        mock_browser.size.height = 20
         mock_browser.get_selected_entry.return_value = entries[2]
         with patch("platyplaty.ui.file_browser_preset_preview._preview_milk_preset"):
             await action_play_next_preset(mock_browser)
-        assert mock_browser._state.selected_index == 2
+        assert mock_browser.selected_index == 2
 
 
 class TestSkipBrokenSymlink:
@@ -74,10 +80,13 @@ class TestSkipBrokenSymlink:
             DirectoryEntry("broken.milk", EntryType.BROKEN_SYMLINK, Path("/broken")),
             DirectoryEntry("b.milk", EntryType.FILE, Path("/b.milk")),
         ]
-        mock_browser._state = MagicMock()
-        mock_browser._state.listing = make_listing(entries)
-        mock_browser._state.selected_index = 0
+        mock_browser.selected_index = 0
+        mock_browser._middle_listing = make_listing(entries)
+        mock_browser._nav_state = MagicMock()
+        mock_browser._nav_state.scroll_offset = 0
+        mock_browser.size = MagicMock()
+        mock_browser.size.height = 20
         mock_browser.get_selected_entry.return_value = entries[2]
         with patch("platyplaty.ui.file_browser_preset_preview._preview_milk_preset"):
             await action_play_next_preset(mock_browser)
-        assert mock_browser._state.selected_index == 2
+        assert mock_browser.selected_index == 2

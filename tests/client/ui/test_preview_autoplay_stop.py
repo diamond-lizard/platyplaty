@@ -69,9 +69,12 @@ class TestJKStopsAutoplay:
             DirectoryEntry("a.milk", EntryType.FILE, Path("/a.milk")),
             DirectoryEntry("b.milk", EntryType.FILE, Path("/b.milk")),
         ]
-        mock_browser._state = MagicMock()
-        mock_browser._state.listing = make_listing(entries)
-        mock_browser._state.selected_index = 0
+        mock_browser.selected_index = 0
+        mock_browser._middle_listing = make_listing(entries)
+        mock_browser._nav_state = MagicMock()
+        mock_browser._nav_state.scroll_offset = 0
+        mock_browser.size = MagicMock()
+        mock_browser.size.height = 20
         mock_browser.get_selected_entry.return_value = entries[1]
         with patch("platyplaty.ui.file_browser_preset_preview._stop_autoplay_if_running") as mock_stop:
             with patch("platyplaty.autoplay_helpers.try_load_preset") as mock_load:
@@ -88,9 +91,12 @@ class TestJKStopsAutoplay:
             DirectoryEntry("a.milk", EntryType.FILE, Path("/a.milk")),
             DirectoryEntry("b.milk", EntryType.FILE, Path("/b.milk")),
         ]
-        mock_browser._state = MagicMock()
-        mock_browser._state.listing = make_listing(entries)
-        mock_browser._state.selected_index = 1
+        mock_browser.selected_index = 1
+        mock_browser._middle_listing = make_listing(entries)
+        mock_browser._nav_state = MagicMock()
+        mock_browser._nav_state.scroll_offset = 0
+        mock_browser.size = MagicMock()
+        mock_browser.size.height = 20
         mock_browser.get_selected_entry.return_value = entries[0]
         with patch("platyplaty.ui.file_browser_preset_preview._stop_autoplay_if_running") as mock_stop:
             with patch("platyplaty.autoplay_helpers.try_load_preset") as mock_load:

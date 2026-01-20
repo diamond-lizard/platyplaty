@@ -46,13 +46,16 @@ class TestPlayNextPreset:
             DirectoryEntry("subdir", EntryType.DIRECTORY, Path("/subdir")),
             DirectoryEntry("b.milk", EntryType.FILE, Path("/b.milk")),
         ]
-        mock_browser._state = MagicMock()
-        mock_browser._state.listing = make_listing(entries)
-        mock_browser._state.selected_index = 0
+        mock_browser.selected_index = 0
+        mock_browser._middle_listing = make_listing(entries)
+        mock_browser._nav_state = MagicMock()
+        mock_browser._nav_state.scroll_offset = 0
+        mock_browser.size = MagicMock()
+        mock_browser.size.height = 20
         mock_browser.get_selected_entry.return_value = entries[2]
-        with patch("platyplaty.ui.file_browser_play_actions._preview_milk_preset"):
+        with patch("platyplaty.ui.file_browser_preset_preview._preview_milk_preset"):
             await action_play_next_preset(mock_browser)
-        assert mock_browser._state.selected_index == 2
+        assert mock_browser.selected_index == 2
 
     @pytest.mark.asyncio
     async def test_noop_when_no_more_milk_files(self, mock_browser: MagicMock) -> None:
@@ -62,13 +65,16 @@ class TestPlayNextPreset:
             DirectoryEntry("a.milk", EntryType.FILE, Path("/a.milk")),
             DirectoryEntry("subdir", EntryType.DIRECTORY, Path("/subdir")),
         ]
-        mock_browser._state = MagicMock()
-        mock_browser._state.listing = make_listing(entries)
-        mock_browser._state.selected_index = 0
-        with patch("platyplaty.ui.file_browser_play_actions._preview_milk_preset") as mock_prev:
+        mock_browser.selected_index = 0
+        mock_browser._middle_listing = make_listing(entries)
+        mock_browser._nav_state = MagicMock()
+        mock_browser._nav_state.scroll_offset = 0
+        mock_browser.size = MagicMock()
+        mock_browser.size.height = 20
+        with patch("platyplaty.ui.file_browser_preset_preview._preview_milk_preset") as mock_prev:
             await action_play_next_preset(mock_browser)
         mock_prev.assert_not_called()
-        assert mock_browser._state.selected_index == 0
+        assert mock_browser.selected_index == 0
 
 
 class TestPlayPreviousPreset:
@@ -83,10 +89,13 @@ class TestPlayPreviousPreset:
             DirectoryEntry("subdir", EntryType.DIRECTORY, Path("/subdir")),
             DirectoryEntry("b.milk", EntryType.FILE, Path("/b.milk")),
         ]
-        mock_browser._state = MagicMock()
-        mock_browser._state.listing = make_listing(entries)
-        mock_browser._state.selected_index = 2
+        mock_browser.selected_index = 2
+        mock_browser._middle_listing = make_listing(entries)
+        mock_browser._nav_state = MagicMock()
+        mock_browser._nav_state.scroll_offset = 0
+        mock_browser.size = MagicMock()
+        mock_browser.size.height = 20
         mock_browser.get_selected_entry.return_value = entries[0]
-        with patch("platyplaty.ui.file_browser_play_actions._preview_milk_preset"):
+        with patch("platyplaty.ui.file_browser_preset_preview._preview_milk_preset"):
             await action_play_previous_preset(mock_browser)
-        assert mock_browser._state.selected_index == 0
+        assert mock_browser.selected_index == 0
