@@ -74,7 +74,7 @@ class TransientErrorBar(Widget):
         return Strip([Segment(text, ERROR_STYLE)])
 
 
-def show_transient_error(app: "App[object]", message: str) -> None:
+def show_transient_error(app: "App[None]", message: str) -> None:
     """Show a transient error message at the bottom of the screen.
 
     Displays black text on red background for 0.5 seconds.
