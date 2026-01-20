@@ -12,6 +12,11 @@ from textual.geometry import Size
 from textual.strip import Strip
 from textual.widget import Widget
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from platyplaty.app import PlatyplatyApp
+
 from platyplaty.dispatch_tables import DispatchTable
 from platyplaty.ui.directory_types import DirectoryEntry, DirectoryListing
 from platyplaty.ui.file_browser_init import init_browser as _init_browser
@@ -56,6 +61,14 @@ class FileBrowser(Widget):
     _right_content: RightPaneContent
     _right_selected_index: int | None
     _layout_state: LayoutState
+
+
+    @property
+    def platyplaty_app(self) -> "PlatyplatyApp":
+        """Return the app instance typed as PlatyplatyApp."""
+        from platyplaty.app import PlatyplatyApp
+        assert isinstance(self.app, PlatyplatyApp)
+        return self.app
 
     def __init__(
         self,

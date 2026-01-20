@@ -54,7 +54,7 @@ async def _handle_add_milk_preset(browser: FileBrowser, entry) -> None:
     if not is_readable(path):
         show_transient_error(browser, "Cannot add: file not readable")
         return
-    ctx = browser.app.ctx
+    ctx = browser.platyplaty_app.ctx
     was_empty = len(ctx.playlist.presets) == 0
     ctx.playlist.add_preset(path)
     if was_empty:

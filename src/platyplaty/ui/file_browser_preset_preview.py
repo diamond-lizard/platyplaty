@@ -45,7 +45,7 @@ async def _preview_milk_preset(browser: FileBrowser, path) -> None:
     """
     from platyplaty.autoplay_helpers import try_load_preset
 
-    ctx = browser.app.ctx
+    ctx = browser.platyplaty_app.ctx
     _stop_autoplay_if_running(ctx)
     success, error = await try_load_preset(ctx, path)
     if not success and error:
@@ -75,11 +75,11 @@ def _update_playing_indicator(browser: FileBrowser, path) -> None:
         scroll_playlist_to_playing,
     )
 
-    ctx = browser.app.ctx
+    ctx = browser.platyplaty_app.ctx
     playlist = ctx.playlist
     index = find_preset_index(playlist, path)
     playlist.set_playing(index)
-    refresh_playlist_view(browser.app)
+    refresh_playlist_view(browser.platyplaty_app)
     if index is not None:
-        scroll_playlist_to_playing(browser.app)
+        scroll_playlist_to_playing(browser.platyplaty_app)
 
