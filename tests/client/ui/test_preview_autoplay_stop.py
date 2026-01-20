@@ -35,6 +35,7 @@ def mock_browser() -> MagicMock:
     browser.app.ctx.autoplay_manager = MagicMock()
     browser._adjust_scroll = MagicMock()
     browser.refresh = MagicMock()
+    browser.platyplaty_app = browser.app
     return browser
 
 
