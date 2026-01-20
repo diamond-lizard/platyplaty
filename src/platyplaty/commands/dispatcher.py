@@ -37,6 +37,9 @@ async def execute_command(
     if name == "save":
         from platyplaty.commands.save_playlist import execute
         return await execute(args, ctx, app, base_dir)
+    if name == "clear":
+        from platyplaty.commands.clear_playlist import execute
+        return await execute(ctx, app)
     return (False, f"Command not found: '{name}'")
 
 
