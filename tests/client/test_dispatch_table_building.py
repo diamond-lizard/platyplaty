@@ -15,6 +15,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 from platyplaty.dispatch_tables import (
     build_client_dispatch_table,
     build_renderer_dispatch_table,
+)
+from platyplaty.dispatch_tables_ui import (
     build_error_view_dispatch_table,
     build_file_browser_dispatch_table,
     build_global_dispatch_table,
