@@ -49,7 +49,7 @@ class TestAutoplayBlocking:
     ) -> None:
         """navigate_up is blocked during autoplay."""
         mock_ctx_autoplay_on.playlist.set_selection(1)
-        with patch("platyplaty.playlist_actions.show_autoplay_blocked_error"):
+        with patch("platyplaty.ui.playlist_key.show_autoplay_blocked_error"):
             await navigate_up(mock_ctx_autoplay_on, mock_app)
         assert mock_ctx_autoplay_on.playlist.get_selection() == 1
 
@@ -59,7 +59,7 @@ class TestAutoplayBlocking:
     ) -> None:
         """navigate_down is blocked during autoplay."""
         mock_ctx_autoplay_on.playlist.set_selection(0)
-        with patch("platyplaty.playlist_actions.show_autoplay_blocked_error"):
+        with patch("platyplaty.ui.playlist_key.show_autoplay_blocked_error"):
             await navigate_down(mock_ctx_autoplay_on, mock_app)
         assert mock_ctx_autoplay_on.playlist.get_selection() == 0
 
@@ -69,7 +69,7 @@ class TestAutoplayBlocking:
     ) -> None:
         """play_next is blocked during autoplay."""
         mock_ctx_autoplay_on.playlist.set_selection(0)
-        with patch("platyplaty.playlist_actions.show_autoplay_blocked_error"):
+        with patch("platyplaty.ui.playlist_key.show_autoplay_blocked_error"):
             await play_next(mock_ctx_autoplay_on, mock_app)
         assert mock_ctx_autoplay_on.playlist.get_selection() == 0
 
@@ -79,7 +79,7 @@ class TestAutoplayBlocking:
     ) -> None:
         """delete_from_playlist is blocked during autoplay."""
         initial_len = len(mock_ctx_autoplay_on.playlist.presets)
-        with patch("platyplaty.playlist_actions.show_autoplay_blocked_error"):
+        with patch("platyplaty.ui.playlist_key.show_autoplay_blocked_error"):
             await delete_from_playlist(mock_ctx_autoplay_on, mock_app)
         assert len(mock_ctx_autoplay_on.playlist.presets) == initial_len
 
@@ -88,7 +88,7 @@ class TestAutoplayBlocking:
         self, mock_ctx_autoplay_on: MagicMock, mock_app: MagicMock
     ) -> None:
         """undo is blocked during autoplay."""
-        with patch("platyplaty.playlist_actions.show_autoplay_blocked_error"):
+        with patch("platyplaty.ui.playlist_key.show_autoplay_blocked_error"):
             await undo(mock_ctx_autoplay_on, mock_app)
 
     @pytest.mark.asyncio
@@ -96,5 +96,5 @@ class TestAutoplayBlocking:
         self, mock_ctx_autoplay_on: MagicMock, mock_app: MagicMock
     ) -> None:
         """redo is blocked during autoplay."""
-        with patch("platyplaty.playlist_actions.show_autoplay_blocked_error"):
+        with patch("platyplaty.ui.playlist_key.show_autoplay_blocked_error"):
             await redo(mock_ctx_autoplay_on, mock_app)
