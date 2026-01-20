@@ -37,7 +37,7 @@ class TestIndicatorMovesToPlaylist:
         from platyplaty.ui.file_browser_preset_preview import _update_playing_indicator
         preset_path = tmp_path / "test.milk"
         mock_browser.app.ctx.playlist.presets = [preset_path]
-        with patch("platyplaty.ui.file_browser_preset_preview.find_preset_index") as mock_find:
+        with patch("platyplaty.playlist_action_helpers.find_preset_index") as mock_find:
             mock_find.return_value = 0
             with patch("platyplaty.ui.file_browser_preset_preview.refresh_playlist_view"):
                 with patch("platyplaty.ui.file_browser_preset_preview.scroll_playlist_to_playing"):
@@ -56,7 +56,7 @@ class TestIndicatorRemovedIfNotInPlaylist:
         from platyplaty.ui.file_browser_preset_preview import _update_playing_indicator
         preset_path = tmp_path / "preview.milk"
         mock_browser.app.ctx.playlist.presets = []
-        with patch("platyplaty.ui.file_browser_preset_preview.find_preset_index") as mock_find:
+        with patch("platyplaty.playlist_action_helpers.find_preset_index") as mock_find:
             mock_find.return_value = None
             with patch("platyplaty.ui.file_browser_preset_preview.refresh_playlist_view"):
                 _update_playing_indicator(mock_browser, preset_path)
@@ -74,7 +74,7 @@ class TestScrollToPlayingIndicator:
         from platyplaty.ui.file_browser_preset_preview import _update_playing_indicator
         preset_path = tmp_path / "test.milk"
         mock_browser.app.ctx.playlist.presets = [preset_path]
-        with patch("platyplaty.ui.file_browser_preset_preview.find_preset_index") as mock_find:
+        with patch("platyplaty.playlist_action_helpers.find_preset_index") as mock_find:
             mock_find.return_value = 5
             with patch("platyplaty.ui.file_browser_preset_preview.refresh_playlist_view"):
                 with patch("platyplaty.ui.file_browser_preset_preview.scroll_playlist_to_playing") as mock_scroll:
@@ -88,7 +88,7 @@ class TestScrollToPlayingIndicator:
         """No scroll when preset is not in playlist."""
         from platyplaty.ui.file_browser_preset_preview import _update_playing_indicator
         preset_path = tmp_path / "preview.milk"
-        with patch("platyplaty.ui.file_browser_preset_preview.find_preset_index") as mock_find:
+        with patch("platyplaty.playlist_action_helpers.find_preset_index") as mock_find:
             mock_find.return_value = None
             with patch("platyplaty.ui.file_browser_preset_preview.refresh_playlist_view"):
                 with patch("platyplaty.ui.file_browser_preset_preview.scroll_playlist_to_playing") as mock_scroll:
