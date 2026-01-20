@@ -79,7 +79,7 @@ class TestDeleteFromPlaylist:
         """Deleting the playing preset starts playing the next."""
         mock_ctx.playlist.set_selection(1)
         mock_ctx.playlist.set_playing(1)
-        with patch("platyplaty.playlist_actions._load_preset_at_index", new_callable=AsyncMock):
+        with patch("platyplaty.playlist_action_helpers.load_preset_at_index", new_callable=AsyncMock):
             await delete_from_playlist(mock_ctx, mock_app)
         assert mock_ctx.playlist.get_playing() == 1
         assert mock_ctx.playlist.presets[1] == Path("/test/c.milk")
