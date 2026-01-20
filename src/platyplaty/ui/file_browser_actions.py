@@ -7,14 +7,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from platyplaty.playlist_action_helpers import autoplay_first_preset, refresh_playlist_view
+from platyplaty.playlist_action_helpers import (
+    autoplay_first_preset,
+    refresh_playlist_view,
+)
 from platyplaty.playlist_snapshot import push_undo_snapshot
 from platyplaty.preset_validator import is_readable
 from platyplaty.ui.directory_types import EntryType
 from platyplaty.ui.file_browser_error import show_transient_error
 
 if TYPE_CHECKING:
-    from platyplaty.app_context import AppContext
     from platyplaty.ui.directory_types import DirectoryEntry
     from platyplaty.ui.file_browser import FileBrowser
 
