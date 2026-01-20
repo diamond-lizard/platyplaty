@@ -12,9 +12,9 @@ from platyplaty.ui.directory_types import EntryType
 from platyplaty.ui.file_browser_error import show_transient_error
 
 if TYPE_CHECKING:
-    from platyplaty.ui.file_browser import FileBrowser
-    from platyplaty.ui.directory_types import DirectoryEntry
     from platyplaty.app_context import AppContext
+    from platyplaty.ui.directory_types import DirectoryEntry
+    from platyplaty.ui.file_browser import FileBrowser
 
 
 async def action_add_preset_or_load_playlist(browser: FileBrowser) -> None:
@@ -42,7 +42,7 @@ async def action_add_preset_or_load_playlist(browser: FileBrowser) -> None:
     show_transient_error(browser, "Cannot add: not a playlist or preset")
 
 
-async def _handle_add_milk_preset(browser: FileBrowser, entry: "DirectoryEntry") -> None:
+async def _handle_add_milk_preset(browser: FileBrowser, entry: DirectoryEntry) -> None:
     """Add a .milk preset to the playlist.
 
     Checks readability and adds to playlist if readable.
@@ -63,7 +63,7 @@ async def _handle_add_milk_preset(browser: FileBrowser, entry: "DirectoryEntry")
         await _autoplay_first_preset(ctx)
 
 
-async def _autoplay_first_preset(ctx: "AppContext") -> None:
+async def _autoplay_first_preset(ctx: AppContext) -> None:
     """Load and play the first preset in the playlist."""
     from platyplaty.playlist_action_helpers import load_preset_at_index
     playlist = ctx.playlist
