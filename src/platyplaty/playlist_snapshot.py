@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 from platyplaty.undo import PlaylistSnapshot
 
 if TYPE_CHECKING:
-    from platyplaty.playlist import Playlist
     from platyplaty.app_context import AppContext
+    from platyplaty.playlist import Playlist
 
 
 def create_snapshot(playlist: "Playlist") -> PlaylistSnapshot:

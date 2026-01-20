@@ -7,10 +7,10 @@ text on a red background.
 
 from rich.segment import Segment
 from rich.style import Style
+from textual.app import App
 from textual.reactive import reactive
 from textual.strip import Strip
 from textual.widget import Widget
-from textual.app import App
 
 # Duration to show the error message in seconds
 ERROR_DISPLAY_DURATION = 0.5
