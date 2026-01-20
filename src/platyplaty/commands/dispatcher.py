@@ -35,3 +35,20 @@ async def execute_command(
         from platyplaty.commands.load_playlist import execute
         return await execute(args, ctx, app, base_dir)
     return (False, f"Command not found: '{name}'")
+
+
+def get_file_browser_current_dir(app: "PlatyplatyApp") -> Path:
+    """Get the current directory from the file browser widget.
+
+    This is the directory shown in the middle pane of the file browser,
+    used for resolving relative paths in commands like :load.
+
+    Args:
+        app: The Textual application.
+
+    Returns:
+        The current directory path from the file browser.
+    """
+    from platyplaty.ui.file_browser import FileBrowser
+    file_browser = app.query_one("#file_browser", FileBrowser)
+    return file_browser.current_dir
