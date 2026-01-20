@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from platyplaty.playlist_file import parse_playlist_file
 from platyplaty.playlist_snapshot import push_undo_snapshot
+from platyplaty.commands.load_validation import validate_playlist_path
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
@@ -52,20 +53,6 @@ async def load_and_play_playlist(
     return await perform_load(filepath, ctx, app)
 
 
-def validate_playlist_path(filepath: Path) -> str | None:
-    """Validate the playlist file path.
-
-    Args:
-        filepath: Path to the playlist file.
-
-    Returns:
-        Error message if invalid, None if valid.
-    """
-    if not filepath.exists():
-        return f"Error: could not load playlist: file not found: {filepath}"
-    if not filepath.is_file():
-        return f"Error: could not load playlist: not a file: {filepath}"
-    return None
 
 
 async def perform_load(

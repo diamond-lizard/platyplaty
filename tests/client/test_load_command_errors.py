@@ -9,10 +9,8 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from platyplaty.commands.load_helpers import (
-    expand_command_path,
-    validate_playlist_path,
-)
+from platyplaty.commands.load_helpers import expand_command_path
+from platyplaty.commands.load_validation import validate_playlist_path
 
 
 class TestValidatePlaylistPath:
