@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 def is_autoplay_blocking(ctx: AppContext) -> bool:
     """Check if autoplay is blocking navigation/editing keys."""
-    autoplay_mgr = getattr(ctx, "autoplay_manager", None)
+    autoplay_mgr = ctx.autoplay_manager
     if autoplay_mgr is None:
         return False
     return autoplay_mgr.autoplay_enabled
