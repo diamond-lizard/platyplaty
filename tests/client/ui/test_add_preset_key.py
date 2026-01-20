@@ -20,10 +20,10 @@ from platyplaty.ui.directory_types import DirectoryEntry, EntryType
 def mock_browser() -> MagicMock:
     """Create a mock FileBrowser for testing."""
     browser = MagicMock()
-    browser.app = MagicMock()
-    browser.app.ctx = MagicMock()
-    browser.app.ctx.playlist = MagicMock()
-    browser.app.ctx.playlist.presets = []
+    browser.platyplaty_app = MagicMock()
+    browser.platyplaty_app.ctx = MagicMock()
+    browser.platyplaty_app.ctx.playlist = MagicMock()
+    browser.platyplaty_app.ctx.playlist.presets = []
     return browser
 
 
@@ -42,11 +42,11 @@ class TestAddMilkPreset:
         milk_file.write_text("preset content")
         entry = DirectoryEntry("test.milk", EntryType.FILE, milk_file)
         mock_browser.get_selected_entry.return_value = entry
-        mock_browser.app.ctx.playlist.presets = []
+        mock_browser.platyplaty_app.ctx.playlist.presets = []
         with patch("platyplaty.ui.file_browser_actions.is_readable", return_value=True):
             with patch("platyplaty.ui.file_browser_actions._autoplay_first_preset"):
                 await action_add_preset_or_load_playlist(mock_browser)
-        mock_browser.app.ctx.playlist.add_preset.assert_called_once_with(milk_file)
+        mock_browser.platyplaty_app.ctx.playlist.add_preset.assert_called_once_with(milk_file)
 
     @pytest.mark.asyncio
     async def test_symlink_to_milk_added(
@@ -62,11 +62,11 @@ class TestAddMilkPreset:
         symlink.symlink_to(target)
         entry = DirectoryEntry("link.milk", EntryType.SYMLINK_TO_FILE, symlink)
         mock_browser.get_selected_entry.return_value = entry
-        mock_browser.app.ctx.playlist.presets = []
+        mock_browser.platyplaty_app.ctx.playlist.presets = []
         with patch("platyplaty.ui.file_browser_actions.is_readable", return_value=True):
             with patch("platyplaty.ui.file_browser_actions._autoplay_first_preset"):
                 await action_add_preset_or_load_playlist(mock_browser)
-        mock_browser.app.ctx.playlist.add_preset.assert_called_once_with(symlink)
+        mock_browser.platyplaty_app.ctx.playlist.add_preset.assert_called_once_with(symlink)
 
 
 class TestAutoplayOnAdd:
@@ -84,7 +84,7 @@ class TestAutoplayOnAdd:
         milk_file.write_text("content")
         entry = DirectoryEntry("test.milk", EntryType.FILE, milk_file)
         mock_browser.get_selected_entry.return_value = entry
-        mock_browser.app.ctx.playlist.presets = []
+        mock_browser.platyplaty_app.ctx.playlist.presets = []
         with patch("platyplaty.ui.file_browser_actions.is_readable", return_value=True):
             with patch("platyplaty.ui.file_browser_actions._autoplay_first_preset") as mock_auto:
                 await action_add_preset_or_load_playlist(mock_browser)
