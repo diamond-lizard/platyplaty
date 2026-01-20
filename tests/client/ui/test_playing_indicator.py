@@ -18,11 +18,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "src"))
 def mock_browser() -> MagicMock:
     """Create a mock FileBrowser for testing."""
     browser = MagicMock()
-    browser.app = MagicMock()
-    browser.app.ctx = MagicMock()
-    browser.app.ctx.playlist = MagicMock()
-    browser.app.ctx.playlist.presets = []
-    browser.app.ctx.autoplay_manager = MagicMock()
+    browser.platyplaty_app = MagicMock()
+    browser.platyplaty_app.ctx = MagicMock()
+    browser.platyplaty_app.ctx.playlist = MagicMock()
+    browser.platyplaty_app.ctx.playlist.presets = []
+    browser.platyplaty_app.ctx.autoplay_manager = MagicMock()
     return browser
 
 
@@ -36,13 +36,13 @@ class TestIndicatorMovesToPlaylist:
         """Indicator moves to preset when it is in playlist."""
         from platyplaty.ui.file_browser_preset_preview import _update_playing_indicator
         preset_path = tmp_path / "test.milk"
-        mock_browser.app.ctx.playlist.presets = [preset_path]
+        mock_browser.platyplaty_app.ctx.playlist.presets = [preset_path]
         with patch("platyplaty.playlist_action_helpers.find_preset_index") as mock_find:
             mock_find.return_value = 0
             with patch("platyplaty.playlist_action_helpers.refresh_playlist_view"):
                 with patch("platyplaty.playlist_action_helpers.scroll_playlist_to_playing"):
                     _update_playing_indicator(mock_browser, preset_path)
-        mock_browser.app.ctx.playlist.set_playing.assert_called_once_with(0)
+        mock_browser.platyplaty_app.ctx.playlist.set_playing.assert_called_once_with(0)
 
 
 class TestIndicatorRemovedIfNotInPlaylist:
@@ -55,12 +55,12 @@ class TestIndicatorRemovedIfNotInPlaylist:
         """Indicator is removed when preset is not in playlist."""
         from platyplaty.ui.file_browser_preset_preview import _update_playing_indicator
         preset_path = tmp_path / "preview.milk"
-        mock_browser.app.ctx.playlist.presets = []
+        mock_browser.platyplaty_app.ctx.playlist.presets = []
         with patch("platyplaty.playlist_action_helpers.find_preset_index") as mock_find:
             mock_find.return_value = None
             with patch("platyplaty.playlist_action_helpers.refresh_playlist_view"):
                 _update_playing_indicator(mock_browser, preset_path)
-        mock_browser.app.ctx.playlist.set_playing.assert_called_once_with(None)
+        mock_browser.platyplaty_app.ctx.playlist.set_playing.assert_called_once_with(None)
 
 
 class TestScrollToPlayingIndicator:
@@ -73,7 +73,7 @@ class TestScrollToPlayingIndicator:
         """Playlist scrolls to make playing indicator visible."""
         from platyplaty.ui.file_browser_preset_preview import _update_playing_indicator
         preset_path = tmp_path / "test.milk"
-        mock_browser.app.ctx.playlist.presets = [preset_path]
+        mock_browser.platyplaty_app.ctx.playlist.presets = [preset_path]
         with patch("platyplaty.playlist_action_helpers.find_preset_index") as mock_find:
             mock_find.return_value = 5
             with patch("platyplaty.playlist_action_helpers.refresh_playlist_view"):
