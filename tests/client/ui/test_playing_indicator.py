@@ -39,8 +39,8 @@ class TestIndicatorMovesToPlaylist:
         mock_browser.app.ctx.playlist.presets = [preset_path]
         with patch("platyplaty.playlist_action_helpers.find_preset_index") as mock_find:
             mock_find.return_value = 0
-            with patch("platyplaty.ui.file_browser_preset_preview.refresh_playlist_view"):
-                with patch("platyplaty.ui.file_browser_preset_preview.scroll_playlist_to_playing"):
+            with patch("platyplaty.playlist_action_helpers.refresh_playlist_view"):
+                with patch("platyplaty.playlist_action_helpers.scroll_playlist_to_playing"):
                     _update_playing_indicator(mock_browser, preset_path)
         mock_browser.app.ctx.playlist.set_playing.assert_called_once_with(0)
 
@@ -58,7 +58,7 @@ class TestIndicatorRemovedIfNotInPlaylist:
         mock_browser.app.ctx.playlist.presets = []
         with patch("platyplaty.playlist_action_helpers.find_preset_index") as mock_find:
             mock_find.return_value = None
-            with patch("platyplaty.ui.file_browser_preset_preview.refresh_playlist_view"):
+            with patch("platyplaty.playlist_action_helpers.refresh_playlist_view"):
                 _update_playing_indicator(mock_browser, preset_path)
         mock_browser.app.ctx.playlist.set_playing.assert_called_once_with(None)
 
@@ -76,8 +76,8 @@ class TestScrollToPlayingIndicator:
         mock_browser.app.ctx.playlist.presets = [preset_path]
         with patch("platyplaty.playlist_action_helpers.find_preset_index") as mock_find:
             mock_find.return_value = 5
-            with patch("platyplaty.ui.file_browser_preset_preview.refresh_playlist_view"):
-                with patch("platyplaty.ui.file_browser_preset_preview.scroll_playlist_to_playing") as mock_scroll:
+            with patch("platyplaty.playlist_action_helpers.refresh_playlist_view"):
+                with patch("platyplaty.playlist_action_helpers.scroll_playlist_to_playing") as mock_scroll:
                     _update_playing_indicator(mock_browser, preset_path)
         mock_scroll.assert_called_once()
 
@@ -90,7 +90,7 @@ class TestScrollToPlayingIndicator:
         preset_path = tmp_path / "preview.milk"
         with patch("platyplaty.playlist_action_helpers.find_preset_index") as mock_find:
             mock_find.return_value = None
-            with patch("platyplaty.ui.file_browser_preset_preview.refresh_playlist_view"):
-                with patch("platyplaty.ui.file_browser_preset_preview.scroll_playlist_to_playing") as mock_scroll:
+            with patch("platyplaty.playlist_action_helpers.refresh_playlist_view"):
+                with patch("platyplaty.playlist_action_helpers.scroll_playlist_to_playing") as mock_scroll:
                     _update_playing_indicator(mock_browser, preset_path)
         mock_scroll.assert_not_called()
