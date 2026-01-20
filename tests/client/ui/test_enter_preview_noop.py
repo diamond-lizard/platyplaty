@@ -36,7 +36,7 @@ class TestPreviewNoOp:
         from platyplaty.ui.file_browser_preset_preview import action_preview_preset
         entry = DirectoryEntry("subdir", EntryType.DIRECTORY, Path("/subdir"))
         mock_browser.get_selected_entry.return_value = entry
-        with patch("platyplaty.ui.file_browser_preset_preview.try_load_preset") as mock_load:
+        with patch("platyplaty.autoplay_helpers.try_load_preset") as mock_load:
             await action_preview_preset(mock_browser)
         mock_load.assert_not_called()
 
@@ -46,7 +46,7 @@ class TestPreviewNoOp:
         from platyplaty.ui.file_browser_preset_preview import action_preview_preset
         entry = DirectoryEntry("link", EntryType.SYMLINK_TO_DIRECTORY, Path("/link"))
         mock_browser.get_selected_entry.return_value = entry
-        with patch("platyplaty.ui.file_browser_preset_preview.try_load_preset") as mock_load:
+        with patch("platyplaty.autoplay_helpers.try_load_preset") as mock_load:
             await action_preview_preset(mock_browser)
         mock_load.assert_not_called()
 
@@ -56,7 +56,7 @@ class TestPreviewNoOp:
         from platyplaty.ui.file_browser_preset_preview import action_preview_preset
         entry = DirectoryEntry("playlist.platy", EntryType.FILE, Path("/playlist.platy"))
         mock_browser.get_selected_entry.return_value = entry
-        with patch("platyplaty.ui.file_browser_preset_preview.try_load_preset") as mock_load:
+        with patch("platyplaty.autoplay_helpers.try_load_preset") as mock_load:
             await action_preview_preset(mock_browser)
         mock_load.assert_not_called()
 
@@ -66,6 +66,6 @@ class TestPreviewNoOp:
         from platyplaty.ui.file_browser_preset_preview import action_preview_preset
         entry = DirectoryEntry("broken.milk", EntryType.BROKEN_SYMLINK, Path("/broken"))
         mock_browser.get_selected_entry.return_value = entry
-        with patch("platyplaty.ui.file_browser_preset_preview.try_load_preset") as mock_load:
+        with patch("platyplaty.autoplay_helpers.try_load_preset") as mock_load:
             await action_preview_preset(mock_browser)
         mock_load.assert_not_called()

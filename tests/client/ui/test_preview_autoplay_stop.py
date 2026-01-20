@@ -51,7 +51,7 @@ class TestPreviewStopsAutoplay:
         milk_file.write_text("content")
         entry = DirectoryEntry("test.milk", EntryType.FILE, milk_file)
         mock_browser.get_selected_entry.return_value = entry
-        with patch("platyplaty.ui.file_browser_preset_preview.try_load_preset") as mock_load:
+        with patch("platyplaty.autoplay_helpers.try_load_preset") as mock_load:
             mock_load.return_value = (True, None)
             with patch("platyplaty.ui.file_browser_preset_preview._update_playing_indicator"):
                 await action_preview_preset(mock_browser)
@@ -74,7 +74,7 @@ class TestJKStopsAutoplay:
         mock_browser._state.selected_index = 0
         mock_browser.get_selected_entry.return_value = entries[1]
         with patch("platyplaty.ui.file_browser_preset_preview._stop_autoplay_if_running") as mock_stop:
-            with patch("platyplaty.ui.file_browser_preset_preview.try_load_preset") as mock_load:
+            with patch("platyplaty.autoplay_helpers.try_load_preset") as mock_load:
                 mock_load.return_value = (True, None)
                 with patch("platyplaty.ui.file_browser_preset_preview._update_playing_indicator"):
                     await action_play_next_preset(mock_browser)
@@ -93,7 +93,7 @@ class TestJKStopsAutoplay:
         mock_browser._state.selected_index = 1
         mock_browser.get_selected_entry.return_value = entries[0]
         with patch("platyplaty.ui.file_browser_preset_preview._stop_autoplay_if_running") as mock_stop:
-            with patch("platyplaty.ui.file_browser_preset_preview.try_load_preset") as mock_load:
+            with patch("platyplaty.autoplay_helpers.try_load_preset") as mock_load:
                 mock_load.return_value = (True, None)
                 with patch("platyplaty.ui.file_browser_preset_preview._update_playing_indicator"):
                     await action_play_previous_preset(mock_browser)
