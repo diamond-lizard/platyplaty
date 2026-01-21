@@ -120,4 +120,5 @@ async def _load_idle_preset(ctx: "AppContext") -> None:
     Args:
         ctx: The AppContext instance with runtime state.
     """
-    await ctx.client.send_command("LOAD PRESET", path="idle://")
+    if ctx.client is not None:
+        await ctx.client.send_command("LOAD PRESET", path="idle://")
