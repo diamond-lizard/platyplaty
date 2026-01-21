@@ -19,6 +19,10 @@ from platyplaty.ui.layout import (
 )
 from platyplaty.ui.playlist_view import PlaylistView
 from platyplaty.ui.transient_error import TransientErrorBar
+from platyplaty.ui.status_line import StatusLine
+from platyplaty.ui.command_prompt import CommandPrompt
+from platyplaty.ui.confirmation_prompt import ConfirmationPrompt
+from platyplaty.ui.error_view import ErrorView
 
 __all__ = [
     "DirectoryEntry",
@@ -33,4 +37,8 @@ __all__ = [
     "TransientErrorBar",
     "PlaylistView",
     "ErrorIndicator",
+    "StatusLine",
+    "CommandPrompt",
+    "ConfirmationPrompt",
+    "ErrorView",
 ]

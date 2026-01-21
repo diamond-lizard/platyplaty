@@ -5,17 +5,25 @@ from typing import TYPE_CHECKING
 
 from textual.app import App, ComposeResult
 from textual.events import Key
-from textual.widgets import RichLog, Static
+from textual.widgets import Static
 
 from platyplaty.app_actions import load_preset_by_direction
 from platyplaty.app_context import AppContext
 from platyplaty.app_shutdown import perform_graceful_shutdown
 from platyplaty.app_startup import on_mount_handler
 from platyplaty.keybinding_dispatch import dispatch_focused_key_event
-from platyplaty.ui import ErrorIndicator, FileBrowser, TransientErrorBar
+from platyplaty.ui import (
+    CommandPrompt,
+    ConfirmationPrompt,
+    ErrorIndicator,
+    ErrorView,
+    FileBrowser,
+    PlaylistView,
+    StatusLine,
+    TransientErrorBar,
+)
 
 if TYPE_CHECKING:
-    from platyplaty.messages import LogMessage
     from platyplaty.playlist import Playlist
     from platyplaty.types.app_config import AppConfig
 
@@ -64,11 +72,15 @@ class PlatyplatyApp(App[None]):
         Returns:
             Widgets to mount in the application.
         """
-        yield Static("Platyplaty Visualizer", id="status")
         yield FileBrowser(self.ctx.file_browser_dispatch_table, id="file_browser")
-        yield RichLog(id="log")
+        yield Static("", id="section_divider")
+        yield PlaylistView(self.ctx.playlist, id="playlist")
+        yield StatusLine(id="status_line")
         yield TransientErrorBar(id="transient_error")
+        yield CommandPrompt(id="command_prompt")
+        yield ConfirmationPrompt(id="confirmation_prompt")
         yield ErrorIndicator(self.ctx.error_log, id="error_indicator")
+        yield ErrorView(self.ctx.error_log, id="error_view")
 
 
     async def on_mount(self) -> None:
@@ -213,6 +225,3 @@ class PlatyplatyApp(App[None]):
         """Handle terminal key events."""
         await dispatch_focused_key_event(event.key, self.ctx, self)
 
-    def on_log_message(self, message: "LogMessage") -> None:
-        """Handle log messages by writing to the RichLog widget."""
-        self.query_one("#log", RichLog).write(message.text)
