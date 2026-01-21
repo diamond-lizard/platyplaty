@@ -63,7 +63,7 @@ class ErrorIndicator(Widget):
         self.refresh()
 
 
-def update_error_indicator(app: "App[None]") -> None:
+def update_error_indicator(app: App[None]) -> None:
     """Update the error indicator visibility.
     
     Call this after adding or clearing errors in the error log.

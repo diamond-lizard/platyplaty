@@ -12,7 +12,7 @@ from platyplaty.app_context import AppContext
 from platyplaty.app_shutdown import perform_graceful_shutdown
 from platyplaty.app_startup import on_mount_handler
 from platyplaty.keybinding_dispatch import dispatch_focused_key_event
-from platyplaty.ui import FileBrowser, TransientErrorBar, ErrorIndicator
+from platyplaty.ui import ErrorIndicator, FileBrowser, TransientErrorBar
 
 if TYPE_CHECKING:
     from platyplaty.messages import LogMessage

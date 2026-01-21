@@ -9,6 +9,7 @@ from platyplaty.ui.directory_types import (
     DirectoryListing,
     EntryType,
 )
+from platyplaty.ui.error_indicator import ErrorIndicator
 from platyplaty.ui.file_browser import FileBrowser
 from platyplaty.ui.layout import (
     LayoutState,
@@ -17,7 +18,6 @@ from platyplaty.ui.layout import (
     calculate_standard_widths,
 )
 from platyplaty.ui.playlist_view import PlaylistView
-from platyplaty.ui.error_indicator import ErrorIndicator
 from platyplaty.ui.transient_error import TransientErrorBar
 
 __all__ = [
