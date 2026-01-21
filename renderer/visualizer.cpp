@@ -42,6 +42,12 @@ PresetLoadResult Visualizer::load_preset(const std::string& path) {
     // Clear error buffer before attempting load
     m_error_buffer[0] = '\0';
 
+    // Handle idle:// URL - skip file validation
+    if (path == "idle://") {
+        m_current_preset_path = path;
+        return {true, ""};
+    }
+
     // Check if file exists and is readable
     std::ifstream file(path);
     if (!file.good()) {
