@@ -29,7 +29,7 @@ class TestExtensionValidation:
         playlist = Playlist([Path("/a.milk")])
         ctx = make_ctx(playlist)
         filepath = tmp_path / "test.txt"
-        success, error = await save_to_path(str(filepath), ctx, tmp_path)
+        success, error = await save_to_path(str(filepath), ctx, MagicMock(), tmp_path)
         assert success is False
         assert error == "Error: a playlist filename must end with .platy"
 
@@ -39,7 +39,7 @@ class TestExtensionValidation:
         playlist = Playlist([Path("/a.milk")])
         ctx = make_ctx(playlist)
         filepath = tmp_path / "test.PLATY"
-        success, error = await save_to_path(str(filepath), ctx, tmp_path)
+        success, error = await save_to_path(str(filepath), ctx, MagicMock(), tmp_path)
         assert success is True
         assert error is None
         assert filepath.exists()
@@ -54,7 +54,7 @@ class TestSaveErrorHandling:
         playlist = Playlist([Path("/a.milk")])
         ctx = make_ctx(playlist)
         filepath = tmp_path / "nonexistent" / "test.platy"
-        success, error = await save_to_path(str(filepath), ctx, tmp_path)
+        success, error = await save_to_path(str(filepath), ctx, MagicMock(), tmp_path)
         assert success is False
         assert "Error: could not save playlist:" in error
 
@@ -65,5 +65,5 @@ class TestSaveErrorHandling:
         playlist.dirty_flag = True
         ctx = make_ctx(playlist)
         filepath = tmp_path / "nonexistent" / "test.platy"
-        await save_to_path(str(filepath), ctx, tmp_path)
+        await save_to_path(str(filepath), ctx, MagicMock(), tmp_path)
         assert playlist.dirty_flag is True
