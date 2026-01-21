@@ -56,7 +56,7 @@ class TestSaveOverwritePrompt:
             "platyplaty.commands.save_playlist.perform_save",
             return_value=(True, None),
         ) as mock_save:
-            captured_callback(True)
+            await captured_callback(True)
         mock_save.assert_called_once()
 
     @pytest.mark.asyncio
@@ -82,6 +82,6 @@ class TestSaveOverwritePrompt:
         with patch(
             "platyplaty.commands.save_playlist.perform_save",
         ) as mock_save:
-            captured_callback(False)
+            await captured_callback(False)
         mock_save.assert_not_called()
 
