@@ -58,11 +58,15 @@ async def perform_startup(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     await ctx.client.send_command("INIT")
     ctx.renderer_ready = True
 
-    # Load initial preset
-    if not await load_preset_with_retry(ctx, app):
-        app.post_message(
-            LogMessage("All presets failed to load", level="warning")
-        )
+    # Load initial preset (or idle if playlist is empty)
+    if ctx.playlist.presets:
+        if not await load_preset_with_retry(ctx, app):
+            app.post_message(
+                LogMessage("All presets failed to load", level="warning")
+            )
+            await _load_idle_preset(ctx)
+    else:
+        await _load_idle_preset(ctx)
 
     # Stage B: Start workers
     app.run_worker(stderr_monitor_task(ctx, app), name="stderr_monitor")
@@ -106,3 +110,14 @@ async def on_mount_handler(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     except Exception as e:
         await cleanup_on_startup_failure(ctx)
         app.exit(message=str(e))
+
+
+async def _load_idle_preset(ctx: "AppContext") -> None:
+    """Load the idle preset (no visualization).
+
+    Sends LOAD PRESET command with idle:// URL to the renderer.
+
+    Args:
+        ctx: The AppContext instance with runtime state.
+    """
+    await ctx.client.send_command("LOAD PRESET", path="idle://")
