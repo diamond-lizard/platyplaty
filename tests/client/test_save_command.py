@@ -33,7 +33,7 @@ class TestSaveWithArgument:
         playlist = Playlist([Path("/a.milk")])
         ctx = make_ctx(playlist)
         filepath = tmp_path / "test.platy"
-        success, error = await save_to_path(str(filepath), ctx, tmp_path)
+        success, error = await save_to_path(str(filepath), ctx, MagicMock(), tmp_path)
         assert success is True
         assert error is None
         assert filepath.exists()
@@ -44,7 +44,7 @@ class TestSaveWithArgument:
         playlist = Playlist([Path("/a.milk")])
         ctx = make_ctx(playlist)
         filepath = tmp_path / "new.platy"
-        await save_to_path(str(filepath), ctx, tmp_path)
+        await save_to_path(str(filepath), ctx, MagicMock(), tmp_path)
         assert playlist.associated_filename == filepath
 
 
