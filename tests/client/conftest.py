@@ -24,3 +24,32 @@ def mock_ctx():
 def mock_app():
     """Create a mock PlatyplatyApp."""
     return MagicMock()
+
+@pytest.fixture
+def mock_ctx_empty():
+    """Create a mock AppContext with empty playlist."""
+    ctx = MagicMock()
+    ctx.playlist = MagicMock()
+    ctx.playlist.dirty_flag = False
+    ctx.playlist.presets = []
+    return ctx
+
+
+@pytest.fixture
+def mock_ctx_nonempty():
+    """Create a mock AppContext with non-empty playlist, no unsaved changes."""
+    ctx = MagicMock()
+    ctx.playlist = MagicMock()
+    ctx.playlist.dirty_flag = False
+    ctx.playlist.presets = [Path("/existing.milk")]
+    return ctx
+
+
+@pytest.fixture
+def mock_ctx_dirty():
+    """Create a mock AppContext with unsaved changes."""
+    ctx = MagicMock()
+    ctx.playlist = MagicMock()
+    ctx.playlist.dirty_flag = True
+    ctx.playlist.presets = [Path("/existing.milk")]
+    return ctx
