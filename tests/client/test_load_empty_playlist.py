@@ -41,7 +41,7 @@ class TestLoadWithEmptyPlaylist:
         mock_prompt = MagicMock()
         mock_app.query_one.return_value = mock_prompt
 
-        with patch("platyplaty.commands.load_confirm.push_undo_snapshot"):
+        with patch("platyplaty.playlist_snapshot.push_undo_snapshot"):
             with patch(
                 "platyplaty.commands.load_confirm.perform_load",
                 new_callable=AsyncMock,
@@ -63,7 +63,7 @@ class TestLoadWithEmptyPlaylist:
         playlist_file.write_text("/preset.milk\n")
 
         with patch(
-            "platyplaty.commands.load_confirm.push_undo_snapshot"
+            "platyplaty.playlist_snapshot.push_undo_snapshot"
         ) as mock_push:
             with patch(
                 "platyplaty.commands.load_confirm.perform_load",
@@ -84,7 +84,7 @@ class TestLoadWithEmptyPlaylist:
         playlist_file = tmp_path / "test.platy"
         playlist_file.write_text("/preset.milk\n")
 
-        with patch("platyplaty.commands.load_confirm.push_undo_snapshot"):
+        with patch("platyplaty.playlist_snapshot.push_undo_snapshot"):
             with patch(
                 "platyplaty.commands.load_confirm.perform_load",
                 new_callable=AsyncMock,
