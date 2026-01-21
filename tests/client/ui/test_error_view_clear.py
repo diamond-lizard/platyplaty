@@ -5,7 +5,7 @@ Tests the clear errors keyboard handling.
 """
 
 import sys
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "src"))
@@ -23,6 +23,7 @@ class TestClearErrors:
         error_log: list[str] = ["error1", "error2", "error3"]
         view = ErrorView(error_log)
         view._wrapped_lines = ["error1", "error2", "error3"]
+        view.app = MagicMock()
 
         class MockContext:
             def __init__(self) -> None:
@@ -41,6 +42,7 @@ class TestClearErrors:
         error_log: list[str] = ["error"]
         view = ErrorView(error_log)
         view._wrapped_lines = ["error"]
+        view.app = MagicMock()
 
         class MockContext:
             def __init__(self) -> None:
