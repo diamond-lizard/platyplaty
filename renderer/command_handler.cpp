@@ -23,7 +23,7 @@ Response handle_command(
             resp.error = "empty path";
             break;
         }
-        if (cmd.preset_path[0] != '/') {
+        if (cmd.preset_path != "idle://" && cmd.preset_path[0] != '/') {
             resp.success = false;
             resp.error = "relative path not allowed: " + cmd.preset_path;
             break;
