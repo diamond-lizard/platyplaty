@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 from platyplaty.commands.load_validation import validate_playlist_path
 from platyplaty.playlist_file import parse_playlist_file
-from platyplaty.playlist_snapshot import push_undo_snapshot
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
@@ -49,8 +48,8 @@ async def load_and_play_playlist(
     error = validate_playlist_path(filepath)
     if error:
         return (False, error)
-    push_undo_snapshot(ctx)
-    return await perform_load(filepath, ctx, app)
+    from platyplaty.commands.load_confirm import check_and_load
+    return await check_and_load(filepath, ctx, app)
 
 
 
