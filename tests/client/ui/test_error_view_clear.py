@@ -23,7 +23,6 @@ class TestClearErrors:
         error_log: list[str] = ["error1", "error2", "error3"]
         view = ErrorView(error_log)
         view._wrapped_lines = ["error1", "error2", "error3"]
-        view.app = MagicMock()
 
         class MockContext:
             def __init__(self) -> None:
@@ -31,7 +30,7 @@ class TestClearErrors:
 
         context = MockContext()
         patch_path = "platyplaty.ui.error_indicator.update_error_indicator"
-        with patch(patch_path):
+        with patch(patch_path), patch.object(type(view), 'app', MagicMock()):
             _handle_clear_errors(view, context)
         assert context.error_log == []
 
@@ -42,7 +41,6 @@ class TestClearErrors:
         error_log: list[str] = ["error"]
         view = ErrorView(error_log)
         view._wrapped_lines = ["error"]
-        view.app = MagicMock()
 
         class MockContext:
             def __init__(self) -> None:
@@ -50,6 +48,6 @@ class TestClearErrors:
 
         context = MockContext()
         patch_path = "platyplaty.ui.error_indicator.update_error_indicator"
-        with patch(patch_path):
+        with patch(patch_path), patch.object(type(view), 'app', MagicMock()):
             result = _handle_clear_errors(view, context)
         assert result is True
