@@ -6,6 +6,7 @@ after configuration has been loaded and validated.
 """
 
 from pathlib import Path
+
 from platyplaty.app import PlatyplatyApp
 from platyplaty.errors import InaccessibleDirectoryError, StartupError
 from platyplaty.playlist import Playlist
