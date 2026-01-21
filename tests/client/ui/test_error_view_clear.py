@@ -5,6 +5,7 @@ Tests the clear errors keyboard handling.
 """
 
 import sys
+from unittest.mock import patch
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "src"))
@@ -28,7 +29,9 @@ class TestClearErrors:
                 self.error_log = error_log
 
         context = MockContext()
-        _handle_clear_errors(view, context)
+        patch_path = "platyplaty.ui.error_view_key.update_error_indicator"
+        with patch(patch_path):
+            _handle_clear_errors(view, context)
         assert context.error_log == []
 
     def test_clear_returns_true(self) -> None:
@@ -44,5 +47,7 @@ class TestClearErrors:
                 self.error_log = error_log
 
         context = MockContext()
-        result = _handle_clear_errors(view, context)
+        patch_path = "platyplaty.ui.error_view_key.update_error_indicator"
+        with patch(patch_path):
+            result = _handle_clear_errors(view, context)
         assert result is True
