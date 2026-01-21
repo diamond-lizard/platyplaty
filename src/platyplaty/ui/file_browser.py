@@ -113,6 +113,11 @@ class FileBrowser(Widget):
         """Refresh all three panes after navigation state changes."""
         _refresh_panes(self)
 
+    def set_focused(self, focused: bool) -> None:
+        """Set whether this widget is focused."""
+        self._focused = focused
+        self.refresh()
+
     async def on_key(self, event: Key) -> None:
         """Handle key events for file browser navigation."""
         await _on_key(self, event)

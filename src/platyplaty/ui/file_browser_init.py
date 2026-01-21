@@ -70,6 +70,7 @@ def init_browser(
     browser._right_content = None
     browser._right_selected_index = None
     browser._layout_state = LayoutState.STANDARD
+    browser._focused = True
 
     # Navigation state manager
     browser._nav_state = NavigationState(browser.current_dir)

@@ -217,6 +217,23 @@ class PlatyplatyApp(App[None]):
 
         await toggle_autoplay(self.ctx, self)
 
+
+    async def action_switch_focus(self) -> None:
+        """Switch focus between file browser and playlist sections."""
+        if self.ctx.current_focus == "file_browser":
+            self.ctx.current_focus = "playlist"
+        elif self.ctx.current_focus == "playlist":
+            self.ctx.current_focus = "file_browser"
+        self._update_section_focus()
+
+    def _update_section_focus(self) -> None:
+        """Update visual appearance of sections based on current focus."""
+        file_browser = self.query_one(FileBrowser)
+        playlist_view = self.query_one(PlaylistView)
+        is_file_browser_focused = self.ctx.current_focus == "file_browser"
+        file_browser.set_focused(is_file_browser_focused)
+        playlist_view.set_focused(not is_file_browser_focused)
+
     async def graceful_shutdown(self) -> None:
         """Shut down the application gracefully."""
         await perform_graceful_shutdown(self.ctx, self)
