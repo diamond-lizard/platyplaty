@@ -43,7 +43,7 @@ class TestLoadWithEmptyPlaylist:
 
         with patch("platyplaty.playlist_snapshot.push_undo_snapshot"):
             with patch(
-                "platyplaty.commands.load_confirm.perform_load",
+                "platyplaty.commands.load_helpers.perform_load",
                 new_callable=AsyncMock,
                 return_value=(True, None),
             ) as mock_load:
@@ -66,7 +66,7 @@ class TestLoadWithEmptyPlaylist:
             "platyplaty.playlist_snapshot.push_undo_snapshot"
         ) as mock_push:
             with patch(
-                "platyplaty.commands.load_confirm.perform_load",
+                "platyplaty.commands.load_helpers.perform_load",
                 new_callable=AsyncMock,
                 return_value=(True, None),
             ):
@@ -86,7 +86,7 @@ class TestLoadWithEmptyPlaylist:
 
         with patch("platyplaty.playlist_snapshot.push_undo_snapshot"):
             with patch(
-                "platyplaty.commands.load_confirm.perform_load",
+                "platyplaty.commands.load_helpers.perform_load",
                 new_callable=AsyncMock,
                 return_value=(True, None),
             ):
