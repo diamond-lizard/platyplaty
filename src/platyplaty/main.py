@@ -25,7 +25,11 @@ import click
     type=click.Path(),
     help="Path to .platy playlist file to load at startup.",
 )
-def main(config_file: str | None, generate_config: str | None, playlist: str | None) -> None:
+def main(
+    config_file: str | None,
+    generate_config: str | None,
+    playlist: str | None,
+) -> None:
     """Platyplaty - A music visualizer using projectM."""
     # Mutual exclusivity check
     if config_file and generate_config:
