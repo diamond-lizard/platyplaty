@@ -90,13 +90,15 @@ class TestLoadUnsavedConfirmation:
 
         await check_and_load(playlist_file, mock_ctx, mock_app)
 
-        with patch("platyplaty.playlist_snapshot.push_undo_snapshot"):
-            with patch(
+        with (
+            patch("platyplaty.playlist_snapshot.push_undo_snapshot"),
+            patch(
                 "platyplaty.commands.load_helpers.perform_load",
                 new_callable=AsyncMock,
                 return_value=(True, None),
-            ) as mock_load:
-                await captured_callback(True)
+            ) as mock_load,
+        ):
+            await captured_callback(True)
 
         mock_load.assert_called_once()
 

@@ -41,13 +41,15 @@ class TestLoadWithEmptyPlaylist:
         mock_prompt = MagicMock()
         mock_app.query_one.return_value = mock_prompt
 
-        with patch("platyplaty.playlist_snapshot.push_undo_snapshot"):
-            with patch(
+        with (
+            patch("platyplaty.playlist_snapshot.push_undo_snapshot"),
+            patch(
                 "platyplaty.commands.load_helpers.perform_load",
                 new_callable=AsyncMock,
                 return_value=(True, None),
-            ) as mock_load:
-                await check_and_load(playlist_file, mock_ctx, mock_app)
+            ) as mock_load,
+        ):
+            await check_and_load(playlist_file, mock_ctx, mock_app)
 
         mock_prompt.show_prompt.assert_not_called()
         mock_load.assert_called_once()
@@ -62,15 +64,17 @@ class TestLoadWithEmptyPlaylist:
         playlist_file = tmp_path / "test.platy"
         playlist_file.write_text("/preset.milk\n")
 
-        with patch(
-            "platyplaty.playlist_snapshot.push_undo_snapshot"
-        ) as mock_push:
-            with patch(
+        with (
+            patch(
+                "platyplaty.playlist_snapshot.push_undo_snapshot"
+            ) as mock_push,
+            patch(
                 "platyplaty.commands.load_helpers.perform_load",
                 new_callable=AsyncMock,
                 return_value=(True, None),
-            ):
-                await check_and_load(playlist_file, mock_ctx, mock_app)
+            ),
+        ):
+            await check_and_load(playlist_file, mock_ctx, mock_app)
 
         mock_push.assert_called_once_with(mock_ctx)
 
@@ -84,12 +88,14 @@ class TestLoadWithEmptyPlaylist:
         playlist_file = tmp_path / "test.platy"
         playlist_file.write_text("/preset.milk\n")
 
-        with patch("platyplaty.playlist_snapshot.push_undo_snapshot"):
-            with patch(
+        with (
+            patch("platyplaty.playlist_snapshot.push_undo_snapshot"),
+            patch(
                 "platyplaty.commands.load_helpers.perform_load",
                 new_callable=AsyncMock,
                 return_value=(True, None),
-            ):
-                result = await check_and_load(playlist_file, mock_ctx, mock_app)
+            ),
+        ):
+            result = await check_and_load(playlist_file, mock_ctx, mock_app)
 
         assert result == (True, None)
