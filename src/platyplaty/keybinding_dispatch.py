@@ -66,6 +66,11 @@ async def dispatch_focused_key_event(
     Returns:
         True if key was bound and action invoked, False otherwise.
     """
+    # Handle ":" key for command prompt (not configurable, per TASK-15500)
+    if key == "colon":
+        await show_command_prompt(ctx, app)
+        return True
+
     # Check global keys first
     if await dispatch_key_event(key, ctx.global_dispatch_table, ctx, app):
         return True
@@ -84,3 +89,35 @@ async def dispatch_focused_key_event(
             key, ctx.error_view_dispatch_table, ctx, app
         )
     return False
+
+
+async def show_command_prompt(ctx: "AppContext", app: "PlatyplatyApp") -> None:
+    """Show the command prompt and set up the callback.
+
+    Args:
+        ctx: Application context.
+        app: The Textual application.
+    """
+    from platyplaty.command_prompt_handler import create_command_callback
+    from platyplaty.ui.command_prompt import CommandPrompt
+
+    prompt = app.query_one(CommandPrompt)
+    callback = create_command_callback(ctx, app)
+    previous_focus_id = get_previous_focus_id(ctx)
+    prompt.show_prompt(callback, previous_focus_id)
+
+
+def get_previous_focus_id(ctx: "AppContext") -> str | None:
+    """Get the widget ID for the previously focused section.
+
+    Args:
+        ctx: Application context with current_focus.
+
+    Returns:
+        Widget ID string for the focused section.
+    """
+    if ctx.current_focus == "file_browser":
+        return "file_browser"
+    if ctx.current_focus == "playlist":
+        return "playlist"
+    return None
