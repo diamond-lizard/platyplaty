@@ -78,6 +78,9 @@ void SocketThread::handle_client() {
             emit_stderr_event("DISCONNECT", "client disconnected before INIT");
         }
     }
+
+    // Exit renderer when client disconnects (no orphaned processes)
+    g_shutdown_requested.store(true, std::memory_order_relaxed);
 }
 
 }  // namespace platyplaty
