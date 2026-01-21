@@ -53,6 +53,8 @@ def advance_next(
     Returns:
         Tuple of (new_index, preset) or None if at end and not looping.
     """
+    if not presets:
+        return None
     if playing_index is None:
         return None
     at_end = playing_index >= len(presets) - 1
@@ -75,6 +77,8 @@ def go_previous(
     Returns:
         Tuple of (new_index, preset) or None if at start and not looping.
     """
+    if not presets:
+        return None
     if playing_index is None:
         return None
     at_start = playing_index == 0
