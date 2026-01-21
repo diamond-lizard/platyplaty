@@ -30,7 +30,7 @@ async def execute(
     """
     if args is None:
         return await save_to_associated(ctx)
-    return await save_to_path(args, ctx, base_dir)
+    return await save_to_path(args, ctx, app, base_dir)
 
 
 async def save_to_associated(ctx: "AppContext") -> tuple[bool, str | None]:
@@ -41,14 +41,39 @@ async def save_to_associated(ctx: "AppContext") -> tuple[bool, str | None]:
 
 
 async def save_to_path(
-    path_arg: str, ctx: "AppContext", base_dir: Path
+    path_arg: str, ctx: "AppContext", app: "PlatyplatyApp", base_dir: Path
 ) -> tuple[bool, str | None]:
     """Save to the specified path."""
     filepath = expand_command_path(path_arg, base_dir)
     if filepath.suffix.lower() != ".platy":
         return (False, "Error: a playlist filename must end with .platy")
+    return await check_and_save(filepath, ctx, app)
+
+
+async def check_and_save(
+    filepath: Path, ctx: "AppContext", app: "PlatyplatyApp"
+) -> tuple[bool, str | None]:
+    """Check if file exists and show overwrite prompt if needed."""
+    if filepath.exists():
+        await show_overwrite_prompt(filepath, ctx, app)
+        return (True, None)
     return perform_save(ctx, filepath)
 
+
+async def show_overwrite_prompt(
+    filepath: Path, ctx: "AppContext", app: "PlatyplatyApp"
+) -> None:
+    """Show confirmation prompt for overwriting existing file."""
+    from platyplaty.ui.confirmation_prompt import ConfirmationPrompt
+
+    prompt = app.query_one(ConfirmationPrompt)
+    msg = "File exists. Overwrite? (y/n)"
+
+    async def on_response(confirmed: bool) -> None:
+        if confirmed:
+            perform_save(ctx, filepath)
+
+    prompt.show_prompt(msg, on_response)
 
 def perform_save(ctx: "AppContext", filepath: Path) -> tuple[bool, str | None]:
     """Perform the actual save operation."""
