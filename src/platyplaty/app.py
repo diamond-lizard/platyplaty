@@ -76,7 +76,8 @@ class PlatyplatyApp(App[None]):
 
     async def action_quit(self) -> None:
         """Quit the application gracefully."""
-        await self.graceful_shutdown()
+        from platyplaty.quit_handler import handle_quit
+        await handle_quit(self.ctx, self)
 
     async def action_next_preset(self) -> None:
         """Advance to the next preset in the playlist."""
