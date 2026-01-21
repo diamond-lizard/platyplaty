@@ -5,7 +5,8 @@ This module provides the callback function for CommandPrompt that parses
 input and routes to the command dispatcher.
 """
 
-from typing import TYPE_CHECKING, Awaitable, Callable
+from collections.abc import Awaitable, Callable
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
