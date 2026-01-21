@@ -12,7 +12,7 @@ from platyplaty.app_context import AppContext
 from platyplaty.app_shutdown import perform_graceful_shutdown
 from platyplaty.app_startup import on_mount_handler
 from platyplaty.keybinding_dispatch import dispatch_focused_key_event
-from platyplaty.ui import FileBrowser, TransientErrorBar
+from platyplaty.ui import FileBrowser, TransientErrorBar, ErrorIndicator
 
 if TYPE_CHECKING:
     from platyplaty.messages import LogMessage
@@ -68,6 +68,7 @@ class PlatyplatyApp(App[None]):
         yield FileBrowser(self.ctx.file_browser_dispatch_table, id="file_browser")
         yield RichLog(id="log")
         yield TransientErrorBar(id="transient_error")
+        yield ErrorIndicator(self.ctx.error_log, id="error_indicator")
 
 
     async def on_mount(self) -> None:

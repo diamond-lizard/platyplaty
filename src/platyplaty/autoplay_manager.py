@@ -68,7 +68,10 @@ class AutoplayManager:
             show_empty_playlist_error(self._app)
             return
         from platyplaty.autoplay_start import start_from_first_preset
-        if not await start_from_first_preset(self._ctx, playlist):
+        success = await start_from_first_preset(self._ctx, playlist)
+        from platyplaty.ui.error_indicator import update_error_indicator
+        update_error_indicator(self._app)
+        if not success:
             self._autoplay_enabled = False
             show_no_playable_error(self._app)
             return
@@ -103,4 +106,7 @@ class AutoplayManager:
     async def advance_to_next(self) -> bool:
         """Advance to the next preset in the playlist."""
         from platyplaty.autoplay_advance import advance_playlist_to_next
-        return await advance_playlist_to_next(self._ctx, self._ctx.playlist)
+        success = await advance_playlist_to_next(self._ctx, self._ctx.playlist)
+        from platyplaty.ui.error_indicator import update_error_indicator
+        update_error_indicator(self._app)
+        return success

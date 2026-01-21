@@ -42,3 +42,5 @@ async def load_preset_by_direction(
         error_bar = app.query_one("#transient_error", TransientErrorBar)
         error_bar.show_error(str(e))
         ctx.error_log.append(str(e))
+        from platyplaty.ui.error_indicator import update_error_indicator
+        update_error_indicator(app)
