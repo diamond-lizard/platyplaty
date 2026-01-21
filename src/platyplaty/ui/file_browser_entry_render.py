@@ -11,8 +11,8 @@ from rich.style import Style
 
 from platyplaty.ui.colors import (
     BACKGROUND_COLOR,
-    get_entry_color,
     DIMMED_COLOR,
+    get_entry_color,
     get_inverted_colors,
 )
 from platyplaty.ui.directory_types import DirectoryEntry, EntryType
