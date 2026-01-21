@@ -5,7 +5,7 @@ This module provides the callback function for CommandPrompt that parses
 input and routes to the command dispatcher.
 """
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Awaitable, Callable
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
@@ -32,7 +32,7 @@ def parse_command_input(text: str) -> tuple[str, str | None]:
 
 def create_command_callback(
     ctx: "AppContext", app: "PlatyplatyApp"
-):
+) -> Callable[[str], Awaitable[None]]:
     """Create a callback for the CommandPrompt widget.
 
     The callback parses the input, executes the command, and handles
