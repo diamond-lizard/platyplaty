@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Unit tests for error view navigation and scrolling.
 
-Tests the ErrorView scroll_up/scroll_down methods and line wrapping.
+Tests the ErrorView navigate_up/navigate_down methods and line wrapping.
 """
 
 import sys
@@ -60,12 +60,12 @@ class TestScrollBounds:
         view._clamp_scroll()
         assert view._scroll_offset == 0
 
-    def test_scroll_up_at_top_is_noop(self) -> None:
+    def test_navigate_up_at_top_is_noop(self) -> None:
         """Scroll up at top does nothing."""
         from platyplaty.ui.error_view import ErrorView
 
         view = ErrorView(["error1", "error2"])
         view._scroll_offset = 0
         view._wrapped_lines = ["error1", "error2"]
-        view.scroll_up()
+        view.navigate_up()
         assert view._scroll_offset == 0

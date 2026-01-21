@@ -73,13 +73,13 @@ class ErrorView(Widget):
         max_offset = max(0, len(self._wrapped_lines) - content_height)
         self._scroll_offset = max(0, min(self._scroll_offset, max_offset))
 
-    def scroll_up(self) -> None:
+    def navigate_up(self) -> None:
         """Scroll up by one line."""
         if self._scroll_offset > 0:
             self._scroll_offset -= 1
             self.refresh()
 
-    def scroll_down(self) -> None:
+    def navigate_down(self) -> None:
         """Scroll down by one line."""
         content_height = self._get_content_height()
         max_offset = max(0, len(self._wrapped_lines) - content_height)

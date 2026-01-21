@@ -35,10 +35,10 @@ def handle_error_view_key(
     if key == _EXIT_KEY:
         return _handle_exit(context)
     if key in _NAV_UP_KEYS:
-        view.scroll_up()
+        view.navigate_up()
         return True
     if key in _NAV_DOWN_KEYS:
-        view.scroll_down()
+        view.navigate_down()
         return True
     action = context.error_view_dispatch_table.get(key)
     if action == "clear_errors":
