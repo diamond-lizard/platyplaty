@@ -1,37 +1,17 @@
 """Startup sequence for PlatyplatyApp."""
 
-import asyncio
-import signal
 from typing import TYPE_CHECKING
 
-from platyplaty.auto_advance import auto_advance_loop, load_preset_with_retry
+from platyplaty.auto_advance import auto_advance_loop
 from platyplaty.event_loop import stderr_monitor_task
-from platyplaty.messages import LogMessage
+from platyplaty.idle_preset import load_initial_preset
 from platyplaty.renderer import start_renderer
+from platyplaty.signal_handlers import setup_signal_handlers
 from platyplaty.socket_client import SocketClient
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
     from platyplaty.app_context import AppContext
-
-
-def setup_signal_handlers(app: "PlatyplatyApp") -> None:
-    """Register signal handlers for graceful shutdown.
-
-    Registers SIGINT and SIGTERM handlers that trigger graceful_shutdown.
-
-    Args:
-        app: The PlatyplatyApp instance.
-    """
-    loop = asyncio.get_running_loop()
-    loop.add_signal_handler(
-        signal.SIGINT,
-        lambda: asyncio.create_task(app.graceful_shutdown()),
-    )
-    loop.add_signal_handler(
-        signal.SIGTERM,
-        lambda: asyncio.create_task(app.graceful_shutdown()),
-    )
 
 
 async def perform_startup(ctx: "AppContext", app: "PlatyplatyApp") -> None:
@@ -59,14 +39,7 @@ async def perform_startup(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     ctx.renderer_ready = True
 
     # Load initial preset (or idle if playlist is empty)
-    if ctx.playlist.presets:
-        if not await load_preset_with_retry(ctx, app):
-            app.post_message(
-                LogMessage("All presets failed to load", level="warning")
-            )
-            await _load_idle_preset(ctx)
-    else:
-        await _load_idle_preset(ctx)
+    await load_initial_preset(ctx, app)
 
     # Stage B: Start workers
     app.run_worker(stderr_monitor_task(ctx, app), name="stderr_monitor")
@@ -111,14 +84,3 @@ async def on_mount_handler(ctx: "AppContext", app: "PlatyplatyApp") -> None:
         await cleanup_on_startup_failure(ctx)
         app.exit(message=str(e))
 
-
-async def _load_idle_preset(ctx: "AppContext") -> None:
-    """Load the idle preset (no visualization).
-
-    Sends LOAD PRESET command with idle:// URL to the renderer.
-
-    Args:
-        ctx: The AppContext instance with runtime state.
-    """
-    if ctx.client is not None:
-        await ctx.client.send_command("LOAD PRESET", path="idle://")
