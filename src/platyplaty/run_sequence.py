@@ -5,6 +5,7 @@ This module contains the functions for running the startup sequence
 after configuration has been loaded and validated.
 """
 
+from pathlib import Path
 from platyplaty.app import PlatyplatyApp
 from platyplaty.errors import InaccessibleDirectoryError, StartupError
 from platyplaty.playlist import Playlist
@@ -22,17 +23,19 @@ from platyplaty.types import Config
 from platyplaty.types.app_config import AppConfig
 
 
-def run_startup_sequence(config: Config) -> None:
+def run_startup_sequence(config: Config, playlist_path: str | None) -> None:
     """Run the main startup sequence.
 
     Args:
         config: Validated configuration.
+        playlist_path: Optional path to .platy playlist file (overrides config).
 
     Raises:
         StartupError: If any startup step fails.
     """
-    # Start with empty playlist (playlist loading implemented in Phase 2300)
-    playlist = Playlist(presets=[], loop=True)
+    # Determine effective playlist path (command-line overrides config)
+    effective_playlist = playlist_path or config.playlist
+    playlist = _create_playlist(effective_playlist)
 
     # Compute socket path and check for stale socket
     try:
@@ -68,3 +71,24 @@ def run_startup_sequence(config: Config) -> None:
         app.run()
     except InaccessibleDirectoryError as e:
         raise StartupError(str(e)) from None
+
+
+def _create_playlist(playlist_path: str | None) -> Playlist:
+    """Create playlist from path or return empty playlist.
+
+    Args:
+        playlist_path: Optional path to .platy playlist file.
+
+    Returns:
+        Playlist loaded from file, or empty playlist if no path given.
+
+    Raises:
+        StartupError: If playlist file cannot be loaded.
+    """
+    playlist = Playlist(presets=[], loop=True)
+    if playlist_path is not None:
+        try:
+            playlist.load_from_file(Path(playlist_path))
+        except Exception as e:
+            raise StartupError(f"Could not load playlist: {e}") from None
+    return playlist
