@@ -28,7 +28,8 @@ def _get_indicator_value(entry_type: EntryType, path: Path) -> int | str:
 
 
 def render_normal_entry(
-    entry: DirectoryEntry, width: int, show_indicators: bool = True, focused: bool = True
+    entry: DirectoryEntry, width: int, show_indicators: bool = True,
+    focused: bool = True
 ) -> list[Segment]:
     """Render an entry with normal (non-selected) colors and 1-char indent."""
     bg_style = Style(bgcolor=BACKGROUND_COLOR)
@@ -56,7 +57,8 @@ def render_normal_entry(
 
 
 def render_selected_entry(
-    entry: DirectoryEntry, width: int, show_indicators: bool = True, focused: bool = True
+    entry: DirectoryEntry, width: int, show_indicators: bool = True,
+    focused: bool = True
 ) -> list[Segment]:
     """Render an entry with inverted (selected) colors and padding."""
     if focused:

@@ -75,5 +75,6 @@ def render_right_pane_line(
         return _render_special_message(content, y, width)
     # File preview - white text
     text = render_file_preview_line(content.lines, y, width)
-    style = Style(color=FILE_COLOR if focused else DIMMED_COLOR, bgcolor=BACKGROUND_COLOR)
+    color = FILE_COLOR if focused else DIMMED_COLOR
+    style = Style(color=color, bgcolor=BACKGROUND_COLOR)
     return [Segment(text, style)]
