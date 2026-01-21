@@ -3,7 +3,7 @@
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -56,7 +56,13 @@ class TestUndo:
         self, mock_ctx: MagicMock, mock_app: MagicMock
     ) -> None:
         """Undo with empty stack shows error message."""
-        await undo(mock_ctx, mock_app)
+        with patch(
+            "platyplaty.playlist_undo_actions.show_transient_error"
+        ) as mock_error:
+            await undo(mock_ctx, mock_app)
+        mock_error.assert_called_once_with(
+            mock_app, "No further undo information"
+        )
 
 
 class TestRedo:
@@ -78,4 +84,10 @@ class TestRedo:
         self, mock_ctx: MagicMock, mock_app: MagicMock
     ) -> None:
         """Redo with empty stack shows error message."""
-        await redo(mock_ctx, mock_app)
+        with patch(
+            "platyplaty.playlist_undo_actions.show_transient_error"
+        ) as mock_error:
+            await redo(mock_ctx, mock_app)
+        mock_error.assert_called_once_with(
+            mock_app, "No further redo information"
+        )
