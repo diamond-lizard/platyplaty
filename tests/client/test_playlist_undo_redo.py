@@ -57,7 +57,7 @@ class TestUndo:
     ) -> None:
         """Undo with empty stack shows error message."""
         with patch(
-            "platyplaty.playlist_undo_actions.show_transient_error"
+            "platyplaty.ui.transient_error.show_transient_error"
         ) as mock_error:
             await undo(mock_ctx, mock_app)
         mock_error.assert_called_once_with(
@@ -85,7 +85,7 @@ class TestRedo:
     ) -> None:
         """Redo with empty stack shows error message."""
         with patch(
-            "platyplaty.playlist_undo_actions.show_transient_error"
+            "platyplaty.ui.transient_error.show_transient_error"
         ) as mock_error:
             await redo(mock_ctx, mock_app)
         mock_error.assert_called_once_with(
