@@ -12,6 +12,7 @@ from rich.style import Style
 from platyplaty.ui.colors import (
     BACKGROUND_COLOR,
     get_entry_color,
+    DIMMED_COLOR,
     get_inverted_colors,
 )
 from platyplaty.ui.directory_types import DirectoryEntry, EntryType
@@ -27,11 +28,11 @@ def _get_indicator_value(entry_type: EntryType, path: Path) -> int | str:
 
 
 def render_normal_entry(
-    entry: DirectoryEntry, width: int, show_indicators: bool = True
+    entry: DirectoryEntry, width: int, show_indicators: bool = True, focused: bool = True
 ) -> list[Segment]:
     """Render an entry with normal (non-selected) colors and 1-char indent."""
     bg_style = Style(bgcolor=BACKGROUND_COLOR)
-    color = get_entry_color(entry.entry_type)
+    color = get_entry_color(entry.entry_type) if focused else DIMMED_COLOR
     fg_style = Style(color=color, bgcolor=BACKGROUND_COLOR)
     # Reserve 1 char left and right for alignment with selected items
     content_width = max(0, width - 2)
@@ -55,11 +56,14 @@ def render_normal_entry(
 
 
 def render_selected_entry(
-    entry: DirectoryEntry, width: int, show_indicators: bool = True
+    entry: DirectoryEntry, width: int, show_indicators: bool = True, focused: bool = True
 ) -> list[Segment]:
     """Render an entry with inverted (selected) colors and padding."""
-    fg, bg = get_inverted_colors(entry.entry_type)
-    style = Style(color=fg, bgcolor=bg)
+    if focused:
+        fg, bg = get_inverted_colors(entry.entry_type)
+        style = Style(color=fg, bgcolor=bg)
+    else:
+        style = Style(color=DIMMED_COLOR, bgcolor=BACKGROUND_COLOR)
     # Reserve 1 char left and right for selection padding
     content_width = max(0, width - 2)
     if show_indicators:

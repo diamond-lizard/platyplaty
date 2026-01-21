@@ -27,6 +27,7 @@ def render_pane_line(
     scroll_offset: int = 0,
     selected_index: int | None = None,
     show_indicators: bool = True,
+    focused: bool = True,
 ) -> list[Segment]:
     """Render a single line of a pane.
 
@@ -56,8 +57,8 @@ def render_pane_line(
         entry_idx = y + scroll_offset
         is_selected = selected_index is not None and entry_idx == selected_index
         if is_selected:
-            return render_selected_entry(entry, width, show_indicators)
-        return render_normal_entry(entry, width, show_indicators)
+            return render_selected_entry(entry, width, show_indicators, focused)
+        return render_normal_entry(entry, width, show_indicators, focused)
 
     return [Segment(" " * width, bg_style)]
 

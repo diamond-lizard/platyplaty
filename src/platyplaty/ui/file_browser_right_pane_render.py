@@ -9,6 +9,7 @@ from rich.style import Style
 
 from platyplaty.ui.colors import (
     BACKGROUND_COLOR,
+    DIMMED_COLOR,
     EMPTY_MESSAGE_BG,
     EMPTY_MESSAGE_FG,
     FILE_COLOR,
@@ -45,7 +46,7 @@ def _render_special_message(
 
 def render_right_pane_line(
     content: RightPaneContent, y: int, width: int,
-    scroll_offset: int = 0, selected_index: int | None = None,
+    scroll_offset: int = 0, selected_index: int | None = None, focused: bool = True,
 ) -> list[Segment]:
     """Render a single line of the right pane.
 
@@ -68,11 +69,11 @@ def render_right_pane_line(
         return render_pane_line(
             content.listing, y, width, is_left_pane=False,
             scroll_offset=scroll_offset, selected_index=selected_index,
-            show_indicators=False,
+            show_indicators=False, focused=focused,
         )
     if isinstance(content, (RightPaneEmpty, RightPaneNoMilk, RightPaneBinaryFile)):
         return _render_special_message(content, y, width)
     # File preview - white text
     text = render_file_preview_line(content.lines, y, width)
-    style = Style(color=FILE_COLOR, bgcolor=BACKGROUND_COLOR)
+    style = Style(color=FILE_COLOR if focused else DIMMED_COLOR, bgcolor=BACKGROUND_COLOR)
     return [Segment(text, style)]

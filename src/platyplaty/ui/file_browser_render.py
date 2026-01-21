@@ -69,7 +69,7 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
             browser._left_listing, pane_y, pane_widths.left, is_left_pane=True,
             scroll_offset=browser._left_scroll_offset,
             selected_index=_calc_left_selected_index(browser),
-            show_indicators=False
+            show_indicators=False, focused=browser._focused
         )
         segments.extend(left_segments)
         segments.append(Segment(" ", Style(bgcolor=BACKGROUND_COLOR)))  # Gap
@@ -78,7 +78,7 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
     middle_segments = render_pane_line(
         browser._middle_listing, pane_y, pane_widths.middle,
         is_left_pane=False, scroll_offset=browser._middle_scroll_offset,
-        selected_index=browser.selected_index, show_indicators=True
+        selected_index=browser.selected_index, show_indicators=True, focused=browser._focused
     )
     segments.extend(middle_segments)
     segments.append(Segment(" ", Style(bgcolor=BACKGROUND_COLOR)))  # Gap
@@ -88,6 +88,7 @@ def render_line(browser: FileBrowser, y: int) -> Strip:
         browser._right_content, pane_y, pane_widths.right,
         scroll_offset=browser._right_scroll_offset,
         selected_index=browser._right_selected_index,
+        focused=browser._focused,
     )
     segments.extend(right_segments)
 

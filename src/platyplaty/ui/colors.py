@@ -15,6 +15,7 @@ BROKEN_SYMLINK_COLOR = "magenta"
 
 # Background color
 BACKGROUND_COLOR = "black"
+DIMMED_COLOR = "bright_black"
 
 # Empty/error message colors
 EMPTY_MESSAGE_BG = "red"
