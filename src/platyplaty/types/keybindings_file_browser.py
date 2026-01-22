@@ -16,10 +16,10 @@ class FileBrowserKeybindings(BaseModel):
         default=["a"], alias="add-preset-or-load-playlist"
     )
     play_previous_preset: list[str] = Field(
-        default=["shift+k"], alias="play-previous-preset"
+        default=["K"], alias="play-previous-preset"
     )
     play_next_preset: list[str] = Field(
-        default=["shift+j"], alias="play-next-preset"
+        default=["J"], alias="play-next-preset"
     )
 
     @model_validator(mode="after")

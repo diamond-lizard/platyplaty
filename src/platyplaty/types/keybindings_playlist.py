@@ -17,12 +17,12 @@ class PlaylistKeybindings(BaseModel):
         "shuffle_playlist", "toggle_autoplay", "page_up", "page_down",
         "navigate_to_first_preset", "navigate_to_last_preset",
     )
-    play_previous: list[str] = Field(default=["shift+k"], alias="play-previous")
-    play_next: list[str] = Field(default=["shift+j"], alias="play-next")
+    play_previous: list[str] = Field(default=["K"], alias="play-previous")
+    play_next: list[str] = Field(default=["J"], alias="play-next")
     reorder_up: list[str] = Field(default=["ctrl+k"], alias="reorder-up")
     reorder_down: list[str] = Field(default=["ctrl+j"], alias="reorder-down")
     delete_from_playlist: list[str] = Field(
-        default=["shift+d", "delete"], alias="delete-from-playlist"
+        default=["D", "delete"], alias="delete-from-playlist"
     )
     undo: list[str] = Field(default=["u"])
     redo: list[str] = Field(default=["ctrl+r"])
