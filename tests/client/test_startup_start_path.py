@@ -67,3 +67,30 @@ def test_no_arg_passes_cwd_as_start_path(
     mock_app.return_value.run.return_value = None
     run_startup_sequence(_make_config(), None)
     assert mock_app.call_args.kwargs["start_path"] == Path.cwd()
+
+
+@patch(f"{PATCH_BASE}.compute_socket_path")
+@patch(f"{PATCH_BASE}.check_stale_socket")
+@patch(f"{PATCH_BASE}.find_renderer_binary")
+@patch(f"{PATCH_BASE}.PlatyplatyApp")
+def test_playlist_arg_loads_playlist_with_presets(
+    mock_app: MagicMock, _rb: MagicMock, _ss: MagicMock, _sp: MagicMock,
+    tmp_path: Path,
+) -> None:
+    """Playlist argument should load playlist presets and pass parent as start_path."""
+    from platyplaty.run_sequence import run_startup_sequence
+    preset1 = tmp_path / "a.milk"
+    preset2 = tmp_path / "b.milk"
+    preset1.touch()
+    preset2.touch()
+    playlist_file = tmp_path / "test.platy"
+    playlist_file.write_text(f"{preset1}\n{preset2}\n")
+    mock_app.return_value.run.return_value = None
+    run_startup_sequence(_make_config(), str(playlist_file))
+    # Verify start_path is parent directory
+    assert mock_app.call_args.kwargs["start_path"] == tmp_path
+    # Verify playlist is loaded with presets
+    playlist = mock_app.call_args.kwargs["playlist"]
+    assert len(playlist.presets) == 2
+    assert playlist.presets[0] == preset1
+    assert playlist.presets[1] == preset2
