@@ -12,8 +12,7 @@ PATCH_BASE = "platyplaty.run_sequence"
 
 def _make_config() -> MagicMock:
     """Create a mock Config for testing."""
-    from platyplaty.types import Config
-    config = MagicMock(spec=Config)
+    config = MagicMock()
     config.playlist = None
     config.renderer.audio_source = "pulse"
     config.renderer.fullscreen = False
