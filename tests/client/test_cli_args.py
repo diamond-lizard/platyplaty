@@ -20,37 +20,43 @@ from platyplaty.main import main
 class TestCliPathArgument:
     """Tests for the optional path positional argument."""
 
-    def test_path_argument_passed_to_run_with_config(self) -> None:
+    def test_path_argument_passed_to_run_with_config(self, tmp_path: Path) -> None:
         """Path argument should be passed to run_with_config."""
         runner = CliRunner()
+        config_file = tmp_path / "test.toml"
+        config_file.touch()
         with patch("platyplaty.startup.run_with_config") as mock_run:
             mock_run.return_value = 0
             result = runner.invoke(
                 main,
-                ["--config-file", "dummy.toml", "/some/path"],
+                ["--config-file", str(config_file), "/some/path"],
             )
             mock_run.assert_called_once()
             call_args = mock_run.call_args
             assert call_args[0][1] == "/some/path"
 
-    def test_no_path_argument_passes_none(self) -> None:
+    def test_no_path_argument_passes_none(self, tmp_path: Path) -> None:
         """Missing path argument should pass None to run_with_config."""
         runner = CliRunner()
+        config_file = tmp_path / "test.toml"
+        config_file.touch()
         with patch("platyplaty.startup.run_with_config") as mock_run:
             mock_run.return_value = 0
-            result = runner.invoke(main, ["--config-file", "dummy.toml"])
+            result = runner.invoke(main, ["--config-file", str(config_file)])
             mock_run.assert_called_once()
             call_args = mock_run.call_args
             assert call_args[0][1] is None
 
-    def test_path_argument_with_spaces(self) -> None:
+    def test_path_argument_with_spaces(self, tmp_path: Path) -> None:
         """Path with spaces should be handled correctly."""
         runner = CliRunner()
+        config_file = tmp_path / "test.toml"
+        config_file.touch()
         with patch("platyplaty.startup.run_with_config") as mock_run:
             mock_run.return_value = 0
             result = runner.invoke(
                 main,
-                ["--config-file", "dummy.toml", "/path/with spaces/file.platy"],
+                ["--config-file", str(config_file), "/path/with spaces/file.platy"],
             )
             mock_run.assert_called_once()
             call_args = mock_run.call_args
