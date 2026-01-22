@@ -33,7 +33,7 @@ class TestCreatePlaylist:
         preset2.touch()
         playlist_file = tmp_path / "test.platy"
         playlist_file.write_text(f"{preset1}\n{preset2}\n")
-        playlist = _create_playlist(str(playlist_file))
+        playlist = _create_playlist(playlist_file)
         assert len(playlist.presets) == 2
         assert playlist.presets[0] == preset1
         assert playlist.presets[1] == preset2
@@ -46,7 +46,7 @@ class TestCreatePlaylist:
         preset.touch()
         playlist_file = tmp_path / "test.platy"
         playlist_file.write_text(f"{preset}\n")
-        playlist = _create_playlist(str(playlist_file))
+        playlist = _create_playlist(playlist_file)
         assert playlist._selection_index == 0
 
     def test_valid_playlist_sets_playing_index_zero(
@@ -57,19 +57,19 @@ class TestCreatePlaylist:
         preset.touch()
         playlist_file = tmp_path / "test.platy"
         playlist_file.write_text(f"{preset}\n")
-        playlist = _create_playlist(str(playlist_file))
+        playlist = _create_playlist(playlist_file)
         assert playlist._playing_index == 0
 
     def test_nonexistent_file_raises_startup_error(self) -> None:
         """Nonexistent playlist file raises StartupError."""
         with pytest.raises(StartupError) as exc_info:
-            _create_playlist("/nonexistent/path.platy")
+            _create_playlist(Path("/nonexistent/path.platy"))
         assert "Could not load playlist" in str(exc_info.value)
 
     def test_empty_playlist_file_returns_empty(self, tmp_path: Path) -> None:
         """Empty playlist file returns empty playlist."""
         playlist_file = tmp_path / "empty.platy"
         playlist_file.write_text("")
-        playlist = _create_playlist(str(playlist_file))
+        playlist = _create_playlist(playlist_file)
         assert len(playlist.presets) == 0
         assert playlist._playing_index is None
