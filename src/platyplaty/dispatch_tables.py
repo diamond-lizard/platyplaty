@@ -42,7 +42,7 @@ def _build_table(mappings: list[tuple[list[str], str]]) -> DispatchTable:
     table: DispatchTable = {}
     for keys, action in mappings:
         for key in keys:
-            table[key] = action
+            table[normalize_key(key)] = action
     return table
 
 
