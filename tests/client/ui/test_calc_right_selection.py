@@ -34,8 +34,6 @@ class TestCalcRightSelection:
         # Create FileBrowser starting in parent
         browser = FileBrowser({}, starting_dir=parent)
 
-        # Select subdir
-        browser.selected_index = 0  # subdir is first (dirs before files)
         browser._right_content = RightPaneDirectory(list_directory(subdir))
 
         # Never visited subdir, so remembered selection is None
