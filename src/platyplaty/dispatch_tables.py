@@ -9,6 +9,27 @@ These tables are used by the keybinding dispatch system to route key events.
 DispatchTable = dict[str, str]
 
 
+def normalize_key(key: str) -> str:
+    """Normalize shift+letter key format to uppercase letter format.
+
+    Textual reports Shift+J as "J" (uppercase), but users may configure
+    keybindings as "shift+j". This function converts "shift+<letter>" to
+    the uppercase letter that Textual actually sends.
+
+    Args:
+        key: The key name to normalize.
+
+    Returns:
+        Normalized key name. Only "shift+<single-lowercase-letter>" is
+        transformed to uppercase; all other patterns pass through unchanged.
+    """
+    if not key.startswith("shift+"):
+        return key
+    suffix = key[6:]  # Everything after "shift+"
+    if len(suffix) == 1 and suffix.islower():
+        return suffix.upper()
+    return key
+
 def _build_table(mappings: list[tuple[list[str], str]]) -> DispatchTable:
     """Build dispatch table from key-action mappings.
 
