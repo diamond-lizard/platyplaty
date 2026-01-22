@@ -36,6 +36,8 @@ class TestSymlinkToMilkPlayable:
         mock_browser.size = MagicMock()
         mock_browser.size.height = 20
         mock_browser.get_selected_entry.return_value = entries[1]
+        mock_browser.set_selection_by_index.side_effect = \
+            lambda idx: setattr(mock_browser, 'selected_index', idx)
         with patch("platyplaty.ui.file_browser_preset_preview._preview_milk_preset"):
             await action_play_next_preset(mock_browser)
         assert mock_browser.selected_index == 1
