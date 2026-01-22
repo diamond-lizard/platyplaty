@@ -35,9 +35,14 @@ def run_startup_sequence(config: Config, path_argument: str | None) -> None:
     Raises:
         StartupError: If any startup step fails.
     """
-    # Determine effective playlist path (command-line overrides config)
-    effective_playlist = path_argument or config.playlist
-    playlist = _create_playlist(effective_playlist)
+    # Resolve path argument to start directory and playlist path
+    resolved = _resolve_path_argument(path_argument)
+
+    # Determine effective playlist path (path argument overrides config)
+    effective_playlist_path = resolved.playlist_path
+    if effective_playlist_path is None and config.playlist:
+        effective_playlist_path = Path(config.playlist)
+    playlist = _create_playlist(effective_playlist_path)
 
     # Compute socket path and check for stale socket
     try:
@@ -75,11 +80,11 @@ def run_startup_sequence(config: Config, path_argument: str | None) -> None:
         raise StartupError(str(e)) from None
 
 
-def _create_playlist(playlist_path: str | None) -> Playlist:
+def _create_playlist(playlist_path: Path | None) -> Playlist:
     """Create playlist from path or return empty playlist.
 
     Args:
-        playlist_path: Optional path to .platy playlist file.
+        playlist_path: Path to .platy playlist file, or None.
 
     Returns:
         Playlist loaded from file, or empty playlist if no path given.
@@ -90,7 +95,7 @@ def _create_playlist(playlist_path: str | None) -> Playlist:
     playlist = Playlist(presets=[], loop=True)
     if playlist_path is not None:
         try:
-            playlist.load_from_file(Path(playlist_path))
+            playlist.load_from_file(playlist_path)
         except Exception as e:
             raise StartupError(f"Could not load playlist: {e}") from None
     return playlist
