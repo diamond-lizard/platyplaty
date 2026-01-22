@@ -2,6 +2,7 @@
 """Textual application for Platyplaty visualizer control."""
 
 from typing import TYPE_CHECKING
+from pathlib import Path
 
 from textual.app import App, ComposeResult
 from textual.events import Key
@@ -45,12 +46,14 @@ class PlatyplatyApp(App[None]):
         self,
         config: "AppConfig",
         playlist: "Playlist",
+        start_path: Path | None = None,
     ) -> None:
         """Initialize the Platyplaty application.
 
         Args:
             config: Immutable application configuration.
             playlist: The playlist instance for preset navigation.
+            start_path: Optional starting directory for the file browser.
         """
         super().__init__()
         # Use ANSI color codes directly instead of Textual's theme-based color
@@ -65,6 +68,7 @@ class PlatyplatyApp(App[None]):
 
         # Create AppContext which builds dispatch tables in __post_init__
         self.ctx = AppContext(config=config, playlist=playlist)
+        self._start_path = start_path
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the application.
@@ -72,7 +76,7 @@ class PlatyplatyApp(App[None]):
         Returns:
             Widgets to mount in the application.
         """
-        yield FileBrowser(self.ctx.file_browser_dispatch_table, id="file_browser")
+        yield FileBrowser(self.ctx.file_browser_dispatch_table, starting_dir=self._start_path, id="file_browser")
         yield Static("", id="section_divider")
         yield PlaylistView(self.ctx.playlist, id="playlist")
         yield StatusLine(id="status_line")

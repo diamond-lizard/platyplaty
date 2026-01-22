@@ -73,7 +73,7 @@ def run_startup_sequence(config: Config, path_argument: str | None) -> None:
     )
 
     # Create and run Textual app
-    app = PlatyplatyApp(config=app_config, playlist=playlist)
+    app = PlatyplatyApp(config=app_config, playlist=playlist, start_path=resolved.start_directory)
     try:
         app.run()
     except InaccessibleDirectoryError as e:
