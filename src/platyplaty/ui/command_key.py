@@ -9,12 +9,13 @@ if TYPE_CHECKING:
     from platyplaty.ui.command_prompt import CommandPrompt
 
 
-async def handle_command_key(key: str, prompt: "CommandPrompt") -> None:
+async def handle_command_key(key: str, prompt: "CommandPrompt", character: str | None) -> None:
     """Handle a key press in the command prompt.
 
     Args:
         key: The key that was pressed.
         prompt: The CommandPrompt widget instance.
+        character: The printable character, or None if not printable.
     """
     if key == "escape":
         prompt.hide()
@@ -28,8 +29,8 @@ async def handle_command_key(key: str, prompt: "CommandPrompt") -> None:
     if key == "backspace":
         prompt.input_text = prompt.input_text[:-1]
         return
-    if len(key) == 1 and key.isprintable():
-        prompt.input_text += key
+    if character is not None:
+        prompt.input_text += character
 
 
 def return_focus_to_widget(app: "App[object]", widget_id: str | None) -> None:
