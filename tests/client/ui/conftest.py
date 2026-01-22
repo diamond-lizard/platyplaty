@@ -88,7 +88,16 @@ def make_listing(entries: list) -> DirectoryListing:
 
 @pytest.fixture
 def mock_browser() -> MagicMock:
-    """Create a mock FileBrowser for testing."""
+    """Create a mock FileBrowser for testing.
+
+    The mock is configured so that calling set_selection_by_index(idx)
+    updates browser.selected_index to idx. This mirrors the real
+    FileBrowser behavior where selected_index is a read-only property
+    derived from internal state that set_selection_by_index() modifies.
+    Without this side_effect, tests that assert on selected_index after
+    calling actions like action_play_next_preset() would fail because
+    MagicMock doesn't automatically connect method calls to attributes.
+    """
     browser = MagicMock()
     browser.app = MagicMock()
     browser.app.ctx = MagicMock()

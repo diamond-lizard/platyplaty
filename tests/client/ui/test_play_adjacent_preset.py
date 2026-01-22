@@ -23,7 +23,11 @@ def make_listing(entries: list) -> DirectoryListing:
 
 @pytest.fixture
 def mock_browser() -> MagicMock:
-    """Create a mock FileBrowser for testing."""
+    """Create a mock FileBrowser for testing.
+
+    See conftest.py mock_browser for explanation of why
+    set_selection_by_index has a side_effect configured.
+    """
     browser = MagicMock()
     browser.app = MagicMock()
     browser.app.ctx = MagicMock()
