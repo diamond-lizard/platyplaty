@@ -54,14 +54,14 @@ def _show_and_close_window(sock, proc, cmd_id: list[int]) -> ShutdownResult:
         proc.wait()
         return ShutdownResult("Window close", False, f"Error showing window: {e}")
 
-    sock.close()
-    return _close_via_ewmh(proc)
+    return _close_via_ewmh(sock, proc)
 
 
-def _close_via_ewmh(proc: subprocess.Popen) -> ShutdownResult:
+def _close_via_ewmh(sock, proc: subprocess.Popen) -> ShutdownResult:
     """Close window using EWMH and wait for exit."""
     if not EWMH_AVAILABLE:
         proc.kill()
+        sock.close()
         proc.wait()
         return ShutdownResult("Window close", False, "ewmh not available (pip install ewmh)")
 
@@ -69,10 +69,12 @@ def _close_via_ewmh(proc: subprocess.Popen) -> ShutdownResult:
 
     if not close_window_by_name("Platyplaty"):
         proc.kill()
+        sock.close()
         proc.wait()
         return ShutdownResult("Window close", False, "Could not find window to close")
 
     print("  Sent close request via EWMH, waiting for renderer to exit...")
+    sock.close()
     return _wait_for_exit(proc)
 
 
