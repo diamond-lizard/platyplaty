@@ -17,6 +17,7 @@ fullscreen = false
 # Keybindings available in all sections.
 # Keys defined here work regardless of which section (file browser or playlist)
 # has focus.
+# Note: For shifted letters, both "K" and "shift+k" formats work.
 [keybindings.global]
 # Switch focus between file browser and playlist
 switch-focus = ["tab"]
@@ -48,10 +49,10 @@ open-parent = ["h", "left"]
 add-preset-or-load-playlist = ["a"]
 
 # Skip to previous .milk file and play
-play-previous-preset = ["shift+k"]
+play-previous-preset = ["K"]
 
 # Skip to next .milk file and play
-play-next-preset = ["shift+j"]
+play-next-preset = ["J"]
 
 # Keybindings and settings for playlist section.
 [keybindings.playlist]
@@ -59,10 +60,10 @@ play-next-preset = ["shift+j"]
 preset-duration = 30
 
 # Select previous preset and play
-play-previous = ["shift+k"]
+play-previous = ["K"]
 
 # Select next preset and play
-play-next = ["shift+j"]
+play-next = ["J"]
 
 # Move selected item up in list
 reorder-up = ["ctrl+k"]
@@ -71,7 +72,7 @@ reorder-up = ["ctrl+k"]
 reorder-down = ["ctrl+j"]
 
 # Remove selected preset from playlist
-delete-from-playlist = ["shift+d", "delete"]
+delete-from-playlist = ["D", "delete"]
 
 # Undo last playlist modification
 undo = ["u"]
