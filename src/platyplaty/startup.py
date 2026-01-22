@@ -13,19 +13,19 @@ from platyplaty.run_sequence import run_startup_sequence
 from platyplaty.types import Config
 
 
-def run_with_config(config_path: str, playlist_path: str | None) -> int:
+def run_with_config(config_path: str, path_argument: str | None) -> int:
     """Run the visualizer with the given config file.
 
     Args:
         config_path: Path to the TOML configuration file.
-        playlist_path: Optional path to .platy playlist file.
+        path_argument: Optional path to directory or .platy playlist file.
 
     Returns:
         Exit code (0 for success, 1 for error).
     """
     try:
         config = _load_and_validate_config(config_path)
-        run_startup_sequence(config, playlist_path)
+        run_startup_sequence(config, path_argument)
         return 0
     except KeyboardInterrupt:
         return 1

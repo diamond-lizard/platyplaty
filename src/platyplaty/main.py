@@ -20,15 +20,15 @@ import click
     metavar="PATH",
     help="Generate example config to PATH (use '-' for stdout).",
 )
-@click.option(
-    "--playlist",
+@click.argument(
+    "path",
+    required=False,
     type=click.Path(),
-    help="Path to .platy playlist file to load at startup.",
 )
 def main(
     config_file: str | None,
     generate_config: str | None,
-    playlist: str | None,
+    path: str | None,
 ) -> None:
     """Platyplaty - A music visualizer using projectM."""
     # Mutual exclusivity check
@@ -52,7 +52,7 @@ def main(
         import sys
 
         from platyplaty.startup import run_with_config
-        sys.exit(run_with_config(config_file, playlist))
+        sys.exit(run_with_config(config_file, path))
 
     # No arguments: show error with suggestion
     raise click.UsageError(
