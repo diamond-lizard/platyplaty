@@ -23,7 +23,7 @@ class TestCliPathArgument:
     def test_path_argument_passed_to_run_with_config(self) -> None:
         """Path argument should be passed to run_with_config."""
         runner = CliRunner()
-        with patch("platyplaty.main.run_with_config") as mock_run:
+        with patch("platyplaty.startup.run_with_config") as mock_run:
             mock_run.return_value = 0
             result = runner.invoke(
                 main,
@@ -36,7 +36,7 @@ class TestCliPathArgument:
     def test_no_path_argument_passes_none(self) -> None:
         """Missing path argument should pass None to run_with_config."""
         runner = CliRunner()
-        with patch("platyplaty.main.run_with_config") as mock_run:
+        with patch("platyplaty.startup.run_with_config") as mock_run:
             mock_run.return_value = 0
             result = runner.invoke(main, ["--config-file", "dummy.toml"])
             mock_run.assert_called_once()
@@ -46,7 +46,7 @@ class TestCliPathArgument:
     def test_path_argument_with_spaces(self) -> None:
         """Path with spaces should be handled correctly."""
         runner = CliRunner()
-        with patch("platyplaty.main.run_with_config") as mock_run:
+        with patch("platyplaty.startup.run_with_config") as mock_run:
             mock_run.return_value = 0
             result = runner.invoke(
                 main,
