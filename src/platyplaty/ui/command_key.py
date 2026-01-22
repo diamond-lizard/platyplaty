@@ -9,7 +9,11 @@ if TYPE_CHECKING:
     from platyplaty.ui.command_prompt import CommandPrompt
 
 
-async def handle_command_key(key: str, prompt: "CommandPrompt", character: str | None) -> None:
+async def handle_command_key(
+    key: str,
+    prompt: "CommandPrompt",
+    character: str | None,
+) -> None:
     """Handle a key press in the command prompt.
 
     Args:
