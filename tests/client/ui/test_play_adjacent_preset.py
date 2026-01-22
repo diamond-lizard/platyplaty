@@ -31,6 +31,9 @@ def mock_browser() -> MagicMock:
     browser.app.ctx.autoplay_manager = MagicMock()
     browser._adjust_scroll = MagicMock()
     browser.refresh = MagicMock()
+    browser.set_selection_by_index = MagicMock(
+        side_effect=lambda idx: setattr(browser, 'selected_index', idx)
+    )
     return browser
 
 
