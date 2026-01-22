@@ -37,18 +37,18 @@ class TestConfigDefaults:
         kb = config.keybindings.file_browser
         assert kb.open_parent == ["h", "left"]
         assert kb.add_preset_or_load_playlist == ["a"]
-        assert kb.play_previous_preset == ["shift+k"]
-        assert kb.play_next_preset == ["shift+j"]
+        assert kb.play_previous_preset == ["K"]
+        assert kb.play_next_preset == ["J"]
 
     def test_keybindings_playlist_defaults(self) -> None:
         """Playlist keybindings should have correct defaults."""
         config = Config()
         kb = config.keybindings.playlist
-        assert kb.play_previous == ["shift+k"]
-        assert kb.play_next == ["shift+j"]
+        assert kb.play_previous == ["K"]
+        assert kb.play_next == ["J"]
         assert kb.reorder_up == ["ctrl+k"]
         assert kb.reorder_down == ["ctrl+j"]
-        assert kb.delete_from_playlist == ["shift+d", "delete"]
+        assert kb.delete_from_playlist == ["D", "delete"]
         assert kb.undo == ["u"]
         assert kb.redo == ["ctrl+r"]
         assert kb.preset_duration == 30
