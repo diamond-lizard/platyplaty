@@ -7,7 +7,7 @@ Key names follow the Textual naming convention.
 import re
 
 # Single character keys (letters and digits)
-LETTER_KEYS = set("abcdefghijklmnopqrstuvwxyz")
+LETTER_KEYS = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 DIGIT_KEYS = set("0123456789")
 
 # Special keys
