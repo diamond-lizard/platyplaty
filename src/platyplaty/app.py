@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Textual application for Platyplaty visualizer control."""
 
-from typing import TYPE_CHECKING
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from textual.app import App, ComposeResult
 from textual.events import Key
