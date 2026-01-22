@@ -76,7 +76,11 @@ class PlatyplatyApp(App[None]):
         Returns:
             Widgets to mount in the application.
         """
-        yield FileBrowser(self.ctx.file_browser_dispatch_table, starting_dir=self._start_path, id="file_browser")
+        yield FileBrowser(
+            self.ctx.file_browser_dispatch_table,
+            starting_dir=self._start_path,
+            id="file_browser",
+        )
         yield Static("", id="section_divider")
         yield PlaylistView(self.ctx.playlist, id="playlist")
         yield StatusLine(id="status_line")
