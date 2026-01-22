@@ -5,11 +5,11 @@ This module contains the functions for running the startup sequence
 after configuration has been loaded and validated.
 """
 
-from dataclasses import dataclass
 from pathlib import Path
 
 from platyplaty.app import PlatyplatyApp
 from platyplaty.errors import InaccessibleDirectoryError, StartupError
+from platyplaty.path_resolution import resolve_path_argument
 from platyplaty.playlist import Playlist
 from platyplaty.renderer_binary import (
     RendererNotFoundError,
@@ -36,7 +36,7 @@ def run_startup_sequence(config: Config, path_argument: str | None) -> None:
         StartupError: If any startup step fails.
     """
     # Resolve path argument to start directory and playlist path
-    resolved = _resolve_path_argument(path_argument)
+    resolved = resolve_path_argument(path_argument)
 
     # Determine effective playlist path (path argument overrides config)
     effective_playlist_path = resolved.playlist_path
@@ -100,39 +100,3 @@ def _create_playlist(playlist_path: Path | None) -> Playlist:
             raise StartupError(f"Could not load playlist: {e}") from None
     return playlist
 
-
-@dataclass
-class ResolvedPath:
-    """Result of resolving the path argument."""
-    start_directory: Path
-    playlist_path: Path | None
-
-
-def _resolve_path_argument(path_argument: str | None) -> ResolvedPath:
-    """Resolve the path argument to start directory and playlist path.
-
-    Args:
-        path_argument: Optional path to directory or .platy file.
-
-    Returns:
-        ResolvedPath with start_directory and playlist_path.
-
-    Raises:
-        StartupError: If path does not exist or is invalid type.
-    """
-    if path_argument is None:
-        return ResolvedPath(start_directory=Path.cwd(), playlist_path=None)
-
-    path = Path(path_argument)
-    if not path.exists():
-        raise StartupError(f"Path does not exist: {path_argument}")
-
-    if path.is_dir():
-        return ResolvedPath(start_directory=path, playlist_path=None)
-
-    if path.is_file():
-        if path.suffix.lower() == ".platy":
-            return ResolvedPath(start_directory=path.parent, playlist_path=path)
-        raise StartupError(f"File must have .platy extension: {path_argument}")
-
-    raise StartupError(f"Path is not a file or directory: {path_argument}")
