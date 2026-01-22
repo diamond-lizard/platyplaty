@@ -50,7 +50,7 @@ async def _play_adjacent_preset(browser: FileBrowser, direction: int) -> None:
     target_index = _find_adjacent_milk_index(browser, direction)
     if target_index is None:
         return
-    browser.selected_index = target_index
+    browser.set_selection_by_index(target_index)
     browser._nav_state.adjust_scroll(browser.size.height - 1)
     browser._middle_scroll_offset = browser._nav_state.scroll_offset
     browser.refresh()

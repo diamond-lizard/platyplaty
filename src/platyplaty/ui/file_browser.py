@@ -49,7 +49,6 @@ class FileBrowser(Widget):
 
     can_focus = True
     current_dir: Path
-    selected_index: int | None
     _nav_state: NavigationState
     _dispatch_table: DispatchTable
     _middle_scroll_offset: int
@@ -121,3 +120,42 @@ class FileBrowser(Widget):
     async def on_key(self, event: Key) -> None:
         """Handle key events for file browser navigation."""
         await _on_key(self, event)
+
+    @property
+    def selected_index(self) -> int | None:
+        """Get the index of the currently selected item.
+
+        This is derived from _nav_state.selected_name to ensure
+        the browser and navigation state are always in sync.
+
+        Returns:
+            The index of the selected item, or None if no selection.
+        """
+        if not hasattr(self, '_nav_state'):
+            return None
+        listing = self._nav_state.get_listing()
+        if listing is None or not listing.entries:
+            return None
+        name = self._nav_state.selected_name
+        if name is None:
+            return None
+        for i, entry in enumerate(listing.entries):
+            if entry.name == name:
+                return i
+        return None
+
+    def set_selection_by_index(self, index: int) -> None:
+        """Set the selection by index.
+
+        Updates _nav_state.selected_name to the name at the given index.
+        This is the only way to change the selection by index.
+
+        Args:
+            index: The index of the item to select.
+        """
+        listing = self._nav_state.get_listing()
+        if listing is None or not listing.entries:
+            return
+        if index < 0 or index >= len(listing.entries):
+            return
+        self._nav_state.selected_name = listing.entries[index].name
