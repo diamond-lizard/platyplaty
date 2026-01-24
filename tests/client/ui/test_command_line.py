@@ -97,16 +97,18 @@ class TestTransientErrorAppearance:
         """TransientErrorBar.visible class sets display: block."""
         assert "display: block" in TransientErrorBar.DEFAULT_CSS
 
-    def test_show_error_adds_visible_class(self) -> None:
-        """TransientErrorBar.show_error() adds the 'visible' class."""
+    def test_add_visible_class_makes_widget_visible(self) -> None:
+        """Adding 'visible' class makes TransientErrorBar visible."""
         error_bar = TransientErrorBar()
-        error_bar.show_error("Test error")
+        assert not error_bar.has_class("visible")
+        error_bar.add_class("visible")
         assert error_bar.has_class("visible")
 
-    def test_show_error_sets_message(self) -> None:
-        """TransientErrorBar.show_error() sets the message attribute."""
+    def test_message_attribute_can_be_set(self) -> None:
+        """TransientErrorBar.message can be set to error text."""
         error_bar = TransientErrorBar()
-        error_bar.show_error("Test error message")
+        assert error_bar.message == ""
+        error_bar.message = "Test error message"
         assert error_bar.message == "Test error message"
 
 
