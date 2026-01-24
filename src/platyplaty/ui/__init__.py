@@ -3,8 +3,8 @@
 This package provides widgets for the three-pane file browser interface.
 """
 
-from platyplaty.ui.command_prompt import CommandPrompt
 from platyplaty.ui.command_line import CommandLine
+from platyplaty.ui.command_prompt import CommandPrompt
 from platyplaty.ui.confirmation_prompt import ConfirmationPrompt
 from platyplaty.ui.directory import list_directory
 from platyplaty.ui.directory_types import (
