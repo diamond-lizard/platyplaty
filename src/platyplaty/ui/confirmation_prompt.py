@@ -31,7 +31,6 @@ class ConfirmationPrompt(Widget, can_focus=True):
 
     DEFAULT_CSS = """
     ConfirmationPrompt {
-        dock: bottom;
         height: 1;
         display: none;
     }

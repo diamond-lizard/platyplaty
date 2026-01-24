@@ -34,7 +34,6 @@ class CommandPrompt(Widget, can_focus=True):
 
     DEFAULT_CSS = """
     CommandPrompt {
-        dock: bottom;
         height: 1;
         display: none;
     }

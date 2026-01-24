@@ -34,7 +34,6 @@ class TransientErrorBar(Widget):
 
     DEFAULT_CSS = """
     TransientErrorBar {
-        dock: bottom;
         height: 1;
         display: none;
     }
