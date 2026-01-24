@@ -32,6 +32,7 @@ async def handle_command_key(
             await prompt.callback(prompt.input_text)
         else:
             prompt.hide()
+        prompt.cursor_index = 0
         return False
     if key == "left":
         if prompt.cursor_index > 0:

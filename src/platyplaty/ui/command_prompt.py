@@ -55,6 +55,7 @@ class CommandPrompt(Widget, can_focus=True):
     def hide(self) -> None:
         """Hide the prompt and return focus."""
         self.input_text = ""
+        self.cursor_index = 0
         self.callback = None
         self.remove_class("visible")
         self._return_focus()
