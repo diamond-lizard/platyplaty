@@ -140,3 +140,33 @@ class TestTransientErrorTimeout:
         error_bar.message = "Some error"
         error_bar.cancel_and_hide()
         assert error_bar.message == ""
+
+
+class TestStatusLineIndependence:
+    """Tests that Status Line remains visible when transient error is displayed."""
+
+    def test_status_line_and_command_line_are_separate_widgets(self) -> None:
+        """StatusLine and CommandLine are distinct widget classes."""
+        from platyplaty.ui.status_line import StatusLine
+        assert StatusLine is not CommandLine
+
+    def test_both_widgets_dock_to_bottom(self) -> None:
+        """Both StatusLine and CommandLine dock to bottom."""
+        from platyplaty.ui.status_line import StatusLine
+        assert "dock: bottom" in StatusLine.DEFAULT_CSS
+        assert "dock: bottom" in CommandLine.DEFAULT_CSS
+
+    def test_transient_error_is_child_of_command_line(self) -> None:
+        """TransientErrorBar is yielded by CommandLine, not StatusLine."""
+        cmd_line = CommandLine()
+        children = list(cmd_line.compose())
+        types = [type(c) for c in children]
+        assert TransientErrorBar in types
+
+    def test_status_line_does_not_yield_transient_error(self) -> None:
+        """StatusLine does not yield TransientErrorBar as a child."""
+        from platyplaty.ui.status_line import StatusLine
+        status = StatusLine(autoplay_enabled=False, shuffle_enabled=False)
+        children = list(status.compose())
+        types = [type(c) for c in children]
+        assert TransientErrorBar not in types
