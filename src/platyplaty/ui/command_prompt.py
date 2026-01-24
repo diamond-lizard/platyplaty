@@ -7,8 +7,6 @@ bottom of the terminal for entering commands like load, save, clear, shuffle.
 
 from collections.abc import Awaitable, Callable
 
-from rich.segment import Segment
-from rich.style import Style
 from textual.events import Key
 from textual.reactive import reactive
 from textual.strip import Strip
@@ -16,11 +14,12 @@ from textual.timer import Timer
 from textual.widget import Widget
 
 from platyplaty.ui.command_key import handle_command_key, return_focus_to_widget
-from platyplaty.ui.style_utils import reverse_style
+from platyplaty.ui.command_render import (
+    BLINK_INTERVAL_MS,
+    calculate_scroll_offset,
+    render_command_line,
+)
 
-PROMPT_STYLE = Style(color="white", bgcolor="black")
-BLINK_INTERVAL_MS = 500
-CURSOR_STYLE = reverse_style(PROMPT_STYLE)
 
 
 class CommandPrompt(Widget, can_focus=True):
@@ -34,16 +33,7 @@ class CommandPrompt(Widget, can_focus=True):
     _blink_timer: Timer | None = None
     _text_scroll: int = 0
 
-    DEFAULT_CSS = """
-    CommandPrompt {
-        dock: bottom;
-        height: 1;
-        display: none;
-    }
-    CommandPrompt.visible {
-        display: block;
-    }
-    """
+    CSS_PATH = "command_prompt.tcss"
 
     def show_prompt(
         self,
@@ -106,23 +96,16 @@ class CommandPrompt(Widget, can_focus=True):
     def on_resize(self, event: object) -> None:
         """Recalculate scroll offset when widget is resized."""
         visible_width = self.size.width - 1
-        if visible_width < 1:
-            visible_width = 1
-        cursor = self.cursor_index
-        if cursor > self._text_scroll + visible_width - 1:
-            self._text_scroll = cursor - visible_width + 1
-        elif cursor < self._text_scroll:
-            self._text_scroll = cursor
+        self._text_scroll = calculate_scroll_offset(
+            self.cursor_index, self._text_scroll, visible_width
+        )
 
     def update_cursor_with_scroll(self, new_cursor: int) -> None:
         """Update cursor position and scroll offset to keep cursor visible."""
-        visible_width = self.size.width - 1  # Subtract 1 for ":" prefix
-        if visible_width < 1:
-            visible_width = 1
-        if new_cursor > self._text_scroll + visible_width - 1:
-            self._text_scroll = new_cursor - visible_width + 1
-        elif new_cursor < self._text_scroll:
-            self._text_scroll = new_cursor
+        visible_width = self.size.width - 1
+        self._text_scroll = calculate_scroll_offset(
+            new_cursor, self._text_scroll, visible_width
+        )
         self.cursor_index = new_cursor
 
     async def on_key(self, event: Key) -> None:
@@ -137,26 +120,10 @@ class CommandPrompt(Widget, can_focus=True):
         """Render a single line of the widget."""
         if y != 0:
             return Strip([])
-        width = self.size.width
-        visible_width = width - 1  # Account for ":" prefix
-        if visible_width < 0:
-            visible_width = 0
-        end = self._text_scroll + visible_width
-        visible_text = self.input_text[self._text_scroll:end]
-        cursor_pos = self.cursor_index - self._text_scroll
-        segments = [Segment(":", PROMPT_STYLE)]
-        if not self.cursor_visible or cursor_pos < 0 or cursor_pos > len(visible_text):
-            segments.append(Segment(visible_text.ljust(visible_width), PROMPT_STYLE))
-        else:
-            before = visible_text[:cursor_pos]
-            if cursor_pos < len(visible_text):
-                cursor_char = visible_text[cursor_pos]
-                after = visible_text[cursor_pos + 1:]
-            else:
-                cursor_char = " "
-                after = ""
-            segments.append(Segment(before, PROMPT_STYLE))
-            segments.append(Segment(cursor_char, CURSOR_STYLE))
-            remaining = visible_width - len(before) - 1 - len(after)
-            segments.append(Segment(after + " " * max(0, remaining), PROMPT_STYLE))
-        return Strip(segments)
+        return render_command_line(
+            self.size.width,
+            self.input_text,
+            self._text_scroll,
+            self.cursor_index,
+            self.cursor_visible,
+        )
