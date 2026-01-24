@@ -46,7 +46,7 @@ class TestStatusLineVisibleDuringPrompt:
     def test_status_line_does_not_yield_command_prompt(self) -> None:
         """StatusLine does not yield CommandPrompt as a child."""
         from platyplaty.ui.status_line import StatusLine
-        status = StatusLine()
+        status = StatusLine([])
         children = list(status.compose())
         types = [type(c) for c in children]
         assert CommandPrompt not in types

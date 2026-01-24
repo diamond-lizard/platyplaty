@@ -40,7 +40,7 @@ class TestStatusLineIndependence:
     def test_status_line_does_not_yield_transient_error(self) -> None:
         """StatusLine does not yield TransientErrorBar as a child."""
         from platyplaty.ui.status_line import StatusLine
-        status = StatusLine()
+        status = StatusLine([])
         children = list(status.compose())
         types = [type(c) for c in children]
         assert TransientErrorBar not in types
