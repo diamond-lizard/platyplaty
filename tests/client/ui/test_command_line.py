@@ -108,3 +108,35 @@ class TestTransientErrorAppearance:
         error_bar = TransientErrorBar()
         error_bar.show_error("Test error message")
         assert error_bar.message == "Test error message"
+
+
+class TestTransientErrorTimeout:
+    """Tests that Command Line returns to blank after transient error timeout."""
+
+    def test_hide_removes_visible_class(self) -> None:
+        """TransientErrorBar._hide() removes the 'visible' class."""
+        error_bar = TransientErrorBar()
+        error_bar.add_class("visible")
+        error_bar._hide()
+        assert not error_bar.has_class("visible")
+
+    def test_hide_clears_message(self) -> None:
+        """TransientErrorBar._hide() clears the message attribute."""
+        error_bar = TransientErrorBar()
+        error_bar.message = "Some error"
+        error_bar._hide()
+        assert error_bar.message == ""
+
+    def test_cancel_and_hide_removes_visible_class(self) -> None:
+        """TransientErrorBar.cancel_and_hide() removes the 'visible' class."""
+        error_bar = TransientErrorBar()
+        error_bar.add_class("visible")
+        error_bar.cancel_and_hide()
+        assert not error_bar.has_class("visible")
+
+    def test_cancel_and_hide_clears_message(self) -> None:
+        """TransientErrorBar.cancel_and_hide() clears the message."""
+        error_bar = TransientErrorBar()
+        error_bar.message = "Some error"
+        error_bar.cancel_and_hide()
+        assert error_bar.message == ""
