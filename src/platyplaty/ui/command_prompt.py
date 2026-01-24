@@ -55,9 +55,11 @@ class CommandPrompt(Widget, can_focus=True):
         self.previous_focus_id = previous_focus_id
         self.add_class("visible")
         self.focus()
+        self.start_blink_timer()
 
     def hide(self) -> None:
         """Hide the prompt and return focus."""
+        self.stop_blink_timer()
         self.input_text = ""
         self.cursor_index = 0
         self.callback = None
@@ -87,6 +89,14 @@ class CommandPrompt(Widget, can_focus=True):
     def _toggle_cursor_visibility(self) -> None:
         """Toggle the cursor visibility state."""
         self.cursor_visible = not self.cursor_visible
+
+    def on_focus(self) -> None:
+        """Start blink timer when focused."""
+        self.start_blink_timer()
+
+    def on_blur(self) -> None:
+        """Stop blink timer on blur (defensive fallback for unexpected focus loss)."""
+        self.stop_blink_timer(visible=False)
 
     async def on_key(self, event: Key) -> None:
         """Handle key events for the command prompt."""
