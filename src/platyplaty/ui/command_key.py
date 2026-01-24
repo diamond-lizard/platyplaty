@@ -70,7 +70,8 @@ async def handle_command_key(
         return False
     if character is not None:
         idx = prompt.cursor_index
-        prompt.input_text = prompt.input_text[:idx] + character + prompt.input_text[idx:]
+        text = prompt.input_text
+        prompt.input_text = text[:idx] + character + text[idx:]
         prompt.cursor_index = idx + 1
         return True
     return False
