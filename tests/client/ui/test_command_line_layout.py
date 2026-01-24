@@ -24,11 +24,10 @@ class TestStatusLineIndependence:
         from platyplaty.ui.status_line import StatusLine
         assert StatusLine is not CommandLine
 
-    def test_both_widgets_dock_to_bottom(self) -> None:
-        """Both StatusLine and CommandLine dock to bottom."""
-        from platyplaty.ui.status_line import StatusLine
-        assert "dock: bottom" in StatusLine.DEFAULT_CSS
-        assert "dock: bottom" in CommandLine.DEFAULT_CSS
+    def test_footer_container_docks_to_bottom(self) -> None:
+        """FooterContainer docks to bottom, containing StatusLine and CommandLine."""
+        from platyplaty.ui.footer_container import FooterContainer
+        assert "dock: bottom" in FooterContainer.DEFAULT_CSS
 
     def test_transient_error_is_child_of_command_line(self) -> None:
         """TransientErrorBar is yielded by CommandLine, not StatusLine."""

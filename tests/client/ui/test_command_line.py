@@ -35,10 +35,6 @@ class TestCommandLineHeight:
         """CommandLine DEFAULT_CSS specifies height: 1."""
         assert "height: 1" in CommandLine.DEFAULT_CSS
 
-    def test_default_css_docks_to_bottom(self) -> None:
-        """CommandLine DEFAULT_CSS docks to bottom."""
-        assert "dock: bottom" in CommandLine.DEFAULT_CSS
-
 
 class TestCommandLineChildren:
     """Tests that CommandLine yields correct child widgets."""
