@@ -77,6 +77,13 @@ class CommandPrompt(Widget, can_focus=True):
             self._toggle_cursor_visibility,
         )
 
+    def stop_blink_timer(self, visible: bool = True) -> None:
+        """Stop the cursor blink timer and set visibility state."""
+        if self._blink_timer is not None:
+            self._blink_timer.stop()
+            self._blink_timer = None
+        self.cursor_visible = visible
+
     def _toggle_cursor_visibility(self) -> None:
         """Toggle the cursor visibility state."""
         self.cursor_visible = not self.cursor_visible
