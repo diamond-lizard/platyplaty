@@ -37,15 +37,18 @@ class StatusLine(Widget):
     _autoplay_enabled: bool
     _playlist_filename: Path | None
     _dirty: bool
+    _error_log: list[str]
 
     def __init__(
         self,
+        error_log: list[str],
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
     ) -> None:
         """Initialize the StatusLine widget."""
         super().__init__(name=name, id=id, classes=classes)
+        self._error_log = error_log
         self._autoplay_enabled = False
         self._playlist_filename = None
         self._dirty = False
@@ -74,3 +77,7 @@ class StatusLine(Widget):
             return Strip([])
         from platyplaty.ui.status_line_render import render_status_line
         return render_status_line(self, self.size.width)
+
+    def update_error_indicator(self) -> None:
+        """Refresh the status line to update error indicator."""
+        self.refresh()
