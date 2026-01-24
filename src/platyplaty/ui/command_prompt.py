@@ -101,6 +101,17 @@ class CommandPrompt(Widget, can_focus=True):
         """Stop blink timer on blur (defensive fallback for unexpected focus loss)."""
         self.stop_blink_timer(visible=False)
 
+    def on_resize(self, event: object) -> None:
+        """Recalculate scroll offset when widget is resized."""
+        visible_width = self.size.width - 1
+        if visible_width < 1:
+            visible_width = 1
+        cursor = self.cursor_index
+        if cursor > self.scroll_offset + visible_width - 1:
+            self.scroll_offset = cursor - visible_width + 1
+        elif cursor < self.scroll_offset:
+            self.scroll_offset = cursor
+
     def update_cursor_with_scroll(self, new_cursor: int) -> None:
         """Update cursor position and scroll offset to keep cursor visible."""
         visible_width = self.size.width - 1  # Subtract 1 for ":" prefix
