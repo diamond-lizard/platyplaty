@@ -16,9 +16,11 @@ from textual.strip import Strip
 from textual.widget import Widget
 
 from platyplaty.ui.command_key import handle_command_key, return_focus_to_widget
+from platyplaty.ui.style_utils import reverse_style
 
 PROMPT_STYLE = Style(color="white", bgcolor="black")
 BLINK_INTERVAL_MS = 500
+CURSOR_STYLE = reverse_style(PROMPT_STYLE)
 
 
 class CommandPrompt(Widget, can_focus=True):
@@ -130,10 +132,30 @@ class CommandPrompt(Widget, can_focus=True):
         if state_changed:
             self.start_blink_timer()
 
+
     def render_line(self, y: int) -> Strip:
         """Render a single line of the widget."""
         if y != 0:
             return Strip([])
         width = self.size.width
-        text = (":" + self.input_text)[:width].ljust(width)
-        return Strip([Segment(text, PROMPT_STYLE)])
+        visible_width = width - 1  # Account for ":" prefix
+        if visible_width < 0:
+            visible_width = 0
+        visible_text = self.input_text[self.scroll_offset:self.scroll_offset + visible_width]
+        cursor_pos = self.cursor_index - self.scroll_offset
+        segments = [Segment(":", PROMPT_STYLE)]
+        if not self.cursor_visible or cursor_pos < 0 or cursor_pos > len(visible_text):
+            segments.append(Segment(visible_text.ljust(visible_width), PROMPT_STYLE))
+        else:
+            before = visible_text[:cursor_pos]
+            if cursor_pos < len(visible_text):
+                cursor_char = visible_text[cursor_pos]
+                after = visible_text[cursor_pos + 1:]
+            else:
+                cursor_char = " "
+                after = ""
+            segments.append(Segment(before, PROMPT_STYLE))
+            segments.append(Segment(cursor_char, CURSOR_STYLE))
+            remaining = visible_width - len(before) - 1 - len(after)
+            segments.append(Segment(after + " " * max(0, remaining), PROMPT_STYLE))
+        return Strip(segments)
