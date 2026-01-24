@@ -45,12 +45,17 @@ class TestAppLayoutWidgets:
         ids = [w.id for w in widgets]
         assert "playlist" in ids
 
-    def test_compose_yields_footer(self) -> None:
-        """App compose yields a FooterContainer widget."""
+    def test_compose_yields_footer_with_status_and_command_line(self) -> None:
+        """App compose yields FooterContainer containing StatusLine and CommandLine."""
         app = make_test_app()
         widgets = list(app.compose())
         ids = [w.id for w in widgets]
         assert "footer" in ids
+        # Find the FooterContainer and verify its children
+        footer = next(w for w in widgets if w.id == "footer")
+        child_ids = [w.id for w in footer.compose()]
+        assert "status_line" in child_ids
+        assert "command_line" in child_ids
 
     def test_compose_yields_section_divider(self) -> None:
         """App compose yields a section divider."""
