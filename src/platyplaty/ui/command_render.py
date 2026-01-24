@@ -6,7 +6,7 @@ with cursor, handling horizontal scrolling and cursor visibility.
 """
 
 from rich.segment import Segment
-from rich.strip import Strip
+from textual.strip import Strip
 from rich.style import Style
 
 from platyplaty.ui.style_utils import reverse_style
