@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from platyplaty.app_context import AppContext
 
 
-from platyplaty.dispatch_tables import DispatchTable
 from platyplaty.command_prompt_show import show_command_prompt
+from platyplaty.dispatch_tables import DispatchTable
 
 
 async def dispatch_key_event(
