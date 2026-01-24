@@ -101,7 +101,9 @@ class CommandPrompt(Widget, can_focus=True):
     async def on_key(self, event: Key) -> None:
         """Handle key events for the command prompt."""
         event.stop()
-        await handle_command_key(event.key, self, event.character)
+        state_changed = await handle_command_key(event.key, self, event.character)
+        if state_changed:
+            self.start_blink_timer()
 
     def render_line(self, y: int) -> Strip:
         """Render a single line of the widget."""
