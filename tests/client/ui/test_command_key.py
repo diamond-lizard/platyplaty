@@ -20,6 +20,7 @@ def mock_prompt():
     prompt.callback = None
     prompt.cursor_index = 0
     prompt.hide = MagicMock()
+    prompt.update_cursor_with_scroll = lambda idx: setattr(prompt, "cursor_index", idx)
     return prompt
 
 
