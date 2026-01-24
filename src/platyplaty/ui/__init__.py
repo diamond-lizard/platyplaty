@@ -14,6 +14,7 @@ from platyplaty.ui.directory_types import (
 )
 from platyplaty.ui.error_view import ErrorView
 from platyplaty.ui.file_browser import FileBrowser
+from platyplaty.ui.footer_container import FooterContainer
 from platyplaty.ui.layout import (
     LayoutState,
     PaneWidths,
@@ -41,4 +42,5 @@ __all__ = [
     "ConfirmationPrompt",
     "ErrorView",
     "CommandLine",
+    "FooterContainer",
 ]

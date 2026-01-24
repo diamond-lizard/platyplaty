@@ -28,7 +28,6 @@ class CommandLine(Widget):
 
     DEFAULT_CSS = """
     CommandLine {
-        dock: bottom;
         height: 1;
         background: black;
         color: white;

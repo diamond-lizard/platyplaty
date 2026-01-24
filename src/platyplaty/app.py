@@ -14,11 +14,10 @@ from platyplaty.app_shutdown import perform_graceful_shutdown
 from platyplaty.app_startup import on_mount_handler
 from platyplaty.keybinding_dispatch import dispatch_focused_key_event
 from platyplaty.ui import (
-    CommandLine,
     ErrorView,
     FileBrowser,
+    FooterContainer,
     PlaylistView,
-    StatusLine,
 )
 
 if TYPE_CHECKING:
@@ -80,8 +79,7 @@ class PlatyplatyApp(App[None]):
         )
         yield Static("", id="section_divider")
         yield PlaylistView(self.ctx.playlist, id="playlist")
-        yield CommandLine(id="command_line")
-        yield StatusLine(self.ctx.error_log, id="status_line")
+        yield FooterContainer(self.ctx.error_log, id="footer")
         yield ErrorView(self.ctx.error_log, id="error_view")
 
 

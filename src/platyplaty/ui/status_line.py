@@ -29,7 +29,6 @@ class StatusLine(Widget):
 
     DEFAULT_CSS = """
     StatusLine {
-        dock: bottom;
         height: 1;
     }
     """
