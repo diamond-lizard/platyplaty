@@ -10,10 +10,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from platyplaty.errors import NoEditorFoundError
+from platyplaty.ui.command_line import CommandLine
 from platyplaty.ui.editor import open_in_editor
 from platyplaty.ui.file_browser_refresh import refresh_listings
 from platyplaty.ui.file_browser_sync import sync_from_nav_state
-from platyplaty.ui.command_line import CommandLine
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
