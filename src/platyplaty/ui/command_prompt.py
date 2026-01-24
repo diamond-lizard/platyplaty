@@ -23,6 +23,7 @@ class CommandPrompt(Widget, can_focus=True):
     """A command prompt that accepts text input for commands."""
 
     input_text: reactive[str] = reactive("", repaint=True)
+    cursor_index: reactive[int] = reactive(0, repaint=True)
     callback: Callable[[str], Awaitable[None]] | None = None
     previous_focus_id: str | None = None
 
@@ -45,6 +46,7 @@ class CommandPrompt(Widget, can_focus=True):
     ) -> None:
         """Display the command prompt and take focus."""
         self.input_text = initial_text
+        self.cursor_index = len(initial_text)
         self.callback = callback
         self.previous_focus_id = previous_focus_id
         self.add_class("visible")

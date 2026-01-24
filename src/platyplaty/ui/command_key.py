@@ -13,28 +13,66 @@ async def handle_command_key(
     key: str,
     prompt: "CommandPrompt",
     character: str | None,
-) -> None:
+) -> bool:
     """Handle a key press in the command prompt.
 
     Args:
         key: The key that was pressed.
         prompt: The CommandPrompt widget instance.
         character: The printable character, or None if not printable.
+
+    Returns:
+        True if text or cursor position changed, False otherwise.
     """
     if key == "escape":
         prompt.hide()
-        return
+        return False
     if key == "enter":
         if prompt.input_text and prompt.callback:
             await prompt.callback(prompt.input_text)
         else:
             prompt.hide()
-        return
+        return False
+    if key == "left":
+        if prompt.cursor_index > 0:
+            prompt.cursor_index -= 1
+            return True
+        return False
+    if key == "right":
+        if prompt.cursor_index < len(prompt.input_text):
+            prompt.cursor_index += 1
+            return True
+        return False
+    if key == "home":
+        if prompt.cursor_index > 0:
+            prompt.cursor_index = 0
+            return True
+        return False
+    if key == "end":
+        text_len = len(prompt.input_text)
+        if prompt.cursor_index < text_len:
+            prompt.cursor_index = text_len
+            return True
+        return False
     if key == "backspace":
-        prompt.input_text = prompt.input_text[:-1]
-        return
+        idx = prompt.cursor_index
+        if idx > 0:
+            prompt.input_text = prompt.input_text[:idx-1] + prompt.input_text[idx:]
+            prompt.cursor_index = idx - 1
+            return True
+        return False
+    if key == "delete":
+        idx = prompt.cursor_index
+        if idx < len(prompt.input_text):
+            prompt.input_text = prompt.input_text[:idx] + prompt.input_text[idx+1:]
+            return True
+        return False
     if character is not None:
-        prompt.input_text += character
+        idx = prompt.cursor_index
+        prompt.input_text = prompt.input_text[:idx] + character + prompt.input_text[idx:]
+        prompt.cursor_index = idx + 1
+        return True
+    return False
 
 
 def return_focus_to_widget(app: "App[object]", widget_id: str | None) -> None:
