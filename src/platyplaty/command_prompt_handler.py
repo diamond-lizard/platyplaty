@@ -72,7 +72,7 @@ def show_command_error(app: "PlatyplatyApp", error: str | None) -> None:
         app: The Textual application.
         error: The error message to display.
     """
-    from platyplaty.ui.transient_error import TransientErrorBar
+    from platyplaty.ui.command_line import CommandLine
 
-    error_bar = app.query_one(TransientErrorBar)
-    error_bar.show_error(error or "Unknown error")
+    cmd_line = app.query_one("#command_line", CommandLine)
+    cmd_line.show_transient_error(error or "Unknown error")

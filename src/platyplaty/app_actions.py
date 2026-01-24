@@ -38,9 +38,9 @@ async def load_preset_by_direction(
     try:
         await ctx.client.send_command("LOAD PRESET", path=str(path))
     except RendererError as e:
-        from platyplaty.ui.transient_error import TransientErrorBar
-        error_bar = app.query_one("#transient_error", TransientErrorBar)
-        error_bar.show_error(str(e))
+        from platyplaty.ui.command_line import CommandLine
+        cmd_line = app.query_one("#command_line", CommandLine)
+        cmd_line.show_transient_error(str(e))
         ctx.error_log.append(str(e))
         from platyplaty.ui.error_indicator import update_error_indicator
         update_error_indicator(app)

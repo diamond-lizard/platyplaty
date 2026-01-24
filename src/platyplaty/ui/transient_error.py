@@ -10,6 +10,7 @@ from rich.style import Style
 from textual.app import App
 from textual.reactive import reactive
 from textual.strip import Strip
+from textual.timer import Timer
 from textual.widget import Widget
 
 # Duration to show the error message in seconds
@@ -31,6 +32,7 @@ class TransientErrorBar(Widget):
     """
 
     message: reactive[str] = reactive("", repaint=True)
+    _timer: Timer | None = None
 
     DEFAULT_CSS = """
     TransientErrorBar {
@@ -50,12 +52,19 @@ class TransientErrorBar(Widget):
         """
         self.message = text
         self.add_class("visible")
-        self.set_timer(ERROR_DISPLAY_DURATION, self._hide)
+        self._timer = self.set_timer(ERROR_DISPLAY_DURATION, self._hide)
 
     def _hide(self) -> None:
         """Hide the error bar after the timer expires."""
         self.message = ""
         self.remove_class("visible")
+
+    def cancel_and_hide(self) -> None:
+        """Cancel the pending timer and immediately hide the widget."""
+        if self._timer is not None:
+            self._timer.stop()
+            self._timer = None
+        self._hide()
 
     def render_line(self, y: int) -> Strip:
         """Render a single line of the widget.
@@ -83,7 +92,8 @@ def show_transient_error(app: "App[None]", message: str) -> None:
         message: The error message to display.
     """
     try:
-        error_bar = app.query_one("#transient_error", TransientErrorBar)
-        error_bar.show_error(message)
+        from platyplaty.ui.command_line import CommandLine
+        cmd_line = app.query_one("#command_line", CommandLine)
+        cmd_line.show_transient_error(message)
     except Exception:
         pass

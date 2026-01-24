@@ -13,7 +13,7 @@ from platyplaty.errors import NoEditorFoundError
 from platyplaty.ui.editor import open_in_editor
 from platyplaty.ui.file_browser_refresh import refresh_listings
 from platyplaty.ui.file_browser_sync import sync_from_nav_state
-from platyplaty.ui.transient_error import TransientErrorBar
+from platyplaty.ui.command_line import CommandLine
 
 if TYPE_CHECKING:
     from platyplaty.ui.file_browser import FileBrowser
@@ -28,8 +28,8 @@ def show_transient_error(browser: FileBrowser, message: str) -> None:
         browser: The file browser instance.
         message: The error message to display.
     """
-    error_bar = browser.app.query_one("#transient_error", TransientErrorBar)
-    error_bar.show_error(message)
+    cmd_line = browser.app.query_one("#command_line", CommandLine)
+    cmd_line.show_transient_error(message)
 
 
 async def open_in_editor_action(browser: FileBrowser, file_path: str) -> None:

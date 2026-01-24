@@ -79,5 +79,9 @@ class CommandLine(Widget):
         Args:
             message: The error message to display briefly.
         """
+        cmd_prompt = self.query_one("#command_prompt", CommandPrompt)
+        confirm_prompt = self.query_one("#confirmation_prompt", ConfirmationPrompt)
+        if cmd_prompt.has_class("visible") or confirm_prompt.has_class("visible"):
+            return
         error_bar = self.query_one("#transient_error", TransientErrorBar)
         error_bar.show_error(message)

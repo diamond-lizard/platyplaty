@@ -17,9 +17,9 @@ def show_no_playable_error(app: "PlatyplatyApp") -> None:
     Args:
         app: The Textual application instance.
     """
-    from platyplaty.ui.transient_error import TransientErrorBar
-    error_bar = app.query_one("#transient_error", TransientErrorBar)
-    error_bar.show_error(NO_PLAYABLE_MESSAGE)
+    from platyplaty.ui.command_line import CommandLine
+    cmd_line = app.query_one("#command_line", CommandLine)
+    cmd_line.show_transient_error(NO_PLAYABLE_MESSAGE)
 
 
 def show_empty_playlist_error(app: "PlatyplatyApp") -> None:
@@ -28,6 +28,6 @@ def show_empty_playlist_error(app: "PlatyplatyApp") -> None:
     Args:
         app: The Textual application instance.
     """
-    from platyplaty.ui.transient_error import TransientErrorBar
-    error_bar = app.query_one("#transient_error", TransientErrorBar)
-    error_bar.show_error(EMPTY_PLAYLIST_MESSAGE)
+    from platyplaty.ui.command_line import CommandLine
+    cmd_line = app.query_one("#command_line", CommandLine)
+    cmd_line.show_transient_error(EMPTY_PLAYLIST_MESSAGE)
