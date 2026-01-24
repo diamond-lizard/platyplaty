@@ -1,9 +1,0 @@
-CommandPrompt {
-    dock: bottom;
-    height: 1;
-    display: none;
-}
-
-CommandPrompt.visible {
-    display: block;
-}

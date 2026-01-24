@@ -32,7 +32,16 @@ class CommandPrompt(Widget, can_focus=True):
     _blink_timer: Timer | None = None
     _text_scroll: int = 0
 
-    CSS_PATH = "command_prompt.tcss"
+    DEFAULT_CSS = """
+    CommandPrompt {
+        dock: bottom;
+        height: 1;
+        display: none;
+    }
+    CommandPrompt.visible {
+        display: block;
+    }
+    """
 
     def show_prompt(
         self,
