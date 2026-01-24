@@ -22,13 +22,13 @@ class TestSaveOverwritePrompt:
 
         existing_file = tmp_path / "existing.platy"
         existing_file.write_text("/old.milk\n")
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
 
         await save_to_path(str(existing_file), mock_ctx, mock_app, tmp_path)
 
-        mock_prompt.show_prompt.assert_called_once()
-        call_args = mock_prompt.show_prompt.call_args
+        mock_command_line.show_confirmation_prompt.assert_called_once()
+        call_args = mock_command_line.show_confirmation_prompt.call_args
         assert "File exists" in call_args[0][0]
         assert "Overwrite" in call_args[0][0]
 
@@ -41,15 +41,15 @@ class TestSaveOverwritePrompt:
 
         existing_file = tmp_path / "existing.platy"
         existing_file.write_text("/old.milk\n")
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
         captured_callback = None
 
         def capture_callback(msg, callback):
             nonlocal captured_callback
             captured_callback = callback
 
-        mock_prompt.show_prompt.side_effect = capture_callback
+        mock_command_line.show_confirmation_prompt.side_effect = capture_callback
         await check_and_save(existing_file, mock_ctx, mock_app)
 
         with patch(
@@ -68,15 +68,15 @@ class TestSaveOverwritePrompt:
 
         existing_file = tmp_path / "existing.platy"
         existing_file.write_text("/old.milk\n")
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
         captured_callback = None
 
         def capture_callback(msg, callback):
             nonlocal captured_callback
             captured_callback = callback
 
-        mock_prompt.show_prompt.side_effect = capture_callback
+        mock_command_line.show_confirmation_prompt.side_effect = capture_callback
         await check_and_save(existing_file, mock_ctx, mock_app)
 
         with patch(

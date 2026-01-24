@@ -36,13 +36,13 @@ class TestQuitWithoutUnsavedChanges:
         from platyplaty.quit_handler import handle_quit
         from platyplaty.ui.prompt_messages import PROMPT_QUIT
 
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
 
         await handle_quit(mock_ctx, mock_app)
 
-        mock_prompt.show_prompt.assert_called_once()
-        call_args = mock_prompt.show_prompt.call_args
+        mock_command_line.show_confirmation_prompt.assert_called_once()
+        call_args = mock_command_line.show_confirmation_prompt.call_args
         assert call_args[0][0] == PROMPT_QUIT
 
 
@@ -56,13 +56,13 @@ class TestQuitWithUnsavedChanges:
         from platyplaty.ui.prompt_messages import PROMPT_QUIT_UNSAVED
 
         mock_ctx.playlist.dirty_flag = True
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
 
         await handle_quit(mock_ctx, mock_app)
 
-        mock_prompt.show_prompt.assert_called_once()
-        call_args = mock_prompt.show_prompt.call_args
+        mock_command_line.show_confirmation_prompt.assert_called_once()
+        call_args = mock_command_line.show_confirmation_prompt.call_args
         assert call_args[0][0] == PROMPT_QUIT_UNSAVED
 
 
@@ -76,15 +76,15 @@ class TestQuitConfirmation:
         """User pressing 'y' triggers graceful shutdown."""
         from platyplaty.quit_handler import handle_quit
 
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
         captured_callback = None
 
         def capture_callback(msg, callback):
             nonlocal captured_callback
             captured_callback = callback
 
-        mock_prompt.show_prompt.side_effect = capture_callback
+        mock_command_line.show_confirmation_prompt.side_effect = capture_callback
 
         await handle_quit(mock_ctx, mock_app)
         await captured_callback(True)
@@ -96,15 +96,15 @@ class TestQuitConfirmation:
         """User pressing 'n' does not trigger shutdown."""
         from platyplaty.quit_handler import handle_quit
 
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
         captured_callback = None
 
         def capture_callback(msg, callback):
             nonlocal captured_callback
             captured_callback = callback
 
-        mock_prompt.show_prompt.side_effect = capture_callback
+        mock_command_line.show_confirmation_prompt.side_effect = capture_callback
 
         await handle_quit(mock_ctx, mock_app)
         await captured_callback(False)

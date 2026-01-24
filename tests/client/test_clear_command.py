@@ -51,14 +51,14 @@ class TestClearWithUnsavedChanges:
         from platyplaty.commands.clear_playlist import execute
 
         mock_ctx.playlist.dirty_flag = True
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
 
         with patch("platyplaty.commands.clear_playlist.push_undo_snapshot"):
             result = await execute(mock_ctx, mock_app)
 
         assert result == (True, None)
-        mock_prompt.show_prompt.assert_called_once()
+        mock_command_line.show_confirmation_prompt.assert_called_once()
         mock_ctx.playlist.clear.assert_not_called()
 
     @pytest.mark.asyncio
@@ -69,15 +69,15 @@ class TestClearWithUnsavedChanges:
         from platyplaty.commands.clear_playlist import execute
 
         mock_ctx.playlist.dirty_flag = True
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
         captured_callback = None
 
         def capture_callback(msg, callback):
             nonlocal captured_callback
             captured_callback = callback
 
-        mock_prompt.show_prompt.side_effect = capture_callback
+        mock_command_line.show_confirmation_prompt.side_effect = capture_callback
 
         with patch("platyplaty.commands.clear_playlist.push_undo_snapshot"):
             await execute(mock_ctx, mock_app)

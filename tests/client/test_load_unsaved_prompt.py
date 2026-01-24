@@ -20,13 +20,13 @@ class TestLoadWithUnsavedChanges:
 
         playlist_file = tmp_path / "test.platy"
         playlist_file.write_text("/preset.milk\n")
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
 
         await check_and_load(playlist_file, mock_ctx_dirty, mock_app)
 
-        mock_prompt.show_prompt.assert_called_once()
-        call_args = mock_prompt.show_prompt.call_args
+        mock_command_line.show_confirmation_prompt.assert_called_once()
+        call_args = mock_command_line.show_confirmation_prompt.call_args
         assert call_args[0][0] == PROMPT_LOAD_REPLACE_UNSAVED
 
     @pytest.mark.asyncio
@@ -39,12 +39,12 @@ class TestLoadWithUnsavedChanges:
 
         playlist_file = tmp_path / "test.platy"
         playlist_file.write_text("/preset.milk\n")
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
 
         await check_and_load(playlist_file, mock_ctx_dirty, mock_app)
 
-        call_args = mock_prompt.show_prompt.call_args
+        call_args = mock_command_line.show_confirmation_prompt.call_args
         assert PROMPT_LOAD_REPLACE_UNSAVED in call_args[0][0]
 
 
@@ -59,15 +59,15 @@ class TestLoadUnsavedConfirmation:
         mock_ctx_dirty.playlist.dirty_flag = True
         playlist_file = tmp_path / "test.platy"
         playlist_file.write_text("/preset.milk\n")
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
         captured_callback = None
 
         def capture_callback(msg, callback):
             nonlocal captured_callback
             captured_callback = callback
 
-        mock_prompt.show_prompt.side_effect = capture_callback
+        mock_command_line.show_confirmation_prompt.side_effect = capture_callback
 
         await check_and_load(playlist_file, mock_ctx_dirty, mock_app)
 
@@ -93,15 +93,15 @@ class TestLoadUnsavedConfirmation:
         mock_ctx_dirty.playlist.dirty_flag = True
         playlist_file = tmp_path / "test.platy"
         playlist_file.write_text("/preset.milk\n")
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
         captured_callback = None
 
         def capture_callback(msg, callback):
             nonlocal captured_callback
             captured_callback = callback
 
-        mock_prompt.show_prompt.side_effect = capture_callback
+        mock_command_line.show_confirmation_prompt.side_effect = capture_callback
 
         await check_and_load(playlist_file, mock_ctx_dirty, mock_app)
 

@@ -19,8 +19,8 @@ class TestLoadWithEmptyPlaylist:
 
         playlist_file = tmp_path / "test.platy"
         playlist_file.write_text("/preset.milk\n")
-        mock_prompt = MagicMock()
-        mock_app.query_one.return_value = mock_prompt
+        mock_command_line = MagicMock()
+        mock_app.query_one.return_value = mock_command_line
 
         with (
             patch("platyplaty.playlist_snapshot.push_undo_snapshot"),
@@ -32,7 +32,7 @@ class TestLoadWithEmptyPlaylist:
         ):
             await check_and_load(playlist_file, mock_ctx_empty, mock_app)
 
-        mock_prompt.show_prompt.assert_not_called()
+        mock_command_line.show_confirmation_prompt.assert_not_called()
         mock_load.assert_called_once()
 
     @pytest.mark.asyncio
