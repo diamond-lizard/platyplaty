@@ -39,9 +39,9 @@ async def show_unsaved_changes_prompt(
     ctx: "AppContext", app: "PlatyplatyApp"
 ) -> None:
     """Show confirmation prompt for unsaved changes."""
-    from platyplaty.ui.confirmation_prompt import ConfirmationPrompt
+    from platyplaty.ui.command_line import CommandLine
 
-    prompt = app.query_one(ConfirmationPrompt)
+    command_line = app.query_one("#command_line", CommandLine)
     msg = (
         "There are unsaved changes in the currently loaded playlist, "
         "clear anyway (y/n)?"
@@ -51,7 +51,7 @@ async def show_unsaved_changes_prompt(
         if confirmed:
             await perform_clear(ctx)
 
-    prompt.show_prompt(msg, on_response)
+    command_line.show_confirmation_prompt(msg, on_response)
 
 
 async def perform_clear(ctx: "AppContext") -> None:

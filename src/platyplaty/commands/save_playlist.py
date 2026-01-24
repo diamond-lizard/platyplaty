@@ -64,16 +64,16 @@ async def show_overwrite_prompt(
     filepath: Path, ctx: "AppContext", app: "PlatyplatyApp"
 ) -> None:
     """Show confirmation prompt for overwriting existing file."""
-    from platyplaty.ui.confirmation_prompt import ConfirmationPrompt
+    from platyplaty.ui.command_line import CommandLine
 
-    prompt = app.query_one(ConfirmationPrompt)
+    command_line = app.query_one("#command_line", CommandLine)
     msg = "File exists. Overwrite? (y/n)"
 
     async def on_response(confirmed: bool) -> None:
         if confirmed:
             perform_save(ctx, filepath)
 
-    prompt.show_prompt(msg, on_response)
+    command_line.show_confirmation_prompt(msg, on_response)
 
 def perform_save(ctx: "AppContext", filepath: Path) -> tuple[bool, str | None]:
     """Perform the actual save operation."""

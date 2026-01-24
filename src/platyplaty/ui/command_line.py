@@ -73,6 +73,9 @@ class CommandLine(Widget):
             callback: Function to call with True (yes) or False (no).
             previous_focus_id: Widget ID to return focus to on dismiss.
         """
+        error_bar = self.query_one("#transient_error", TransientErrorBar)
+        if error_bar.has_class("visible"):
+            error_bar.cancel_and_hide()
         prompt = self.query_one("#confirmation_prompt", ConfirmationPrompt)
         prompt.show_prompt(message, callback, previous_focus_id)
 

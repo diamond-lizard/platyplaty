@@ -44,9 +44,9 @@ async def show_unsaved_changes_prompt(
     filepath: Path, ctx: "AppContext", app: "PlatyplatyApp"
 ) -> None:
     """Show confirmation prompt for unsaved changes before loading."""
-    from platyplaty.ui.confirmation_prompt import ConfirmationPrompt
+    from platyplaty.ui.command_line import CommandLine
 
-    prompt = app.query_one(ConfirmationPrompt)
+    command_line = app.query_one("#command_line", CommandLine)
     msg = (
         "There are unsaved changes in the currently loaded playlist, "
         "replace anyway (y/n)?"
@@ -56,23 +56,23 @@ async def show_unsaved_changes_prompt(
         if confirmed:
             await do_load(filepath, ctx, app)
 
-    prompt.show_prompt(msg, on_response)
+    command_line.show_confirmation_prompt(msg, on_response)
 
 
 async def show_non_empty_prompt(
     filepath: Path, ctx: "AppContext", app: "PlatyplatyApp"
 ) -> None:
     """Show confirmation prompt for clearing non-empty playlist."""
-    from platyplaty.ui.confirmation_prompt import ConfirmationPrompt
+    from platyplaty.ui.command_line import CommandLine
 
-    prompt = app.query_one(ConfirmationPrompt)
+    command_line = app.query_one("#command_line", CommandLine)
     msg = "Load selected playlist, clearing current playlist? (y/n)"
 
     async def on_response(confirmed: bool) -> None:
         if confirmed:
             await do_load(filepath, ctx, app)
 
-    prompt.show_prompt(msg, on_response)
+    command_line.show_confirmation_prompt(msg, on_response)
 
 
 async def do_load(
