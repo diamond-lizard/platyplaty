@@ -82,7 +82,7 @@ class PlatyplatyApp(App[None]):
         yield Static("", id="section_divider")
         yield PlaylistView(self.ctx.playlist, id="playlist")
         yield CommandLine(id="command_line")
-        yield StatusLine(id="status_line")
+        yield StatusLine(self.ctx.error_log, id="status_line")
         yield ErrorIndicator(self.ctx.error_log, id="error_indicator")
         yield ErrorView(self.ctx.error_log, id="error_view")
 
