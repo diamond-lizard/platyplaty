@@ -32,7 +32,7 @@ class CommandPrompt(Widget, can_focus=True):
     callback: Callable[[str], Awaitable[None]] | None = None
     previous_focus_id: str | None = None
     _blink_timer: Timer | None = None
-    scroll_offset: int = 0
+    _text_scroll: int = 0
 
     DEFAULT_CSS = """
     CommandPrompt {
@@ -53,7 +53,7 @@ class CommandPrompt(Widget, can_focus=True):
     ) -> None:
         """Display the command prompt and take focus."""
         self.input_text = initial_text
-        self.scroll_offset = 0
+        self._text_scroll = 0
         self.cursor_index = len(initial_text)
         self.callback = callback
         self.previous_focus_id = previous_focus_id
@@ -65,7 +65,7 @@ class CommandPrompt(Widget, can_focus=True):
         """Hide the prompt and return focus."""
         self.stop_blink_timer()
         self.input_text = ""
-        self.scroll_offset = 0
+        self._text_scroll = 0
         self.cursor_index = 0
         self.callback = None
         self.remove_class("visible")
@@ -109,20 +109,20 @@ class CommandPrompt(Widget, can_focus=True):
         if visible_width < 1:
             visible_width = 1
         cursor = self.cursor_index
-        if cursor > self.scroll_offset + visible_width - 1:
-            self.scroll_offset = cursor - visible_width + 1
-        elif cursor < self.scroll_offset:
-            self.scroll_offset = cursor
+        if cursor > self._text_scroll + visible_width - 1:
+            self._text_scroll = cursor - visible_width + 1
+        elif cursor < self._text_scroll:
+            self._text_scroll = cursor
 
     def update_cursor_with_scroll(self, new_cursor: int) -> None:
         """Update cursor position and scroll offset to keep cursor visible."""
         visible_width = self.size.width - 1  # Subtract 1 for ":" prefix
         if visible_width < 1:
             visible_width = 1
-        if new_cursor > self.scroll_offset + visible_width - 1:
-            self.scroll_offset = new_cursor - visible_width + 1
-        elif new_cursor < self.scroll_offset:
-            self.scroll_offset = new_cursor
+        if new_cursor > self._text_scroll + visible_width - 1:
+            self._text_scroll = new_cursor - visible_width + 1
+        elif new_cursor < self._text_scroll:
+            self._text_scroll = new_cursor
         self.cursor_index = new_cursor
 
     async def on_key(self, event: Key) -> None:
@@ -141,9 +141,9 @@ class CommandPrompt(Widget, can_focus=True):
         visible_width = width - 1  # Account for ":" prefix
         if visible_width < 0:
             visible_width = 0
-        end = self.scroll_offset + visible_width
-        visible_text = self.input_text[self.scroll_offset:end]
-        cursor_pos = self.cursor_index - self.scroll_offset
+        end = self._text_scroll + visible_width
+        visible_text = self.input_text[self._text_scroll:end]
+        cursor_pos = self.cursor_index - self._text_scroll
         segments = [Segment(":", PROMPT_STYLE)]
         if not self.cursor_visible or cursor_pos < 0 or cursor_pos > len(visible_text):
             segments.append(Segment(visible_text.ljust(visible_width), PROMPT_STYLE))
