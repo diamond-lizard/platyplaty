@@ -30,6 +30,7 @@ class CommandPrompt(Widget, can_focus=True):
     callback: Callable[[str], Awaitable[None]] | None = None
     previous_focus_id: str | None = None
     _blink_timer: Timer | None = None
+    scroll_offset: int = 0
 
     DEFAULT_CSS = """
     CommandPrompt {
@@ -50,6 +51,7 @@ class CommandPrompt(Widget, can_focus=True):
     ) -> None:
         """Display the command prompt and take focus."""
         self.input_text = initial_text
+        self.scroll_offset = 0
         self.cursor_index = len(initial_text)
         self.callback = callback
         self.previous_focus_id = previous_focus_id
@@ -61,6 +63,7 @@ class CommandPrompt(Widget, can_focus=True):
         """Hide the prompt and return focus."""
         self.stop_blink_timer()
         self.input_text = ""
+        self.scroll_offset = 0
         self.cursor_index = 0
         self.callback = None
         self.remove_class("visible")
@@ -97,6 +100,17 @@ class CommandPrompt(Widget, can_focus=True):
     def on_blur(self) -> None:
         """Stop blink timer on blur (defensive fallback for unexpected focus loss)."""
         self.stop_blink_timer(visible=False)
+
+    def update_cursor_with_scroll(self, new_cursor: int) -> None:
+        """Update cursor position and scroll offset to keep cursor visible."""
+        visible_width = self.size.width - 1  # Subtract 1 for ":" prefix
+        if visible_width < 1:
+            visible_width = 1
+        if new_cursor > self.scroll_offset + visible_width - 1:
+            self.scroll_offset = new_cursor - visible_width + 1
+        elif new_cursor < self.scroll_offset:
+            self.scroll_offset = new_cursor
+        self.cursor_index = new_cursor
 
     async def on_key(self, event: Key) -> None:
         """Handle key events for the command prompt."""

@@ -36,30 +36,30 @@ async def handle_command_key(
         return False
     if key == "left":
         if prompt.cursor_index > 0:
-            prompt.cursor_index -= 1
+            prompt.update_cursor_with_scroll(prompt.cursor_index - 1)
             return True
         return False
     if key == "right":
         if prompt.cursor_index < len(prompt.input_text):
-            prompt.cursor_index += 1
+            prompt.update_cursor_with_scroll(prompt.cursor_index + 1)
             return True
         return False
     if key == "home":
         if prompt.cursor_index > 0:
-            prompt.cursor_index = 0
+            prompt.update_cursor_with_scroll(0)
             return True
         return False
     if key == "end":
         text_len = len(prompt.input_text)
         if prompt.cursor_index < text_len:
-            prompt.cursor_index = text_len
+            prompt.update_cursor_with_scroll(text_len)
             return True
         return False
     if key == "backspace":
         idx = prompt.cursor_index
         if idx > 0:
             prompt.input_text = prompt.input_text[:idx-1] + prompt.input_text[idx:]
-            prompt.cursor_index = idx - 1
+            prompt.update_cursor_with_scroll(idx - 1)
             return True
         return False
     if key == "delete":
@@ -72,7 +72,7 @@ async def handle_command_key(
         idx = prompt.cursor_index
         text = prompt.input_text
         prompt.input_text = text[:idx] + character + text[idx:]
-        prompt.cursor_index = idx + 1
+        prompt.update_cursor_with_scroll(idx + 1)
         return True
     return False
 
