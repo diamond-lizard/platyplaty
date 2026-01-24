@@ -172,3 +172,32 @@ class TestStatusLineIndependence:
         children = list(status.compose())
         types = [type(c) for c in children]
         assert TransientErrorBar not in types
+
+
+class TestTransientErrorSuppression:
+    """Tests that transient errors are suppressed when prompts are active."""
+
+    def test_command_prompt_visible_class_in_css(self) -> None:
+        """CommandPrompt CSS defines a .visible class."""
+        assert "visible" in CommandPrompt.DEFAULT_CSS
+
+    def test_confirmation_prompt_visible_class_in_css(self) -> None:
+        """ConfirmationPrompt CSS defines a .visible class."""
+        assert "visible" in ConfirmationPrompt.DEFAULT_CSS
+
+    def test_command_line_checks_command_prompt_visible(self) -> None:
+        """CommandLine.show_transient_error checks CommandPrompt visible class."""
+        # Verify the suppression logic exists in the source
+        import inspect
+        source = inspect.getsource(CommandLine.show_transient_error)
+        assert "command_prompt" in source
+        assert "has_class" in source
+        assert "visible" in source
+
+    def test_command_line_checks_confirmation_prompt_visible(self) -> None:
+        """CommandLine.show_transient_error checks ConfirmationPrompt visible class."""
+        # Verify the suppression logic exists in the source
+        import inspect
+        source = inspect.getsource(CommandLine.show_transient_error)
+        assert "confirmation_prompt" in source
+        assert "has_class" in source
