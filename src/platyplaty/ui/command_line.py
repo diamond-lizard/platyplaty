@@ -8,6 +8,7 @@ appears at the very bottom of the terminal, with the Status Line above it.
 
 from collections.abc import Awaitable, Callable
 
+from textual.app import ComposeResult
 from textual.widget import Widget
 
 from platyplaty.ui.command_prompt import CommandPrompt
@@ -34,7 +35,7 @@ class CommandLine(Widget):
     }
     """
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Yield child widgets: CommandPrompt, TransientErrorBar, ConfirmationPrompt."""
         yield CommandPrompt(id="command_prompt")
         yield TransientErrorBar(id="transient_error")
