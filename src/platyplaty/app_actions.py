@@ -42,5 +42,5 @@ async def load_preset_by_direction(
         cmd_line = app.query_one("#command_line", CommandLine)
         cmd_line.show_transient_error(str(e))
         ctx.error_log.append(str(e))
-        from platyplaty.ui.error_indicator import update_error_indicator
-        update_error_indicator(app)
+        from platyplaty.ui.status_line import StatusLine
+        app.query_one("#status_line", StatusLine).update_error_indicator()

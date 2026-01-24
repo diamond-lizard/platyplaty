@@ -56,6 +56,6 @@ def _handle_clear_errors(view: ErrorView, context: AppContext) -> bool:
     """Handle clearing all errors."""
     context.error_log.clear()
     view.notify_errors_changed()
-    from platyplaty.ui.error_indicator import update_error_indicator
-    update_error_indicator(view.app)
+    from platyplaty.ui.status_line import StatusLine
+    view.app.query_one("#status_line", StatusLine).update_error_indicator()
     return True
