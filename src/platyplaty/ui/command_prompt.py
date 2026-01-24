@@ -141,7 +141,8 @@ class CommandPrompt(Widget, can_focus=True):
         visible_width = width - 1  # Account for ":" prefix
         if visible_width < 0:
             visible_width = 0
-        visible_text = self.input_text[self.scroll_offset:self.scroll_offset + visible_width]
+        end = self.scroll_offset + visible_width
+        visible_text = self.input_text[self.scroll_offset:end]
         cursor_pos = self.cursor_index - self.scroll_offset
         segments = [Segment(":", PROMPT_STYLE)]
         if not self.cursor_visible or cursor_pos < 0 or cursor_pos > len(visible_text):
