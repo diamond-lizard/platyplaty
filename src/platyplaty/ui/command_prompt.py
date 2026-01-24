@@ -10,9 +10,9 @@ from collections.abc import Awaitable, Callable
 from rich.segment import Segment
 from rich.style import Style
 from textual.events import Key
-from textual.timer import Timer
 from textual.reactive import reactive
 from textual.strip import Strip
+from textual.timer import Timer
 from textual.widget import Widget
 
 from platyplaty.ui.command_key import handle_command_key, return_focus_to_widget
