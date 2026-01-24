@@ -29,8 +29,7 @@ class TestClearErrors:
                 self.error_log = error_log
 
         context = MockContext()
-        patch_path = "platyplaty.ui.error_indicator.update_error_indicator"
-        with patch(patch_path), patch.object(type(view), 'app', MagicMock()):
+        with patch.object(type(view), 'app', MagicMock()):
             _handle_clear_errors(view, context)
         assert context.error_log == []
 
@@ -47,7 +46,6 @@ class TestClearErrors:
                 self.error_log = error_log
 
         context = MockContext()
-        patch_path = "platyplaty.ui.error_indicator.update_error_indicator"
-        with patch(patch_path), patch.object(type(view), 'app', MagicMock()):
+        with patch.object(type(view), 'app', MagicMock()):
             result = _handle_clear_errors(view, context)
         assert result is True

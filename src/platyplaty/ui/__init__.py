@@ -12,7 +12,6 @@ from platyplaty.ui.directory_types import (
     DirectoryListing,
     EntryType,
 )
-from platyplaty.ui.error_indicator import ErrorIndicator
 from platyplaty.ui.error_view import ErrorView
 from platyplaty.ui.file_browser import FileBrowser
 from platyplaty.ui.layout import (
@@ -37,7 +36,6 @@ __all__ = [
     "list_directory",
     "TransientErrorBar",
     "PlaylistView",
-    "ErrorIndicator",
     "StatusLine",
     "CommandPrompt",
     "ConfirmationPrompt",
