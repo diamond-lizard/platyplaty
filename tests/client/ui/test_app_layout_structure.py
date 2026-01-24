@@ -59,6 +59,13 @@ class TestAppLayoutWidgets:
         ids = [w.id for w in widgets]
         assert "section_divider" in ids
 
+    def test_compose_yields_command_line(self) -> None:
+        """App compose yields a CommandLine widget."""
+        app = make_test_app()
+        widgets = list(app.compose())
+        ids = [w.id for w in widgets]
+        assert "command_line" in ids
+
 
 class TestAppLayoutOrder:
     """Tests that widgets are in the correct order."""
@@ -83,3 +90,10 @@ class TestAppLayoutOrder:
         widgets = list(app.compose())
         ids = [w.id for w in widgets]
         assert ids.index("playlist") < ids.index("status_line")
+
+        def test_command_line_before_status_line(self) -> None:
+            """CommandLine comes before StatusLine in yield order."""
+            app = make_test_app()
+            widgets = list(app.compose())
+            ids = [w.id for w in widgets]
+            assert ids.index("command_line") < ids.index("status_line")
