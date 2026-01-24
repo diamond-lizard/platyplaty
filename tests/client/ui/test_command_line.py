@@ -84,3 +84,27 @@ class TestCommandLineChildren:
         children = list(widget.compose())
         prompt = next(c for c in children if isinstance(c, ConfirmationPrompt))
         assert prompt.id == "confirmation_prompt"
+
+
+class TestTransientErrorAppearance:
+    """Tests that transient errors appear on Command Line when triggered."""
+
+    def test_transient_error_bar_hidden_by_default(self) -> None:
+        """TransientErrorBar has display: none by default."""
+        assert "display: none" in TransientErrorBar.DEFAULT_CSS
+
+    def test_transient_error_bar_visible_class_shows_block(self) -> None:
+        """TransientErrorBar.visible class sets display: block."""
+        assert "display: block" in TransientErrorBar.DEFAULT_CSS
+
+    def test_show_error_adds_visible_class(self) -> None:
+        """TransientErrorBar.show_error() adds the 'visible' class."""
+        error_bar = TransientErrorBar()
+        error_bar.show_error("Test error")
+        assert error_bar.has_class("visible")
+
+    def test_show_error_sets_message(self) -> None:
+        """TransientErrorBar.show_error() sets the message attribute."""
+        error_bar = TransientErrorBar()
+        error_bar.show_error("Test error message")
+        assert error_bar.message == "Test error message"
