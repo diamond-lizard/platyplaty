@@ -19,6 +19,7 @@ async def show_command_prompt(ctx: "AppContext", app: "PlatyplatyApp") -> None:
         app: The Textual application.
     """
     from platyplaty.command_prompt_handler import create_command_callback
+    from platyplaty.focus_helpers import get_previous_focus_id
     from platyplaty.ui.command_line import CommandLine
 
     command_line = app.query_one(CommandLine)
@@ -26,18 +27,3 @@ async def show_command_prompt(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     previous_focus_id = get_previous_focus_id(ctx)
     command_line.show_command_prompt(callback, previous_focus_id)
 
-
-def get_previous_focus_id(ctx: "AppContext") -> str | None:
-    """Get the widget ID for the previously focused section.
-
-    Args:
-        ctx: Application context with current_focus.
-
-    Returns:
-        Widget ID string for the focused section.
-    """
-    if ctx.current_focus == "file_browser":
-        return "file_browser"
-    if ctx.current_focus == "playlist":
-        return "playlist"
-    return None

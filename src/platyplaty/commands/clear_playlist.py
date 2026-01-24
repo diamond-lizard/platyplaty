@@ -40,6 +40,7 @@ async def show_unsaved_changes_prompt(
 ) -> None:
     """Show confirmation prompt for unsaved changes."""
     from platyplaty.ui.command_line import CommandLine
+    from platyplaty.focus_helpers import get_previous_focus_id
 
     command_line = app.query_one("#command_line", CommandLine)
     msg = (
@@ -51,7 +52,8 @@ async def show_unsaved_changes_prompt(
         if confirmed:
             await perform_clear(ctx)
 
-    command_line.show_confirmation_prompt(msg, on_response)
+    previous_focus_id = get_previous_focus_id(ctx)
+    command_line.show_confirmation_prompt(msg, on_response, previous_focus_id)
 
 
 async def perform_clear(ctx: "AppContext") -> None:
