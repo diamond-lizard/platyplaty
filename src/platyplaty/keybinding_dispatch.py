@@ -99,12 +99,12 @@ async def show_command_prompt(ctx: "AppContext", app: "PlatyplatyApp") -> None:
         app: The Textual application.
     """
     from platyplaty.command_prompt_handler import create_command_callback
-    from platyplaty.ui.command_prompt import CommandPrompt
+    from platyplaty.ui.command_line import CommandLine
 
-    prompt = app.query_one(CommandPrompt)
+    command_line = app.query_one(CommandLine)
     callback = create_command_callback(ctx, app)
     previous_focus_id = get_previous_focus_id(ctx)
-    prompt.show_prompt(callback, previous_focus_id)
+    command_line.show_command_prompt(callback, previous_focus_id)
 
 
 def get_previous_focus_id(ctx: "AppContext") -> str | None:

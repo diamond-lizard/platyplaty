@@ -54,6 +54,9 @@ class CommandLine(Widget):
             previous_focus_id: Widget ID to return focus to on dismiss.
             initial_text: Initial text to populate the prompt with.
         """
+        error_bar = self.query_one("#transient_error", TransientErrorBar)
+        if error_bar.has_class("visible"):
+            error_bar.cancel_and_hide()
         prompt = self.query_one("#command_prompt", CommandPrompt)
         prompt.show_prompt(callback, previous_focus_id, initial_text)
 
