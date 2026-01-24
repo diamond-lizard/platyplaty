@@ -21,7 +21,6 @@ from platyplaty.ui.command_render import (
 )
 
 
-
 class CommandPrompt(Widget, can_focus=True):
     """A command prompt that accepts text input for commands."""
 
