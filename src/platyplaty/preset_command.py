@@ -31,4 +31,5 @@ async def send_load_preset(ctx: AppContext, path: Path | str) -> None:
         path: Preset file path (Path) or special URL like "idle://" (str).
     """
     ctx.preset_sent_to_renderer = path
+    assert ctx.client is not None, "Client must exist before loading preset"
     await ctx.client.send_command("LOAD PRESET", path=str(path))
