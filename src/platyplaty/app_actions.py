@@ -4,7 +4,6 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from platyplaty.socket_exceptions import RendererError
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
@@ -30,17 +29,17 @@ async def load_preset_by_direction(
             or playlist.previous).
         direction: Description for error messages ("next" or "previous").
     """
-    if not ctx.renderer_ready or not ctx.client or ctx.exiting:
+    if ctx.exiting:
         return
     path = get_preset()
     if path is None:
         return
-    try:
-        await ctx.client.send_command("LOAD PRESET", path=str(path))
-    except RendererError as e:
+    from platyplaty.preset_command import load_preset
+    success, error = await load_preset(ctx, app, path)
+    if not success and error is not None:
         from platyplaty.ui.command_line import CommandLine
         cmd_line = app.query_one("#command_line", CommandLine)
-        cmd_line.show_transient_error(str(e))
-        ctx.error_log.append(str(e))
+        cmd_line.show_transient_error(error)
+        ctx.error_log.append(error)
         from platyplaty.ui.status_line import StatusLine
         app.query_one("#status_line", StatusLine).update_error_indicator()

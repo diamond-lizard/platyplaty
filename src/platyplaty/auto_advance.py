@@ -8,7 +8,7 @@ import asyncio
 from contextlib import suppress
 from typing import TYPE_CHECKING
 
-from platyplaty.preset_loading import _run_advance_loop, _try_load_preset
+from platyplaty.preset_loading import _run_advance_loop, load_current_playlist_preset
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
@@ -30,7 +30,7 @@ async def load_preset_with_retry(ctx: "AppContext", app: "PlatyplatyApp") -> boo
     for _ in range(len(ctx.playlist.presets)):
         if ctx.exiting or not ctx.client:
             return False
-        if await _try_load_preset(ctx, app):
+        if await load_current_playlist_preset(ctx, app):
             return True
         if ctx.playlist.next() is None:
             break

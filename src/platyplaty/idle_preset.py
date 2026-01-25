@@ -10,16 +10,17 @@ if TYPE_CHECKING:
     from platyplaty.app_context import AppContext
 
 
-async def load_idle_preset(ctx: "AppContext") -> None:
+async def load_idle_preset(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     """Load the idle preset (no visualization).
-
-    Sends LOAD PRESET command with idle:// URL to the renderer.
-
+    
+    Uses load_preset for automatic renderer restart and crash tracking.
+    
     Args:
         ctx: The AppContext instance with runtime state.
+        app: The PlatyplatyApp instance.
     """
-    if ctx.client is not None:
-        await ctx.client.send_command("LOAD PRESET", path="idle://")
+    from platyplaty.preset_command import load_preset
+    await load_preset(ctx, app, "idle://")
 
 
 async def load_initial_preset(ctx: "AppContext", app: "PlatyplatyApp") -> None:
@@ -33,9 +34,9 @@ async def load_initial_preset(ctx: "AppContext", app: "PlatyplatyApp") -> None:
         app: The PlatyplatyApp instance for logging.
     """
     if not ctx.playlist.presets:
-        await load_idle_preset(ctx)
+        await load_idle_preset(ctx, app)
         return
     if await load_preset_with_retry(ctx, app):
         return
     app.post_message(LogMessage("All presets failed to load", level="warning"))
-    await load_idle_preset(ctx)
+    await load_idle_preset(ctx, app)

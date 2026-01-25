@@ -40,7 +40,7 @@ async def play_previous(ctx: AppContext, app: PlatyplatyApp) -> None:
 
 async def _play_by_delta(ctx: AppContext, app: PlatyplatyApp, delta: int) -> None:
     """Move selection and playing indicator by delta, then load preset."""
-    from platyplaty.autoplay_helpers import try_load_preset
+    from platyplaty.preset_command import load_preset
     from platyplaty.playlist_action_helpers import refresh_playlist_view
 
     playlist = ctx.playlist
@@ -53,12 +53,12 @@ async def _play_by_delta(ctx: AppContext, app: PlatyplatyApp, delta: int) -> Non
     playlist.set_selection(new_index)
     playlist.set_playing(new_index)
     refresh_playlist_view(app)
-    await try_load_preset(ctx, playlist.presets[new_index])
+    await load_preset(ctx, app, playlist.presets[new_index])
 
 
 async def play_selection(ctx: AppContext, app: PlatyplatyApp) -> None:
     """Play the currently selected preset in the playlist."""
-    from platyplaty.autoplay_helpers import try_load_preset
+    from platyplaty.preset_command import load_preset
     from platyplaty.playlist_action_helpers import refresh_playlist_view
     from platyplaty.ui.playlist_key import (
         is_autoplay_blocking,
@@ -74,7 +74,7 @@ async def play_selection(ctx: AppContext, app: PlatyplatyApp) -> None:
     current = playlist.get_selection()
     playlist.set_playing(current)
     refresh_playlist_view(app)
-    await try_load_preset(ctx, playlist.presets[current])
+    await load_preset(ctx, app, playlist.presets[current])
 
 
 async def toggle_autoplay(ctx: AppContext, app: PlatyplatyApp) -> None:

@@ -8,7 +8,6 @@ import asyncio
 from typing import TYPE_CHECKING
 
 from platyplaty.messages import LogMessage
-from platyplaty.socket_exceptions import RendererError
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
@@ -37,7 +36,7 @@ async def _process_one_advance_step(
         return ("break", consecutive_failures, 0.0)
 
     try:
-        success = await _try_load_preset(ctx, app)
+        success = await load_current_playlist_preset(ctx, app)
     except ConnectionError:
         if not ctx.exiting:
             ctx.exiting = True
@@ -80,23 +79,28 @@ async def _run_advance_loop(
         await asyncio.sleep(sleep_time)
 
 
-async def _try_load_preset(ctx: "AppContext", app: "PlatyplatyApp") -> bool:
-    """Try to load the current preset.
 
+async def load_current_playlist_preset(ctx: "AppContext", app: "PlatyplatyApp") -> bool:
+    """Load the current preset from the playlist.
+    
+    Gets the current preset path from ctx.playlist.current() and loads it
+    using load_preset, which handles renderer restart and crash tracking.
+    
     Args:
+        ctx: Application context with playlist and client.
         app: The Textual application instance.
-
+    
     Returns:
         True if successful, False otherwise.
     """
+    from platyplaty.preset_command import load_preset
+    
     preset_path = ctx.playlist.current()
-    if not ctx.client:
+    if preset_path is None:
         return False
-    try:
-        await ctx.client.send_command("LOAD PRESET", path=str(preset_path))
-        return True
-    except RendererError as e:
+    success, error = await load_preset(ctx, app, preset_path)
+    if error is not None:
         app.post_message(
-            LogMessage(f"Failed to load {preset_path}: {e}", level="warning")
+            LogMessage(f"Failed to load {preset_path}: {error}", level="warning")
         )
-        return False
+    return success

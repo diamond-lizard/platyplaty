@@ -4,10 +4,8 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from platyplaty.socket_exceptions import RendererError
 
 if TYPE_CHECKING:
-    from platyplaty.app_context import AppContext
     from platyplaty.playlist import Playlist
 
 
@@ -46,27 +44,6 @@ def validate_and_mark_broken(playlist: "Playlist", index: int) -> bool:
         return True
     playlist.broken_indices.add(index)
     return False
-
-async def try_load_preset(ctx: "AppContext", path: Path) -> tuple[bool, str | None]:
-    """Attempt to load a preset into the renderer.
-
-    Args:
-        ctx: Application context with client.
-        path: Path to the preset file.
-
-    Returns:
-        Tuple of (success, error_message). error_message is None on success
-        or validation failure, contains renderer error message on render error.
-    """
-    if not ctx.client:
-        return (False, None)
-    if not is_preset_playable(path):
-        return (False, None)
-    try:
-        await ctx.client.send_command("LOAD PRESET", path=str(path))
-        return (True, None)
-    except RendererError as e:
-        return (False, str(e))
 
 
 def find_next_playable(playlist: "Playlist", start_index: int) -> int | None:

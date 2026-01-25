@@ -23,13 +23,13 @@ def refresh_playlist_view(app: PlatyplatyApp) -> None:
         pass
 
 
-async def load_preset_at_index(ctx: AppContext, index: int) -> None:
-    """Load the preset at the given index."""
-    from platyplaty.autoplay_helpers import try_load_preset
-
-    playlist = ctx.playlist
-    if 0 <= index < len(playlist.presets):
-        await try_load_preset(ctx, playlist.presets[index])
+    async def load_preset_at_index(ctx: AppContext, app: PlatyplatyApp, index: int) -> None:
+        """Load the preset at the given index."""
+        from platyplaty.preset_command import load_preset
+        
+        playlist = ctx.playlist
+        if 0 <= index < len(playlist.presets):
+            await load_preset(ctx, app, playlist.presets[index])
 
 
 def scroll_playlist_to_playing(app: PlatyplatyApp) -> None:
@@ -67,9 +67,9 @@ def find_preset_index(playlist: Playlist, path: Path) -> int | None:
     return indices[0]
 
 
-async def autoplay_first_preset(ctx: AppContext) -> None:
-    """Load and play the first preset in the playlist."""
-    playlist = ctx.playlist
-    playlist.set_selection(0)
-    playlist.set_playing(0)
-    await load_preset_at_index(ctx, 0)
+    async def autoplay_first_preset(ctx: AppContext, app: PlatyplatyApp) -> None:
+        """Load and play the first preset in the playlist."""
+        playlist = ctx.playlist
+        playlist.set_selection(0)
+        playlist.set_playing(0)
+        await load_preset_at_index(ctx, app, 0)

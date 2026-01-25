@@ -46,11 +46,11 @@ async def _preview_milk_preset(browser: FileBrowser, path: Path) -> None:
         browser: The file browser instance.
         path: Path to the preset file.
     """
-    from platyplaty.autoplay_helpers import try_load_preset
+    from platyplaty.preset_command import load_preset
 
     ctx = browser.platyplaty_app.ctx
     _stop_autoplay_if_running(ctx)
-    success, error = await try_load_preset(ctx, path)
+    success, error = await load_preset(ctx, browser.platyplaty_app, path)
     if not success and error:
         show_transient_error(browser, error)
     if success:
