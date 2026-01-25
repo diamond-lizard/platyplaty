@@ -37,13 +37,13 @@ async def advance_playlist_to_next(
     playlist.set_playing(next_index)
     playlist.set_selection(next_index)
     success, error = await load_preset(ctx, app, playlist.presets[next_index])
-        if not success and error is not None:
-            # Don't mark preset as broken if renderer died (Broken pipe)
-            # The crash handler will deal with marking the actual crashed preset
-            if "Broken pipe" in error or "BrokenPipeError" in error:
-                ctx.error_log.append(error)
-                return False
-            playlist.broken_indices.add(next_index)
+    if not success and error is not None:
+        # Don't mark preset as broken if renderer died (Broken pipe)
+        # The crash handler will deal with marking the actual crashed preset
+        if "Broken pipe" in error or "BrokenPipeError" in error:
             ctx.error_log.append(error)
-            return await advance_playlist_to_next(ctx, app, playlist)
+            return False
+        playlist.broken_indices.add(next_index)
+        ctx.error_log.append(error)
+        return await advance_playlist_to_next(ctx, app, playlist)
     return success
