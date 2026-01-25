@@ -62,7 +62,7 @@ class TestAutoplayErrors:
             side_effect=RendererError("Renderer error")
         )
 
-        with patch("platyplaty.preset_command.is_preset_playable", return_value=True):
+        with patch("platyplaty.autoplay_helpers.is_preset_playable", return_value=True):
             success, error = await load_preset(ctx, MagicMock(), Path("/test/preset.milk"))
 
         assert success is False
