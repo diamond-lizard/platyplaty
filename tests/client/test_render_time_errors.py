@@ -32,12 +32,15 @@ class TestManualPlaybackErrors:
         ctx.client.send_command = AsyncMock(
             side_effect=RendererError("Failed to load preset")
         )
+        ctx.renderer_process = MagicMock()
+        ctx.renderer_process.returncode = None
 
         app = MagicMock()
         app.query_one = MagicMock(return_value=MagicMock())
         get_preset = MagicMock(return_value=Path("/test/preset.milk"))
 
-        await load_preset_by_direction(ctx, app, get_preset, "next")
+        with patch("platyplaty.preset_command.is_preset_playable", return_value=True):
+            await load_preset_by_direction(ctx, app, get_preset, "next")
 
         assert len(ctx.error_log) == 1
         assert "Failed to load preset" in ctx.error_log[0]
