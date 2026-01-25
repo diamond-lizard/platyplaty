@@ -14,6 +14,7 @@ from textual.widget import Widget
 from platyplaty.ui.command_prompt import CommandPrompt
 from platyplaty.ui.confirmation_prompt import ConfirmationPrompt
 from platyplaty.ui.transient_error import TransientErrorBar
+from platyplaty.ui.persistent_message import PersistentMessage
 
 
 class CommandLine(Widget):
@@ -39,6 +40,7 @@ class CommandLine(Widget):
         yield CommandPrompt(id="command_prompt")
         yield TransientErrorBar(id="transient_error")
         yield ConfirmationPrompt(id="confirmation_prompt")
+        yield PersistentMessage(id="persistent_message")
 
     def show_command_prompt(
         self,
@@ -90,3 +92,15 @@ class CommandLine(Widget):
             return
         error_bar = self.query_one("#transient_error", TransientErrorBar)
         error_bar.show_error(message)
+
+    def show_persistent_message(self, message: str) -> None:
+        """Display a persistent message until dismissed.
+
+        Args:
+            message: The message to display.
+        """
+        error_bar = self.query_one("#transient_error", TransientErrorBar)
+        if error_bar.has_class("visible"):
+            error_bar.cancel_and_hide()
+        persistent = self.query_one("#persistent_message", PersistentMessage)
+        persistent.show_message(message)
