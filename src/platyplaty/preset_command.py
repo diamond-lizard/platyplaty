@@ -42,18 +42,18 @@ async def load_preset(
     path: Path | str,
 ) -> tuple[bool, str | None]:
     """Load a preset into the renderer with automatic restart.
-    
+
     This is the main entry point for loading presets. It handles:
     1. Skipping bad/missing presets (for file paths)
     2. Restarting the renderer if it has crashed
     3. Crash tracking via send_load_preset
     4. Showing window and setting fullscreen on success
-    
+
     Args:
         ctx: Application context with renderer state.
         app: The Textual application instance.
         path: Preset file path (Path) or special URL like "idle://" (str).
-    
+
     Returns:
         Tuple of (success, error_message). error_message is None on success,
         validation failure, or renderer start failure; contains renderer

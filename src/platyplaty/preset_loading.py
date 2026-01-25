@@ -82,14 +82,14 @@ async def _run_advance_loop(
 
 async def load_current_playlist_preset(ctx: "AppContext", app: "PlatyplatyApp") -> bool:
     """Load the current preset from the playlist.
-    
+
     Gets the current preset path from ctx.playlist.current() and loads it
     using load_preset, which handles renderer restart and crash tracking.
-    
+
     Args:
         ctx: Application context with playlist and client.
         app: The Textual application instance.
-    
+
     Returns:
         True if successful, False otherwise.
     """

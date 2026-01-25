@@ -12,9 +12,9 @@ if TYPE_CHECKING:
 
 async def load_idle_preset(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     """Load the idle preset (no visualization).
-    
+
     Uses load_preset for automatic renderer restart and crash tracking.
-    
+
     Args:
         ctx: The AppContext instance with runtime state.
         app: The PlatyplatyApp instance.

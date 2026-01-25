@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 async def ensure_renderer_running(ctx: "AppContext", app: "PlatyplatyApp") -> bool:
     """Ensure the renderer is running, restarting it if necessary.
-    
+
     If the renderer process is already running, returns True immediately.
     If the renderer has crashed or never started, this function will:
     1. Start a new renderer process
@@ -23,11 +23,11 @@ async def ensure_renderer_running(ctx: "AppContext", app: "PlatyplatyApp") -> bo
     3. Send CHANGE AUDIO SOURCE and INIT commands
     4. Start a new stderr_monitor_task worker
     5. Set ctx.renderer_ready = True
-    
+
     Args:
         ctx: Application context with renderer state.
         app: The Textual application instance for run_worker.
-    
+
     Returns:
         True if renderer is running (either already was or successfully
         restarted), False if restart failed.
