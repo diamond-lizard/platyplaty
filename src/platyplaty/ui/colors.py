@@ -21,6 +21,10 @@ DIMMED_COLOR = "bright_black"
 EMPTY_MESSAGE_BG = "red"
 EMPTY_MESSAGE_FG = "white"
 
+# Bad preset colors (crashed the renderer)
+BAD_PRESET_FG = "black"
+BAD_PRESET_BG = "red"
+
 # Selected item color (path display)
 SELECTED_COLOR = "bright_white"
 
