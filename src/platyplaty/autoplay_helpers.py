@@ -21,8 +21,8 @@ def is_preset_playable(path: Path) -> bool:
         True if the file exists, is readable, is not a broken symlink,
         and has not been marked as bad (crashed the renderer).
     """
-    from platyplaty.preset_validator import is_valid_preset
     from platyplaty.bad_presets import is_preset_bad
+    from platyplaty.preset_validator import is_valid_preset
     if is_preset_bad(path):
         return False
     return is_valid_preset(path)
