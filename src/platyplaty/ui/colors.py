@@ -22,8 +22,8 @@ EMPTY_MESSAGE_BG = "red"
 EMPTY_MESSAGE_FG = "white"
 
 # Bad preset colors (crashed the renderer)
-BAD_PRESET_FG = "black"
-BAD_PRESET_BG = "red"
+BAD_PRESET_FG = "red"
+BAD_PRESET_BG = "black"
 
 # Selected item color (path display)
 SELECTED_COLOR = "bright_white"
