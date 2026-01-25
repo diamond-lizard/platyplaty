@@ -37,6 +37,10 @@ async def perform_startup(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     await ctx.client.send_command("INIT")
     ctx.renderer_ready = True
 
+    # Create autoplay manager
+    from platyplaty.autoplay_manager import AutoplayManager
+    ctx.autoplay_manager = AutoplayManager(ctx, app, ctx.config.preset_duration)
+
     # Load initial preset (or idle if playlist is empty)
     await load_initial_preset(ctx, app)
 
