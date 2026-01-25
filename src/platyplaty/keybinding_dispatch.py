@@ -71,7 +71,7 @@ async def dispatch_focused_key_event(
     # Clear any persistent message before processing keys
     cmd_line = app.query_one("#command_line", CommandLine)
     cmd_line.clear_persistent_message()
-    
+
     # Handle ":" key for command prompt (not configurable, per TASK-15500)
     if key == "colon":
         await show_command_prompt(ctx, app)
@@ -95,5 +95,3 @@ async def dispatch_focused_key_event(
             key, ctx.error_view_dispatch_table, ctx, app
         )
     return False
-
-
