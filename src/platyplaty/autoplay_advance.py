@@ -3,14 +3,16 @@
 
 from typing import TYPE_CHECKING
 
-from platyplaty.autoplay_helpers import find_next_playable, try_load_preset
+from platyplaty.autoplay_helpers import find_next_playable
+from platyplaty.preset_command import load_preset
 
 if TYPE_CHECKING:
     from platyplaty.app_context import AppContext
     from platyplaty.playlist import Playlist
+    from platyplaty.app import PlatyplatyApp
 
 
-async def advance_playlist_to_next(ctx: "AppContext", playlist: "Playlist") -> bool:
+async def advance_playlist_to_next(ctx: "AppContext", app: "PlatyplatyApp", playlist: "Playlist") -> bool:
     """Advance to the next preset in the playlist.
 
     Handles looping and skipping of broken presets.
@@ -32,9 +34,9 @@ async def advance_playlist_to_next(ctx: "AppContext", playlist: "Playlist") -> b
         return True  # Single-preset playlist, don't reload
     playlist.set_playing(next_index)
     playlist.set_selection(next_index)
-    success, error = await try_load_preset(ctx, playlist.presets[next_index])
+    success, error = await load_preset(ctx, app, playlist.presets[next_index])
     if not success and error is not None:
         playlist.broken_indices.add(next_index)
         ctx.error_log.append(error)
-        return await advance_playlist_to_next(ctx, playlist)
+        return await advance_playlist_to_next(ctx, app, playlist)
     return success

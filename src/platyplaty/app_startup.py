@@ -19,7 +19,6 @@ async def perform_startup(ctx: "AppContext", app: "PlatyplatyApp") -> None:
 
     Stage A: Start renderer, connect socket, send initial commands.
     Stage B: Start background workers.
-    Stage C: Show window and optionally go fullscreen.
 
     Args:
         ctx: The AppContext instance with runtime state.
@@ -45,10 +44,6 @@ async def perform_startup(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     app.run_worker(stderr_monitor_task(ctx, app), name="stderr_monitor")
     app.run_worker(auto_advance_loop(ctx, app), name="auto_advance")
 
-    # Stage C: Send final startup commands
-    await ctx.client.send_command("SHOW WINDOW")
-    if ctx.config.fullscreen:
-        await ctx.client.send_command("SET FULLSCREEN", enabled=True)
 
 
 async def cleanup_on_startup_failure(ctx: "AppContext") -> None:

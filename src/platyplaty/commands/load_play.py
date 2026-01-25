@@ -36,7 +36,7 @@ async def play_first_preset(ctx: "AppContext", app: "PlatyplatyApp") -> None:
         app: The Textual application.
     """
     from platyplaty.autoplay_start import start_from_first_preset
-    await start_from_first_preset(ctx, ctx.playlist)
+    await start_from_first_preset(ctx, app, ctx.playlist)
 
 
 def handle_autoplay_continuation(ctx: "AppContext") -> None:

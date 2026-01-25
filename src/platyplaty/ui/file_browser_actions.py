@@ -65,7 +65,7 @@ async def _handle_add_milk_preset(browser: FileBrowser, entry: DirectoryEntry) -
     push_undo_snapshot(ctx)
     ctx.playlist.add_preset(path)
     if was_empty:
-        await autoplay_first_preset(ctx)
+        await autoplay_first_preset(ctx, browser.platyplaty_app)
     refresh_playlist_view(browser.platyplaty_app)
 
 

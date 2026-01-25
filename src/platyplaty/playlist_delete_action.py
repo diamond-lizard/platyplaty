@@ -41,7 +41,7 @@ async def delete_from_playlist(ctx: AppContext, app: PlatyplatyApp) -> None:
     playlist.set_selection(new_selection)
     if was_playing:
         playlist.set_playing(new_selection)
-        await load_preset_at_index(ctx, new_selection)
+        await load_preset_at_index(ctx, app, new_selection)
     elif playing is not None and playing > current:
         playlist.set_playing(playing - 1)
     refresh_playlist_view(app)

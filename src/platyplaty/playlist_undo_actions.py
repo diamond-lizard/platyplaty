@@ -35,7 +35,7 @@ async def undo(ctx: AppContext, app: PlatyplatyApp) -> None:
         restore_snapshot(ctx.playlist, previous)
         playing_idx = ctx.playlist.get_playing()
         if playing_idx is not None:
-            await load_preset_at_index(ctx, playing_idx)
+            await load_preset_at_index(ctx, app, playing_idx)
         # TODO: Phase 2300 - load idle preset when playing_index is None
         refresh_playlist_view(app)
 
@@ -66,6 +66,6 @@ async def redo(ctx: AppContext, app: PlatyplatyApp) -> None:
         restore_snapshot(ctx.playlist, next_state)
         playing_idx = ctx.playlist.get_playing()
         if playing_idx is not None:
-            await load_preset_at_index(ctx, playing_idx)
+            await load_preset_at_index(ctx, app, playing_idx)
         # TODO: Phase 2300 - load idle preset when playing_index is None
         refresh_playlist_view(app)
