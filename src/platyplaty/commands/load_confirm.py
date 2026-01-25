@@ -44,8 +44,8 @@ async def show_unsaved_changes_prompt(
     filepath: Path, ctx: "AppContext", app: "PlatyplatyApp"
 ) -> None:
     """Show confirmation prompt for unsaved changes before loading."""
-    from platyplaty.ui.command_line import CommandLine
     from platyplaty.focus_helpers import get_previous_focus_id
+    from platyplaty.ui.command_line import CommandLine
 
     command_line = app.query_one("#command_line", CommandLine)
     msg = (
@@ -65,8 +65,8 @@ async def show_non_empty_prompt(
     filepath: Path, ctx: "AppContext", app: "PlatyplatyApp"
 ) -> None:
     """Show confirmation prompt for clearing non-empty playlist."""
-    from platyplaty.ui.command_line import CommandLine
     from platyplaty.focus_helpers import get_previous_focus_id
+    from platyplaty.ui.command_line import CommandLine
 
     command_line = app.query_one("#command_line", CommandLine)
     msg = "Load selected playlist, clearing current playlist? (y/n)"

@@ -6,7 +6,6 @@ text on a red background.
 """
 
 from rich.segment import Segment
-from rich.style import Style
 from textual.reactive import reactive
 from textual.strip import Strip
 from textual.widget import Widget

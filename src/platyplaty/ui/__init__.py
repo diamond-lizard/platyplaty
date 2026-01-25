@@ -21,8 +21,8 @@ from platyplaty.ui.layout import (
     calculate_pane_widths,
     calculate_standard_widths,
 )
-from platyplaty.ui.playlist_view import PlaylistView
 from platyplaty.ui.persistent_message import PersistentMessage
+from platyplaty.ui.playlist_view import PlaylistView
 from platyplaty.ui.status_line import StatusLine
 from platyplaty.ui.transient_error import TransientErrorBar
 

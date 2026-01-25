@@ -13,8 +13,8 @@ from textual.widget import Widget
 
 from platyplaty.ui.command_prompt import CommandPrompt
 from platyplaty.ui.confirmation_prompt import ConfirmationPrompt
-from platyplaty.ui.transient_error import TransientErrorBar
 from platyplaty.ui.persistent_message import PersistentMessage
+from platyplaty.ui.transient_error import TransientErrorBar
 
 
 class CommandLine(Widget):

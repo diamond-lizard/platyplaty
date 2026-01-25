@@ -24,8 +24,8 @@ async def handle_quit(ctx: "AppContext", app: "PlatyplatyApp") -> None:
         ctx: Application context.
         app: The Textual application.
     """
-    from platyplaty.ui.command_line import CommandLine
     from platyplaty.focus_helpers import get_previous_focus_id
+    from platyplaty.ui.command_line import CommandLine
 
     command_line = app.query_one("#command_line", CommandLine)
     message = PROMPT_QUIT_UNSAVED if ctx.playlist.dirty_flag else PROMPT_QUIT

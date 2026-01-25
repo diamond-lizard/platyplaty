@@ -64,8 +64,8 @@ async def show_overwrite_prompt(
     filepath: Path, ctx: "AppContext", app: "PlatyplatyApp"
 ) -> None:
     """Show confirmation prompt for overwriting existing file."""
-    from platyplaty.ui.command_line import CommandLine
     from platyplaty.focus_helpers import get_previous_focus_id
+    from platyplaty.ui.command_line import CommandLine
 
     command_line = app.query_one("#command_line", CommandLine)
     msg = "File exists. Overwrite? (y/n)"
