@@ -11,7 +11,6 @@ users to retry presets that may work after libprojectM updates.
 """
 from pathlib import Path
 
-
 _bad_presets: set[Path] = set()
 
 

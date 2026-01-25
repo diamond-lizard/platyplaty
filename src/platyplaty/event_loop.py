@@ -9,6 +9,7 @@ import asyncio
 from typing import TYPE_CHECKING
 
 from textual.events import Key
+
 from platyplaty.messages import LogMessage
 from platyplaty.netstring_reader import read_netstrings_from_stderr
 from platyplaty.stderr_parser import parse_stderr_event

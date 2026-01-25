@@ -4,8 +4,8 @@
 from __future__ import annotations
 
 import asyncio
-from pathlib import Path
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from platyplaty.build_dispatch_tables import (
