@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from platyplaty.autoplay_helpers import find_next_playable
 from platyplaty.preset_command import load_preset
+from platyplaty.playlist_action_helpers import refresh_playlist_view
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
@@ -36,6 +37,7 @@ async def advance_playlist_to_next(
         return True  # Single-preset playlist, don't reload
     playlist.set_playing(next_index)
     playlist.set_selection(next_index)
+    refresh_playlist_view(app)
     success, error = await load_preset(ctx, app, playlist.presets[next_index])
     if not success and error is not None:
         # Don't mark preset as broken if renderer died (Broken pipe)
