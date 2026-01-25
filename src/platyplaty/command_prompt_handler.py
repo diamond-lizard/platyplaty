@@ -60,13 +60,14 @@ def create_command_callback(
         if success:
             prompt.hide()
         else:
+            prompt.hide()
             show_command_error(app, error)
 
     return callback
 
 
 def show_command_error(app: "PlatyplatyApp", error: str | None) -> None:
-    """Show an error message via the transient error bar.
+    """Show an error message via the persistent message display.
 
     Args:
         app: The Textual application.
@@ -75,4 +76,4 @@ def show_command_error(app: "PlatyplatyApp", error: str | None) -> None:
     from platyplaty.ui.command_line import CommandLine
 
     cmd_line = app.query_one("#command_line", CommandLine)
-    cmd_line.show_transient_error(error or "Unknown error")
+    cmd_line.show_persistent_message(error or "Unknown error")
