@@ -2,6 +2,10 @@
 """Helper functions for managing broken preset indices in playlists."""
 
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from platyplaty.playlist import Playlist
 
 
 def validate_new_preset(broken_indices: set[int], path: Path, new_index: int) -> None:
@@ -52,3 +56,21 @@ def swap_broken_indices(broken_indices: set[int], idx1: int, idx2: int) -> None:
         return
     broken_indices.discard(idx2)
     broken_indices.add(idx1)
+
+
+def mark_all_matching_as_broken(playlist: "Playlist", path: Path) -> None:
+    """Mark all playlist entries matching the given path as broken.
+
+    Iterates through playlist.presets and for each preset that resolves
+    to the same path as the input, adds its index to playlist.broken_indices.
+    Uses path.resolve() so symlinks pointing to the same target file are
+    handled correctly.
+
+    Args:
+        playlist: The Playlist instance to update.
+        path: Path to the preset that should be marked as broken.
+    """
+    resolved_path = path.resolve()
+    for index, preset_path in enumerate(playlist.presets):
+        if preset_path.resolve() == resolved_path:
+            playlist.broken_indices.add(index)
