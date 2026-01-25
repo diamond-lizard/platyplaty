@@ -14,6 +14,7 @@ from platyplaty.messages import LogMessage
 from platyplaty.netstring_reader import read_netstrings_from_stderr
 from platyplaty.stderr_parser import parse_stderr_event
 from platyplaty.types import StderrEvent
+from platyplaty.crash_handler import handle_renderer_crash
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
@@ -79,8 +80,18 @@ async def stderr_monitor_task(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     except asyncio.CancelledError:
         pass  # Normal shutdown via Textual worker cancellation
 
-    # Renderer process exited - trigger shutdown
-    if not ctx.exiting:
-        ctx.exiting = True
-        app.exit()
+    # Ensure process fully terminated before handling crash
+    await ctx.renderer_process.wait()
 
+    # Deliberate exit (QUIT/DISCONNECT) - do nothing
+    if ctx.exiting:
+        return
+
+    # Renderer crashed - check if preset was involved
+    if ctx.preset_sent_to_renderer is not None:
+        # Preset crash - handle recovery
+        await handle_renderer_crash(ctx, app)
+    else:
+        # Non-preset crash - exit the application
+        ctx.exiting = True
+        app.exit(message="Renderer crashed unexpectedly", return_code=1)
