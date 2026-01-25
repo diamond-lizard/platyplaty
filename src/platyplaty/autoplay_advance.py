@@ -12,7 +12,9 @@ if TYPE_CHECKING:
     from platyplaty.playlist import Playlist
 
 
-async def advance_playlist_to_next(ctx: "AppContext", app: "PlatyplatyApp", playlist: "Playlist") -> bool:
+async def advance_playlist_to_next(
+    ctx: "AppContext", app: "PlatyplatyApp", playlist: "Playlist"
+) -> bool:
     """Advance to the next preset in the playlist.
 
     Handles looping and skipping of broken presets.

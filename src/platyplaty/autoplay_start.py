@@ -34,7 +34,9 @@ async def load_first_preset(
     return await try_advance_after_error(ctx, app, playlist)
 
 
-async def try_advance_after_error(ctx: "AppContext", app: "PlatyplatyApp", playlist: "Playlist") -> bool:
+async def try_advance_after_error(
+    ctx: "AppContext", app: "PlatyplatyApp", playlist: "Playlist"
+) -> bool:
     """Try to advance to the next playable preset after an error.
 
     Args:
@@ -57,7 +59,9 @@ def handle_start_failure(app: "PlatyplatyApp") -> None:
     show_no_playable_error(app)
 
 
-async def start_from_first_preset(ctx: "AppContext", app: "PlatyplatyApp", playlist: "Playlist") -> bool:
+async def start_from_first_preset(
+    ctx: "AppContext", app: "PlatyplatyApp", playlist: "Playlist"
+) -> bool:
     """Find the first playable preset and start playing it.
 
     Sets selection and playing indices before loading.

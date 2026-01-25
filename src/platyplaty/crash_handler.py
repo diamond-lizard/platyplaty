@@ -60,7 +60,8 @@ async def handle_renderer_crash(ctx: "AppContext", app: "PlatyplatyApp") -> None
 
     # Show persistent message
     command_line = app.query_one("#command_line", CommandLine)
-    command_line.show_persistent_message("Renderer crashed. Load a preset to restart it.")
+    message = "Renderer crashed. Load a preset to restart it."
+    command_line.show_persistent_message(message)
 
     # Refresh playlist view to show broken styling
     refresh_playlist_view(app)

@@ -106,7 +106,9 @@ class AutoplayManager:
     async def advance_to_next(self) -> bool:
         """Advance to the next preset in the playlist."""
         from platyplaty.autoplay_advance import advance_playlist_to_next
-        success = await advance_playlist_to_next(self._ctx, self._app, self._ctx.playlist)
+        success = await advance_playlist_to_next(
+            self._ctx, self._app, self._ctx.playlist
+        )
         from platyplaty.ui.status_line import StatusLine
         self._app.query_one("#status_line", StatusLine).update_error_indicator()
         return success
