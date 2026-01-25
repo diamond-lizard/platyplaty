@@ -58,6 +58,7 @@ class CommandLine(Widget):
         error_bar = self.query_one("#transient_error", TransientErrorBar)
         if error_bar.has_class("visible"):
             error_bar.cancel_and_hide()
+        self.clear_persistent_message()
         prompt = self.query_one("#command_prompt", CommandPrompt)
         prompt.show_prompt(callback, previous_focus_id, initial_text)
 
@@ -77,6 +78,7 @@ class CommandLine(Widget):
         error_bar = self.query_one("#transient_error", TransientErrorBar)
         if error_bar.has_class("visible"):
             error_bar.cancel_and_hide()
+        self.clear_persistent_message()
         prompt = self.query_one("#confirmation_prompt", ConfirmationPrompt)
         prompt.show_prompt(message, callback, previous_focus_id)
 
@@ -86,6 +88,7 @@ class CommandLine(Widget):
         Args:
             message: The error message to display briefly.
         """
+        self.clear_persistent_message()
         cmd_prompt = self.query_one("#command_prompt", CommandPrompt)
         confirm_prompt = self.query_one("#confirmation_prompt", ConfirmationPrompt)
         if cmd_prompt.has_class("visible") or confirm_prompt.has_class("visible"):
@@ -104,3 +107,9 @@ class CommandLine(Widget):
             error_bar.cancel_and_hide()
         persistent = self.query_one("#persistent_message", PersistentMessage)
         persistent.show_message(message)
+
+    def clear_persistent_message(self) -> None:
+        """Clear any visible persistent message."""
+        persistent = self.query_one("#persistent_message", PersistentMessage)
+        if persistent.has_class("visible"):
+            persistent.clear_message()
