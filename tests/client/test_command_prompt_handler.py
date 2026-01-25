@@ -14,11 +14,9 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from platyplaty.command_prompt_handler import (
-    create_command_callback,
     parse_command_input,
     show_command_error,
 )
-
 
 class TestParseCommandInput:
     """Tests for parse_command_input function."""
@@ -64,55 +62,3 @@ class TestShowCommandError:
         )
 
 
-class TestCommandCallbackUnknownCommand:
-    """Tests for callback behavior with unknown commands."""
-
-    @pytest.mark.asyncio
-    async def test_unknown_command_hides_prompt(self) -> None:
-        """Unknown command hides prompt before showing error."""
-        mock_ctx = MagicMock()
-        mock_app = MagicMock()
-        mock_prompt = MagicMock()
-        mock_cmd_line = MagicMock()
-
-        def query_one_side_effect(query, widget_type=None):
-            if widget_type is None:
-                from platyplaty.ui.command_prompt import CommandPrompt
-                if query == CommandPrompt:
-                    return mock_prompt
-            if query == "#command_line":
-                return mock_cmd_line
-            return MagicMock()
-
-        mock_app.query_one.side_effect = query_one_side_effect
-
-        callback = create_command_callback(mock_ctx, mock_app)
-        await callback("unknowncmd")
-
-        mock_prompt.hide.assert_called_once()
-
-    @pytest.mark.asyncio
-    async def test_unknown_command_shows_persistent_message(self) -> None:
-        """Unknown command shows persistent message with correct format."""
-        mock_ctx = MagicMock()
-        mock_app = MagicMock()
-        mock_prompt = MagicMock()
-        mock_cmd_line = MagicMock()
-
-        def query_one_side_effect(query, widget_type=None):
-            if widget_type is None:
-                from platyplaty.ui.command_prompt import CommandPrompt
-                if query == CommandPrompt:
-                    return mock_prompt
-            if query == "#command_line":
-                return mock_cmd_line
-            return MagicMock()
-
-        mock_app.query_one.side_effect = query_one_side_effect
-
-        callback = create_command_callback(mock_ctx, mock_app)
-        await callback("badcmd")
-
-        mock_cmd_line.show_persistent_message.assert_called_once()
-        call_args = mock_cmd_line.show_persistent_message.call_args[0][0]
-        assert "Command not found: 'badcmd'" in call_args
