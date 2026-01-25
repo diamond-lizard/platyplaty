@@ -87,6 +87,13 @@ async def toggle_autoplay(ctx: AppContext, app: PlatyplatyApp) -> None:
     if autoplay_mgr is None:
         return
     await autoplay_mgr.toggle_autoplay()
+    from platyplaty.ui.status_line import StatusLine
+    status_line = app.query_one("#status_line", StatusLine)
+    status_line.update_state(
+        autoplay_mgr.autoplay_enabled,
+        ctx.playlist.file_path,
+        ctx.playlist.dirty,
+    )
     refresh_playlist_view(app)
 
 
