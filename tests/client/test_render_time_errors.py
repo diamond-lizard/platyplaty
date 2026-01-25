@@ -61,6 +61,8 @@ class TestAutoplayErrors:
         ctx.client.send_command = AsyncMock(
             side_effect=RendererError("Renderer error")
         )
+        ctx.renderer_process = MagicMock()
+        ctx.renderer_process.returncode = None
 
         with patch("platyplaty.autoplay_helpers.is_preset_playable", return_value=True):
             success, error = await load_preset(ctx, MagicMock(), Path("/test/preset.milk"))
