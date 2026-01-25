@@ -20,6 +20,8 @@ def mock_context() -> MagicMock:
     ctx.playlist = Playlist([Path("/test/a.milk"), Path("/test/b.milk")])
     ctx.client = AsyncMock()
     ctx.client.send_command = AsyncMock()
+    ctx.renderer_process = MagicMock()
+    ctx.renderer_process.returncode = None
     return ctx
 
 
