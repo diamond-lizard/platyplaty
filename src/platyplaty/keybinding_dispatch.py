@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 from platyplaty.command_prompt_show import show_command_prompt
 from platyplaty.dispatch_tables import DispatchTable
+from platyplaty.ui import CommandLine
 
 
 async def dispatch_key_event(
@@ -67,6 +68,10 @@ async def dispatch_focused_key_event(
     Returns:
         True if key was bound and action invoked, False otherwise.
     """
+    # Clear any persistent message before processing keys
+    cmd_line = app.query_one("#command_line", CommandLine)
+    cmd_line.clear_persistent_message()
+    
     # Handle ":" key for command prompt (not configurable, per TASK-15500)
     if key == "colon":
         await show_command_prompt(ctx, app)
