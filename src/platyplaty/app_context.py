@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import asyncio
+from pathlib import Path
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -50,6 +51,9 @@ class AppContext:
         error_view_dispatch_table: Maps error view keys to action names.
         undo_manager: Manages undo/redo stacks for playlist operations.
         autoplay_manager: Manages autoplay toggle and timer, or None.
+        preset_sent_to_renderer: Last preset path sent to renderer for
+            crash tracking. Path for files, str for "idle://", None before
+            first load.
     """
 
     config: AppConfig
@@ -69,6 +73,7 @@ class AppContext:
     error_view_dispatch_table: DispatchTable = field(default_factory=dict)
     undo_manager: UndoManager = field(default_factory=UndoManager)
     autoplay_manager: AutoplayManager | None = None
+    preset_sent_to_renderer: Path | str | None = None
 
     def __post_init__(self) -> None:
         """Build dispatch tables from keybindings."""
