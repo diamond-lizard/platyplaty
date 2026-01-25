@@ -39,7 +39,7 @@ class TestManualPlaybackErrors:
         app.query_one = MagicMock(return_value=MagicMock())
         get_preset = MagicMock(return_value=Path("/test/preset.milk"))
 
-        with patch("platyplaty.preset_command.is_preset_playable", return_value=True):
+        with patch("platyplaty.autoplay_helpers.is_preset_playable", return_value=True):
             await load_preset_by_direction(ctx, app, get_preset, "next")
 
         assert len(ctx.error_log) == 1
