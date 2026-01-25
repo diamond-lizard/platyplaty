@@ -47,7 +47,7 @@ class TestPlaySelection:
         mock_ctx.playlist.set_selection(2)
         mock_ctx.playlist.set_playing(0)
         with patch(
-            "platyplaty.autoplay_helpers.try_load_preset",
+            "platyplaty.preset_command.load_preset",
             new_callable=AsyncMock
         ):
             await play_selection(mock_ctx, mock_app)
@@ -60,7 +60,7 @@ class TestPlaySelection:
         """play_selection loads the currently selected preset."""
         mock_ctx.playlist.set_selection(1)
         mock_load = AsyncMock()
-        with patch("platyplaty.autoplay_helpers.try_load_preset", mock_load):
+        with patch("platyplaty.preset_command.load_preset", mock_load):
             await play_selection(mock_ctx, mock_app)
         mock_load.assert_called_once_with(mock_ctx, Path("/test/b.milk"))
 
@@ -75,7 +75,7 @@ class TestPlaySelection:
         ctx.autoplay_manager = MagicMock()
         ctx.autoplay_manager.autoplay_enabled = False
         mock_load = AsyncMock()
-        with patch("platyplaty.autoplay_helpers.try_load_preset", mock_load):
+        with patch("platyplaty.preset_command.load_preset", mock_load):
             await play_selection(ctx, mock_app)
         mock_load.assert_not_called()
 
@@ -92,7 +92,7 @@ class TestPlaySelection:
         ctx.playlist.set_playing(0)
         mock_load = AsyncMock()
         with (
-            patch("platyplaty.autoplay_helpers.try_load_preset", mock_load),
+            patch("platyplaty.preset_command.load_preset", mock_load),
             patch("platyplaty.ui.playlist_key.show_autoplay_blocked_error"),
         ):
             await play_selection(ctx, mock_app)

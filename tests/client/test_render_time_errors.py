@@ -49,7 +49,7 @@ class TestAutoplayErrors:
     @pytest.mark.asyncio
     async def test_error_appended_to_error_log_during_autoplay(self) -> None:
         """Renderer error during autoplay is appended to ctx.error_log."""
-        from platyplaty.autoplay_helpers import try_load_preset
+        from platyplaty.preset_command import load_preset
         from platyplaty.preset_validator import is_valid_preset
 
         ctx = MagicMock()
@@ -59,8 +59,8 @@ class TestAutoplayErrors:
             side_effect=RendererError("Renderer error")
         )
 
-        with patch("platyplaty.autoplay_helpers.is_preset_playable", return_value=True):
-            success, error = await try_load_preset(ctx, Path("/test/preset.milk"))
+        with patch("platyplaty.preset_command.is_preset_playable", return_value=True):
+            success, error = await load_preset(ctx, MagicMock(), Path("/test/preset.milk"))
 
         assert success is False
         assert error == "Renderer error"
