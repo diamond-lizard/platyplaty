@@ -96,7 +96,7 @@ class TestAutoplayErrors:
         playlist.set_playing(0)
 
         with patch("platyplaty.autoplay_helpers.is_preset_playable", return_value=True):
-            result = await advance_playlist_to_next(ctx, playlist)
+            result = await advance_playlist_to_next(ctx, MagicMock(), playlist)
 
         assert result is True
         assert 1 in playlist.broken_indices
