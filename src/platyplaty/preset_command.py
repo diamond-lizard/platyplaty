@@ -74,13 +74,12 @@ async def load_preset(
     # Send the load command with crash tracking
     try:
         await send_load_preset(ctx, path)
+        # Show window and set fullscreen on success
+        assert ctx.client is not None
+        await ctx.client.send_command("SHOW WINDOW")
+        if ctx.config.fullscreen:
+            await ctx.client.send_command("SET FULLSCREEN", enabled=True)
     except (RendererError, ConnectionError) as e:
         return (False, str(e))
-
-    # Show window and set fullscreen on success
-    assert ctx.client is not None
-    await ctx.client.send_command("SHOW WINDOW")
-    if ctx.config.fullscreen:
-        await ctx.client.send_command("SET FULLSCREEN", enabled=True)
 
     return (True, None)

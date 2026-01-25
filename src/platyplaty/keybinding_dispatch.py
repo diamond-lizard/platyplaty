@@ -43,9 +43,7 @@ async def dispatch_key_event(
     try:
         await app.run_action(action_name)
     except ConnectionError:
-        if not ctx.exiting:
-            ctx.exiting = True
-            app.exit()
+        pass
     return True
 
 

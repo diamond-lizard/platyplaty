@@ -38,9 +38,6 @@ async def _process_one_advance_step(
     try:
         success = await load_current_playlist_preset(ctx, app)
     except ConnectionError:
-        if not ctx.exiting:
-            ctx.exiting = True
-            app.exit()
         return ("break", consecutive_failures, 0.0)
 
     if success:
