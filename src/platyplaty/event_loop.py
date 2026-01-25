@@ -81,6 +81,7 @@ async def stderr_monitor_task(ctx: "AppContext", app: "PlatyplatyApp") -> None:
         pass  # Normal shutdown via Textual worker cancellation
 
     # Ensure process fully terminated before handling crash
+    assert ctx.renderer_process is not None
     await ctx.renderer_process.wait()
 
     # Deliberate exit (QUIT/DISCONNECT) - do nothing
