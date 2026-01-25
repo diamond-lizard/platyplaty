@@ -94,7 +94,7 @@ async def load_current_playlist_preset(ctx: "AppContext", app: "PlatyplatyApp") 
         True if successful, False otherwise.
     """
     from platyplaty.preset_command import load_preset
-    
+
     preset_path = ctx.playlist.current()
     if preset_path is None:
         return False

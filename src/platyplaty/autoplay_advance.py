@@ -7,9 +7,9 @@ from platyplaty.autoplay_helpers import find_next_playable
 from platyplaty.preset_command import load_preset
 
 if TYPE_CHECKING:
+    from platyplaty.app import PlatyplatyApp
     from platyplaty.app_context import AppContext
     from platyplaty.playlist import Playlist
-    from platyplaty.app import PlatyplatyApp
 
 
 async def advance_playlist_to_next(ctx: "AppContext", app: "PlatyplatyApp", playlist: "Playlist") -> bool:
