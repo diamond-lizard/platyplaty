@@ -77,7 +77,7 @@ def render_selected_entry(
     """Render an entry with inverted (selected) colors and padding."""
     if focused:
         if _is_bad_preset(entry):
-            fg, bg = BAD_PRESET_FG, BAD_PRESET_BG
+            fg, bg = BAD_PRESET_BG, BAD_PRESET_FG
         else:
             fg, bg = get_inverted_colors(entry.entry_type)
         style = Style(color=fg, bgcolor=bg)
