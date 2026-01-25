@@ -45,7 +45,7 @@ class TestPreviewMilkFile:
             with patch("platyplaty.ui.file_browser_preset_preview._update_playing_indicator"):
                 await action_preview_preset(mock_browser)
         mock_load.assert_called_once()
-        assert mock_load.call_args[0][1] == milk_file
+        assert mock_load.call_args[0][2] == milk_file
 
     @pytest.mark.asyncio
     async def test_symlink_to_milk_loads(
@@ -64,4 +64,4 @@ class TestPreviewMilkFile:
             with patch("platyplaty.ui.file_browser_preset_preview._update_playing_indicator"):
                 await action_preview_preset(mock_browser)
         mock_load.assert_called_once()
-        assert mock_load.call_args[0][1] == symlink
+        assert mock_load.call_args[0][2] == symlink
