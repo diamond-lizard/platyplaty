@@ -65,3 +65,8 @@ async def handle_renderer_crash(ctx: "AppContext", app: "PlatyplatyApp") -> None
 
     # Refresh playlist view to show broken styling
     refresh_playlist_view(app)
+
+    # Refresh file browser to show bad preset styling
+    from platyplaty.ui.file_browser import FileBrowser
+    file_browser = app.query_one(FileBrowser)
+    file_browser.refresh()
