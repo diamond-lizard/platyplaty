@@ -59,7 +59,7 @@ def _get_style(is_selected: bool, is_focused: bool, is_broken: bool) -> Style:
     if is_broken:
         if is_selected and is_focused:
             return Style(color="red", bgcolor="black")
-        return Style(color="black", bgcolor="red")
+        return Style(color="red", bgcolor="black")
     if is_selected and is_focused:
         return Style(color="black", bgcolor="white")
     if is_selected:
