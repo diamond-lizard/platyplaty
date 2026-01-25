@@ -46,7 +46,7 @@ class TestPlayNext:
         """play_next moves both selection and playing indicator."""
         mock_ctx.playlist.set_selection(0)
         mock_ctx.playlist.set_playing(0)
-        with patch("platyplaty.autoplay_helpers.try_load_preset", new_callable=AsyncMock):
+        with patch("platyplaty.preset_command.load_preset", new_callable=AsyncMock):
             await play_next(mock_ctx, mock_app)
         assert mock_ctx.playlist.get_selection() == 1
         assert mock_ctx.playlist.get_playing() == 1
@@ -58,7 +58,7 @@ class TestPlayNext:
         """play_next at last item does not change anything."""
         mock_ctx.playlist.set_selection(2)
         mock_ctx.playlist.set_playing(2)
-        with patch("platyplaty.autoplay_helpers.try_load_preset", new_callable=AsyncMock):
+        with patch("platyplaty.preset_command.load_preset", new_callable=AsyncMock):
             await play_next(mock_ctx, mock_app)
         assert mock_ctx.playlist.get_selection() == 2
         assert mock_ctx.playlist.get_playing() == 2
@@ -74,7 +74,7 @@ class TestPlayPrevious:
         """play_previous moves both selection and playing indicator."""
         mock_ctx.playlist.set_selection(1)
         mock_ctx.playlist.set_playing(1)
-        with patch("platyplaty.autoplay_helpers.try_load_preset", new_callable=AsyncMock):
+        with patch("platyplaty.preset_command.load_preset", new_callable=AsyncMock):
             await play_previous(mock_ctx, mock_app)
         assert mock_ctx.playlist.get_selection() == 0
         assert mock_ctx.playlist.get_playing() == 0
@@ -86,7 +86,7 @@ class TestPlayPrevious:
         """play_previous at first item does not change anything."""
         mock_ctx.playlist.set_selection(0)
         mock_ctx.playlist.set_playing(0)
-        with patch("platyplaty.autoplay_helpers.try_load_preset", new_callable=AsyncMock):
+        with patch("platyplaty.preset_command.load_preset", new_callable=AsyncMock):
             await play_previous(mock_ctx, mock_app)
         assert mock_ctx.playlist.get_selection() == 0
         assert mock_ctx.playlist.get_playing() == 0
