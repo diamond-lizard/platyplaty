@@ -88,6 +88,8 @@ class TestAutoplayErrors:
             return None
 
         ctx.client.send_command = mock_send_command
+        ctx.renderer_process = MagicMock()
+        ctx.renderer_process.returncode = None
 
         playlist = Playlist([
             Path("/test/preset1.milk"),
