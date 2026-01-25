@@ -63,7 +63,7 @@ class TestLoadUnsavedConfirmation:
         mock_app.query_one.return_value = mock_command_line
         captured_callback = None
 
-        def capture_callback(msg, callback):
+        def capture_callback(msg, callback, previous_focus_id=None):
             nonlocal captured_callback
             captured_callback = callback
 
@@ -97,7 +97,7 @@ class TestLoadUnsavedConfirmation:
         mock_app.query_one.return_value = mock_command_line
         captured_callback = None
 
-        def capture_callback(msg, callback):
+        def capture_callback(msg, callback, previous_focus_id=None):
             nonlocal captured_callback
             captured_callback = callback
 
