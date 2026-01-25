@@ -21,6 +21,10 @@ def mock_app() -> MagicMock:
     """Create a mock PlatyplatyApp for testing dispatch."""
     app = MagicMock()
     app.run_action = AsyncMock()
+    # Mock query_one to return a mock CommandLine with clear_persistent_message
+    mock_cmd_line = MagicMock()
+    mock_cmd_line.clear_persistent_message = MagicMock()
+    app.query_one = MagicMock(return_value=mock_cmd_line)
     return app
 
 
