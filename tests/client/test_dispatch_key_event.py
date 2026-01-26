@@ -77,24 +77,16 @@ class TestDispatchKeyEvent:
         mock_app.run_action.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_dispatch_handles_connection_error_sets_exiting(
+    async def test_dispatch_suppresses_connection_error(
         self, mock_ctx: MagicMock, mock_app: MagicMock
     ) -> None:
-        """Dispatch sets _exiting and calls exit() on ConnectionError."""
-        mock_app.run_action = AsyncMock(side_effect=ConnectionError("disconnected"))
-        table = {"n": "next_preset"}
-        await dispatch_key_event("n", table, mock_ctx, mock_app)
-        assert mock_ctx.exiting is True
-        mock_app.exit.assert_called_once()
+        """Dispatch suppresses ConnectionError without exiting.
 
-    @pytest.mark.asyncio
-    async def test_dispatch_connection_error_skips_if_already_exiting(
-        self, mock_ctx: MagicMock, mock_app: MagicMock
-    ) -> None:
-        """Dispatch does not double-exit if already exiting."""
-        mock_ctx.exiting = True
+        The crash handler (stderr_monitor_task) is responsible for
+        handling renderer crashes, not the dispatch function.
+        """
         mock_app.run_action = AsyncMock(side_effect=ConnectionError("disconnected"))
         table = {"n": "next_preset"}
-        await dispatch_key_event("n", table, mock_ctx, mock_app)
-        # exit() should not be called again since already exiting
-        mock_app.exit.assert_not_called()
+        result = await dispatch_key_event("n", table, mock_ctx, mock_app)
+        assert result is True  # Key was handled
+        mock_app.exit.assert_not_called()  # No exit on ConnectionError
