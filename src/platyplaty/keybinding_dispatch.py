@@ -6,6 +6,7 @@ Global keys work in all sections. Section-specific keys only work when
 that section has focus and are silently ignored otherwise.
 """
 
+import contextlib
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -40,10 +41,8 @@ async def dispatch_key_event(
     action_name = table.get(key)
     if action_name is None:
         return False
-    try:
+    with contextlib.suppress(ConnectionError):
         await app.run_action(action_name)
-    except ConnectionError:
-        pass
     return True
 
 
