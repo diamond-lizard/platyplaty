@@ -50,7 +50,7 @@ async def _preview_milk_preset(browser: FileBrowser, path: Path) -> None:
 
     ctx = browser.platyplaty_app.ctx
     _stop_autoplay_if_running(ctx)
-    success, error = await load_preset(ctx, browser.platyplaty_app, path)
+    success, error = await load_preset(ctx, browser.platyplaty_app, path, force=True)
     if not success and error:
         show_transient_error(browser, error)
     if success:

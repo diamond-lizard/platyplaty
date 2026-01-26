@@ -40,6 +40,7 @@ async def load_preset(
     ctx: AppContext,
     app: PlatyplatyApp,
     path: Path | str,
+    force: bool = False,
 ) -> tuple[bool, str | None]:
     """Load a preset into the renderer with automatic restart.
 
@@ -53,6 +54,8 @@ async def load_preset(
         ctx: Application context with renderer state.
         app: The Textual application instance.
         path: Preset file path (Path) or special URL like "idle://" (str).
+        force: If True, skip the is_preset_playable check, allowing
+            retry of bad presets (for manual user override with Enter key).
 
     Returns:
         Tuple of (success, error_message). error_message is None on success,
@@ -64,7 +67,7 @@ async def load_preset(
     from platyplaty.socket_exceptions import RendererError
 
     # For file presets, check if playable (skip bad/missing)
-    if isinstance(path, Path) and not is_preset_playable(path):
+    if isinstance(path, Path) and not force and not is_preset_playable(path):
         return (False, None)
 
     # Ensure renderer is running (restart if crashed)

@@ -74,7 +74,7 @@ async def play_selection(ctx: AppContext, app: PlatyplatyApp) -> None:
     current = playlist.get_selection()
     playlist.set_playing(current)
     refresh_playlist_view(app)
-    await load_preset(ctx, app, playlist.presets[current])
+    await load_preset(ctx, app, playlist.presets[current], force=True)
 
 
 async def toggle_autoplay(ctx: AppContext, app: PlatyplatyApp) -> None:
