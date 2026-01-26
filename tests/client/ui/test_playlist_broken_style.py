@@ -18,17 +18,17 @@ from platyplaty.ui.playlist_entry_render import _get_style
 class TestBrokenPresetStyling:
     """Tests for broken preset visual styling."""
 
-    def test_broken_normal_shows_black_on_red(self) -> None:
-        """Broken preset not selected shows black text on red background."""
+    def test_broken_normal_shows_red_on_black(self) -> None:
+        """Broken preset not selected shows red text on black background."""
         style = _get_style(is_selected=False, is_focused=True, is_broken=True)
-        assert style.color.name == "black"
-        assert style.bgcolor.name == "red"
-
-    def test_broken_selected_focused_shows_red_on_black(self) -> None:
-        """Broken preset selected and focused shows red text on black background."""
-        style = _get_style(is_selected=True, is_focused=True, is_broken=True)
         assert style.color.name == "red"
         assert style.bgcolor.name == "black"
+
+    def test_broken_selected_focused_shows_black_on_red(self) -> None:
+        """Broken preset selected and focused shows black text on red background."""
+        style = _get_style(is_selected=True, is_focused=True, is_broken=True)
+        assert style.color.name == "black"
+        assert style.bgcolor.name == "red"
 
     def test_broken_selected_unfocused_shows_black_on_red(self) -> None:
         """Broken preset selected but unfocused shows black on red (not inverted)."""
@@ -36,11 +36,11 @@ class TestBrokenPresetStyling:
         assert style.color.name == "black"
         assert style.bgcolor.name == "red"
 
-    def test_broken_unfocused_shows_black_on_red(self) -> None:
-        """Broken preset in unfocused pane shows black on red."""
+    def test_broken_unfocused_shows_red_on_black(self) -> None:
+        """Broken preset in unfocused pane shows red on black."""
         style = _get_style(is_selected=False, is_focused=False, is_broken=True)
-        assert style.color.name == "black"
-        assert style.bgcolor.name == "red"
+        assert style.color.name == "red"
+        assert style.bgcolor.name == "black"
 
 
 class TestNormalPresetStyling:
