@@ -57,8 +57,8 @@ def _get_display_name(widget: PlaylistView, index: int) -> str:
 def _get_style(is_selected: bool, is_focused: bool, is_broken: bool) -> Style:
     """Get the style for an entry based on selection, focus and broken state."""
     if is_broken:
-        if is_selected and is_focused:
-            return Style(color="red", bgcolor="black")
+        if is_selected:
+            return Style(color="black", bgcolor="red")
         return Style(color="red", bgcolor="black")
     if is_selected and is_focused:
         return Style(color="black", bgcolor="white")
