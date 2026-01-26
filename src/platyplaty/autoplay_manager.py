@@ -90,18 +90,31 @@ class AutoplayManager:
             self._timer_task = None
 
 
+    def _refresh_status_line(self) -> None:
+        """Refresh the status line to show current autoplay state."""
+        from platyplaty.ui.status_line import StatusLine
+        playlist = self._ctx.playlist
+        status_line = self._app.query_one("#status_line", StatusLine)
+        status_line.update_state(
+            self._autoplay_enabled,
+            playlist.associated_filename,
+            playlist.dirty_flag,
+        )
+
     def stop_autoplay(self) -> None:
         """Stop autoplay without showing an error message."""
         if not self._autoplay_enabled:
             return
         self._autoplay_enabled = False
         self._stop_timer()
+        self._refresh_status_line()
 
     def stop_autoplay_with_error(self) -> None:
         """Stop autoplay and show error message for no playable presets."""
         self._autoplay_enabled = False
         self._stop_timer()
         show_no_playable_error(self._app)
+        self._refresh_status_line()
 
     async def advance_to_next(self) -> bool:
         """Advance to the next preset in the playlist."""

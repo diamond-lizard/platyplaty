@@ -35,8 +35,8 @@ async def ensure_renderer_running(ctx: "AppContext", app: "PlatyplatyApp") -> bo
     from platyplaty.event_loop import stderr_monitor_task
     from platyplaty.renderer import start_renderer
     from platyplaty.socket_client import SocketClient
-    from platyplaty.ui.command_line import CommandLine
     from platyplaty.socket_path import check_stale_socket
+    from platyplaty.ui.command_line import CommandLine
 
     # Check if renderer is already running
     if ctx.renderer_process is not None and ctx.renderer_process.returncode is None:

@@ -3,7 +3,10 @@
 
 from typing import TYPE_CHECKING
 
-from platyplaty.autoplay_errors import show_no_playable_error
+from platyplaty.autoplay_errors import (
+    is_renderer_connection_error,
+    show_no_playable_error,
+)
 from platyplaty.preset_command import load_preset
 
 if TYPE_CHECKING:
@@ -29,6 +32,11 @@ async def load_first_preset(
     success, error = await load_preset(ctx, app, preset_path)
     if success or error is None:
         return success
+    # Don't mark preset as broken if renderer connection is dead.
+    # The crash handler will mark the actual crashed preset.
+    if is_renderer_connection_error(error):
+        ctx.error_log.append(error)
+        return False
     playlist.broken_indices.add(first_index)
     ctx.error_log.append(error)
     return await try_advance_after_error(ctx, app, playlist)
