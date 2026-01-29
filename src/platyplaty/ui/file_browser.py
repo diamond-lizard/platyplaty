@@ -21,6 +21,9 @@ from platyplaty.ui.directory_types import DirectoryEntry, DirectoryListing
 from platyplaty.ui.file_browser_init import init_browser as _init_browser
 from platyplaty.ui.file_browser_key import on_key as _on_key
 from platyplaty.ui.file_browser_render import render_line as _render_line
+from platyplaty.ui.file_browser_refresh import (
+    refresh_right_pane as _refresh_right_pane,
+)
 from platyplaty.ui.file_browser_scroll import (
     adjust_left_pane_scroll as _adjust_left_scroll,
 )
@@ -102,6 +105,7 @@ class FileBrowser(Widget):
 
     def on_mount(self) -> None:
         """Handle mount event to adjust scroll when size becomes valid."""
+        _refresh_right_pane(self)
         _adjust_left_scroll(self, self.size.height - 1)
         _adjust_right_scroll(self, self.size.height - 1)
 
