@@ -72,13 +72,15 @@ class PlatyplatyApp(App[None]):
         Returns:
             Widgets to mount in the application.
         """
+        is_file_browser_focused = self.ctx.current_focus == "file_browser"
         yield FileBrowser(
             self.ctx.file_browser_dispatch_table,
             starting_dir=self._start_path,
+            focused=is_file_browser_focused,
             id="file_browser",
         )
         yield Static("", id="section_divider")
-        yield PlaylistView(self.ctx.playlist, id="playlist")
+        yield PlaylistView(self.ctx.playlist, focused=not is_file_browser_focused, id="playlist")
         yield FooterContainer(self.ctx.error_log, id="footer")
         yield ErrorView(self.ctx.error_log, id="error_view")
 

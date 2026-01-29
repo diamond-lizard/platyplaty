@@ -72,13 +72,14 @@ class FileBrowser(Widget):
         self,
         dispatch_table: DispatchTable,
         starting_dir: Path | None = None,
+        focused: bool = False,
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
     ) -> None:
         """Initialize the FileBrowser widget."""
         super().__init__(name=name, id=id, classes=classes)
-        _init_browser(self, dispatch_table, starting_dir)
+        _init_browser(self, dispatch_table, starting_dir, focused)
 
     def get_content_width(self, container: Size, viewport: Size) -> int:
         """Return the content width."""

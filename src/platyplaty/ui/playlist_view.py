@@ -27,6 +27,7 @@ class PlaylistView(Widget):
     def __init__(
         self,
         playlist: Playlist,
+        focused: bool = False,
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
@@ -35,7 +36,7 @@ class PlaylistView(Widget):
         super().__init__(name=name, id=id, classes=classes)
         self._playlist = playlist
         self._scroll_offset = 0
-        self._focused = True
+        self._focused = focused
         self._display_names = []
         self._update_display_names()
 

@@ -24,6 +24,7 @@ def init_browser(
     browser: FileBrowser,
     dispatch_table: DispatchTable,
     starting_dir: Path | None,
+    focused: bool,
 ) -> None:
     """Initialize the FileBrowser widget's state.
 
@@ -69,7 +70,7 @@ def init_browser(
     browser._right_content = None
     browser._right_selected_index = None
     browser._layout_state = LayoutState.STANDARD
-    browser._focused = True
+    browser._focused = focused
 
     # Navigation state manager
     browser._nav_state = NavigationState(browser.current_dir)
