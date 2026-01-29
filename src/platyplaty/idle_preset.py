@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING
 
-from platyplaty.auto_advance import load_preset_with_retry
+from platyplaty.autoplay_start import start_from_first_preset
 from platyplaty.messages import LogMessage
 
 if TYPE_CHECKING:
@@ -36,7 +36,7 @@ async def load_initial_preset(ctx: "AppContext", app: "PlatyplatyApp") -> None:
     if not ctx.playlist.presets:
         await load_idle_preset(ctx, app)
         return
-    if await load_preset_with_retry(ctx, app):
+    if await start_from_first_preset(ctx, app, ctx.playlist):
         return
     app.post_message(LogMessage("All presets failed to load", level="warning"))
     await load_idle_preset(ctx, app)

@@ -2,7 +2,6 @@
 
 from typing import TYPE_CHECKING
 
-from platyplaty.auto_advance import auto_advance_loop
 from platyplaty.event_loop import stderr_monitor_task
 from platyplaty.idle_preset import load_initial_preset
 from platyplaty.renderer import start_renderer
@@ -46,7 +45,6 @@ async def perform_startup(ctx: "AppContext", app: "PlatyplatyApp") -> None:
 
     # Stage B: Start workers
     app.run_worker(stderr_monitor_task(ctx, app), name="stderr_monitor")
-    app.run_worker(auto_advance_loop(ctx, app), name="auto_advance")
 
 
 
