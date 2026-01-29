@@ -98,6 +98,7 @@ class FileBrowser(Widget):
 
     def on_resize(self, event: Resize) -> None:
         """Handle terminal resize events."""
+        _refresh_right_pane(self)
         _adjust_left_scroll(self, self.size.height - 1)
         _adjust_right_scroll(self, self.size.height - 1)
         _adjust_middle_scroll(self, self.size.height - 1)
@@ -105,7 +106,6 @@ class FileBrowser(Widget):
 
     def on_mount(self) -> None:
         """Handle mount event to adjust scroll when size becomes valid."""
-        _refresh_right_pane(self)
         _adjust_left_scroll(self, self.size.height - 1)
         _adjust_right_scroll(self, self.size.height - 1)
 
