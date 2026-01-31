@@ -58,7 +58,7 @@ def find_empty_variables(path_str: str) -> list[str]:
 
 def _format_variable_error(prefix: str, var_names: list[str]) -> str:
     """Format an error message for undefined or empty variables."""
-    quoted = [f"'$${v}'" for v in var_names]
+    quoted = [f"'${v}'" for v in var_names]
     if len(var_names) == 1:
         return f"{prefix}: {quoted[0]}"
     return f"{prefix}s: {', '.join(quoted)}"
