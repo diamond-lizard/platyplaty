@@ -80,7 +80,9 @@ class PlatyplatyApp(App[None]):
             id="file_browser",
         )
         yield Static("", id="section_divider")
-        yield PlaylistView(self.ctx.playlist, focused=not is_file_browser_focused, id="playlist")
+        yield PlaylistView(
+            self.ctx.playlist, focused=not is_file_browser_focused, id="playlist"
+        )
         yield FooterContainer(self.ctx.error_log, id="footer")
         yield ErrorView(self.ctx.error_log, id="error_view")
 
