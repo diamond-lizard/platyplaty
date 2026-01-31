@@ -111,7 +111,7 @@ class NavigationState:
         parent = self.current_dir.parent
         if parent == self.current_dir:
             return 0
-        return _get_scroll_offset_for_directory(self, str(parent))
+        return _get_scroll_offset_for_directory(self, str(parent.resolve()))
 
     def get_selected_name_for_directory(self, directory_path: str) -> str | None:
         """Get the remembered selected name for a directory.

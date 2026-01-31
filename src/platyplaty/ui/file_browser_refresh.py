@@ -77,7 +77,7 @@ def refresh_right_pane(browser: FileBrowser) -> None:
 
     # Directory content: calculate selection and scroll position
     if isinstance(browser._right_content, RightPaneDirectory):
-        path_str = str(browser.current_dir / selected.name)
+        path_str = str((browser.current_dir / selected.name).resolve())
         browser._right_selected_index = calc_right_selection(browser, path_str)
         nav_state = browser._nav_state
         browser._right_scroll_offset = nav_state.get_scroll_offset_for_directory(

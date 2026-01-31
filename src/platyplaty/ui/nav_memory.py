@@ -33,7 +33,7 @@ def save_current_memory(state: NavigationState) -> None:
     Args:
         state: The navigation state to save.
     """
-    key = str(state.current_dir)
+    key = str(state.current_dir.resolve())
     state._directory_memory[key] = DirectoryMemory(
         selected_name=state.selected_name,
         scroll_offset=state.scroll_offset,
@@ -70,7 +70,7 @@ def restore_memory(state: NavigationState) -> None:
     Args:
         state: The navigation state to update.
     """
-    key = str(state.current_dir)
+    key = str(state.current_dir.resolve())
     memory = state._directory_memory.get(key)
     if memory and try_restore_remembered_name(state, memory):
         return
@@ -84,7 +84,7 @@ def restore_scroll_from_memory(state: NavigationState) -> None:
     Args:
         state: The navigation state to update.
     """
-    key = str(state.current_dir)
+    key = str(state.current_dir.resolve())
     memory = state._directory_memory.get(key)
     if memory:
         state.scroll_offset = memory.scroll_offset
