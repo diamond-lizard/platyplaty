@@ -118,7 +118,10 @@ class CommandPrompt(Widget, can_focus=True):
         self.cursor_index = new_cursor
 
     def paste_text(self, text: str) -> bool:
-        """Paste text at cursor, stripping whitespace. Return True if text was inserted."""
+        """Paste text at cursor, stripping whitespace.
+
+        Return True if text was inserted.
+        """
         result = handle_paste(self.input_text, self.cursor_index, text)
         if result is None:
             return False
