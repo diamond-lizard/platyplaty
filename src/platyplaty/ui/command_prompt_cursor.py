@@ -56,4 +56,6 @@ class CursorManager:
 
     def handle_resize(self, cursor_index: int, visible_width: int) -> None:
         """Recalculate scroll offset for new terminal width."""
-        self._scroll = calculate_scroll_offset(cursor_index, self._scroll, visible_width)
+        self._scroll = calculate_scroll_offset(
+            cursor_index, self._scroll, visible_width
+        )
