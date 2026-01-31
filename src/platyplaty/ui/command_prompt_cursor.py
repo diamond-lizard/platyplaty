@@ -5,15 +5,20 @@ This module provides cursor position, scrolling, and blink timer management
 for the CommandPrompt widget, extracted to reduce file size.
 """
 
+from typing import TYPE_CHECKING
+
 from textual.timer import Timer
 
 from platyplaty.ui.command_render import BLINK_INTERVAL_MS, calculate_scroll_offset
+
+if TYPE_CHECKING:
+    from platyplaty.ui.command_prompt import CommandPrompt
 
 
 class CursorManager:
     """Manages cursor position, scrolling, and blinking for a widget."""
 
-    def __init__(self, widget: object) -> None:
+    def __init__(self, widget: "CommandPrompt") -> None:
         """Initialize with reference to the widget."""
         self._widget = widget
         self._timer: Timer | None = None

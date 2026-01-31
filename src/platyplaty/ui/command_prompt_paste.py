@@ -5,11 +5,16 @@ This module provides paste functionality extracted from CommandPrompt
 to reduce file size.
 """
 
+from typing import TYPE_CHECKING
+
 from platyplaty.clipboard import get_primary_selection
 from platyplaty.ui.paste_handler import handle_paste
 
+if TYPE_CHECKING:
+    from platyplaty.ui.command_prompt import CommandPrompt
 
-def do_paste(prompt: object, text: str) -> bool:
+
+def do_paste(prompt: "CommandPrompt", text: str) -> bool:
     """Paste text at cursor, stripping whitespace.
 
     Args:
@@ -28,7 +33,7 @@ def do_paste(prompt: object, text: str) -> bool:
     return True
 
 
-def do_paste_from_selection(prompt: object) -> bool:
+def do_paste_from_selection(prompt: "CommandPrompt") -> bool:
     """Paste X11 primary selection at cursor.
 
     Args:
