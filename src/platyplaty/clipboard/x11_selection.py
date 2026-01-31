@@ -34,7 +34,10 @@ def get_primary_selection() -> str:
     try:
         root = tk.Tk()
         root.withdraw()
-        return root.clipboard_get(selection="PRIMARY")
+        # selection_get is untyped in typeshed; assert ensures str at runtime
+        result = root.selection_get(selection="PRIMARY")  # type: ignore[no-untyped-call]
+        assert isinstance(result, str)
+        return result
     except (tk.TclError, OSError):
         return ""
     finally:

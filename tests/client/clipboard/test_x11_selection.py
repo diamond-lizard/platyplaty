@@ -15,7 +15,7 @@ class TestGetPrimarySelection:
         mock_tk = MagicMock()
         mock_root = MagicMock()
         mock_tk.Tk.return_value = mock_root
-        mock_root.clipboard_get.return_value = "selected text"
+        mock_root.selection_get.return_value = "selected text"
 
         with patch.dict(sys.modules, {"tkinter": mock_tk}):
             from platyplaty.clipboard.x11_selection import get_primary_selection
@@ -27,7 +27,7 @@ class TestGetPrimarySelection:
 
         assert result == "selected text"
         mock_root.withdraw.assert_called_once()
-        mock_root.clipboard_get.assert_called_once_with(selection="PRIMARY")
+        mock_root.selection_get.assert_called_once_with(selection="PRIMARY")
         mock_root.destroy.assert_called_once()
 
     def test_tclerror_returns_empty_string(self):
@@ -36,7 +36,7 @@ class TestGetPrimarySelection:
         mock_tk.TclError = Exception
         mock_root = MagicMock()
         mock_tk.Tk.return_value = mock_root
-        mock_root.clipboard_get.side_effect = mock_tk.TclError("no selection")
+        mock_root.selection_get.side_effect = mock_tk.TclError("no selection")
 
         with patch.dict(sys.modules, {"tkinter": mock_tk}):
             import importlib
@@ -62,7 +62,7 @@ class TestGetPrimarySelection:
         mock_tk = MagicMock()
         mock_root = MagicMock()
         mock_tk.Tk.return_value = mock_root
-        mock_root.clipboard_get.side_effect = OSError("no display")
+        mock_root.selection_get.side_effect = OSError("no display")
 
         with patch.dict(sys.modules, {"tkinter": mock_tk}):
             import importlib
@@ -79,7 +79,7 @@ class TestGetPrimarySelection:
         mock_tk.TclError = Exception
         mock_root = MagicMock()
         mock_tk.Tk.return_value = mock_root
-        mock_root.clipboard_get.side_effect = mock_tk.TclError("error")
+        mock_root.selection_get.side_effect = mock_tk.TclError("error")
 
         with patch.dict(sys.modules, {"tkinter": mock_tk}):
             import importlib
