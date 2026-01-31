@@ -7,7 +7,7 @@ bottom of the terminal for entering commands like load, save, clear, shuffle.
 
 from collections.abc import Awaitable, Callable
 
-from textual.events import Key
+from textual.events import Key, Paste
 from textual.reactive import reactive
 from textual.strip import Strip
 from textual.timer import Timer
@@ -19,6 +19,8 @@ from platyplaty.ui.command_render import (
     calculate_scroll_offset,
     render_command_line,
 )
+from platyplaty.clipboard import get_primary_selection
+from platyplaty.ui.paste_handler import handle_paste
 
 
 class CommandPrompt(Widget, can_focus=True):
@@ -114,6 +116,25 @@ class CommandPrompt(Widget, can_focus=True):
             new_cursor, self._text_scroll, visible_width
         )
         self.cursor_index = new_cursor
+
+    def paste_text(self, text: str) -> bool:
+        """Paste text at cursor, stripping whitespace. Return True if text was inserted."""
+        result = handle_paste(self.input_text, self.cursor_index, text)
+        if result is None:
+            return False
+        self.input_text, new_cursor = result
+        self.update_cursor_with_scroll(new_cursor)
+        self.start_blink_timer()
+        return True
+
+    def paste_from_selection(self) -> bool:
+        """Paste X11 primary selection at cursor. Return True if text was inserted."""
+        return self.paste_text(get_primary_selection())
+
+    def on_paste(self, event: Paste) -> None:
+        """Handle bracketed paste events from terminal."""
+        event.stop()
+        self.paste_text(event.text)
 
     async def on_key(self, event: Key) -> None:
         """Handle key events for the command prompt."""
