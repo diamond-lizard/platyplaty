@@ -88,14 +88,14 @@ class TestPasteText:
 class TestPasteFromSelection:
     """Tests for paste_from_selection method."""
 
-    @patch("platyplaty.ui.command_prompt.get_primary_selection")
+    @patch("platyplaty.ui.command_prompt_paste.get_primary_selection")
     def test_calls_get_primary_selection(self, mock_get_sel, mock_prompt):
         """paste_from_selection calls get_primary_selection."""
         mock_get_sel.return_value = "selected text"
         mock_prompt.paste_from_selection()
         mock_get_sel.assert_called_once()
 
-    @patch("platyplaty.ui.command_prompt.get_primary_selection")
+    @patch("platyplaty.ui.command_prompt_paste.get_primary_selection")
     def test_pastes_selection_content(self, mock_get_sel, mock_prompt):
         """paste_from_selection pastes the selection content."""
         mock_get_sel.return_value = "selected"
