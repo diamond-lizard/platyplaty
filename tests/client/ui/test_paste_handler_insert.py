@@ -55,8 +55,8 @@ class TestHandlePaste:
 
     def test_normal_paste_returns_new_text_and_cursor(self) -> None:
         """Normal paste returns tuple with new text and cursor."""
-        result = handle_paste("hello", 5, " world")
-        assert result == ("hello world", 11)
+        result = handle_paste("hello", 5, "world")
+        assert result == ("helloworld", 10)
 
     def test_empty_paste_content_returns_none(self) -> None:
         """Empty paste_content returns None."""
