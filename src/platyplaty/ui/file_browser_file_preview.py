@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from platyplaty.ui.file_browser_file_utils import read_file_preview_lines
+from platyplaty.ui.file_browser_playlist_preview import make_playlist_preview
 from platyplaty.ui.file_browser_types import (
     BinaryFileError,
     RightPaneBinaryFile,
@@ -35,6 +36,9 @@ def make_file_preview(
     Returns:
         RightPaneFilePreview with file lines, or None if unreadable.
     """
+    # Delegate .platy files to playlist preview (handles 0-byte files differently)
+    if entry.name.lower().endswith('.platy'):
+        return make_playlist_preview(browser, entry)
     file_path = browser.current_dir / entry.name
     # Check file size: empty files trigger collapsed state
     try:
