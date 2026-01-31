@@ -23,7 +23,9 @@ from platyplaty.ui.file_browser_types import (
     RightPaneEmpty,
     RightPaneFilePreview,
     RightPaneNoMilk,
+    RightPanePlaylistPreview,
 )
+from platyplaty.ui.truncation import truncate_simple
 
 
 def _render_special_message(
@@ -79,5 +81,14 @@ def render_right_pane_line(
         color = FILE_COLOR if focused else DIMMED_COLOR
         style = Style(color=color, bgcolor=BACKGROUND_COLOR)
         return [Segment(text, style)]
-    # RightPanePlaylistPreview - placeholder until Phase 400 implements
-    return [Segment(" " * width, Style(bgcolor=BACKGROUND_COLOR))]
+    if isinstance(content, RightPanePlaylistPreview):
+        if y >= len(content.names):
+            return [Segment(" " * width, bg_style)]
+        content_width = max(0, width - 2)
+        name = truncate_simple(content.names[y], content_width)
+        text = " " + name.ljust(content_width) + " "
+        text = text[:width]
+        color = FILE_COLOR if focused else DIMMED_COLOR
+        style = Style(color=color, bgcolor=BACKGROUND_COLOR)
+        return [Segment(text, style)]
+    return [Segment(" " * width, bg_style)]
