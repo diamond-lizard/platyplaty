@@ -44,6 +44,13 @@ class RightPaneBinaryFile:
     pass
 
 
+@dataclass
+class RightPanePlaylistPreview:
+    """Right pane content showing disambiguated preset names from a .platy file."""
+
+    names: tuple[str, ...]
+
+
 class BinaryFileError(Exception):
     """Raised when a file cannot be decoded as UTF-8."""
 
@@ -56,5 +63,6 @@ RightPaneContent = (
     | RightPaneEmpty
     | RightPaneNoMilk
     | RightPaneBinaryFile
+    | RightPanePlaylistPreview
     | None
 )
