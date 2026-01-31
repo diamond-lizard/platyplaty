@@ -19,9 +19,9 @@ from platyplaty.ui.file_browser_pane_render import render_pane_line
 from platyplaty.ui.file_browser_types import (
     RightPaneBinaryFile,
     RightPaneContent,
-    RightPaneFilePreview,
     RightPaneDirectory,
     RightPaneEmpty,
+    RightPaneFilePreview,
     RightPaneNoMilk,
 )
 
