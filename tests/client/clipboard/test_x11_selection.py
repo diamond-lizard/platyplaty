@@ -15,6 +15,7 @@ class TestGetPrimarySelection:
         mock_tk = MagicMock()
         mock_root = MagicMock()
         mock_tk.Tk.return_value = mock_root
+        mock_tk.TclError = Exception
         mock_root.selection_get.return_value = "selected text"
 
         with patch.dict(sys.modules, {"tkinter": mock_tk}):
@@ -62,6 +63,7 @@ class TestGetPrimarySelection:
         mock_tk = MagicMock()
         mock_root = MagicMock()
         mock_tk.Tk.return_value = mock_root
+        mock_tk.TclError = Exception
         mock_root.selection_get.side_effect = OSError("no display")
 
         with patch.dict(sys.modules, {"tkinter": mock_tk}):
