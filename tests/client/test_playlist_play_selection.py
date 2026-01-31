@@ -62,7 +62,7 @@ class TestPlaySelection:
         mock_load = AsyncMock()
         with patch("platyplaty.preset_command.load_preset", mock_load):
             await play_selection(mock_ctx, mock_app)
-        mock_load.assert_called_once_with(mock_ctx, mock_app, Path("/test/b.milk"))
+        mock_load.assert_called_once_with(mock_ctx, mock_app, Path("/test/b.milk"), force=True)
 
     @pytest.mark.asyncio
     async def test_play_selection_on_empty_playlist_is_noop(
