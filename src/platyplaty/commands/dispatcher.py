@@ -31,6 +31,11 @@ async def execute_command(
     Returns:
         Tuple of (success, error_message). error_message is None on success.
     """
+    if name == "cd":
+        if ctx.current_focus != "file_browser":
+            return (False, "Error: The 'cd' command only works in the file browser")
+        from platyplaty.commands.cd import execute as cd_exec
+        return await cd_exec(args, ctx, app, base_dir)
     if name == "load":
         from platyplaty.commands.load_playlist import execute as load_exec
         return await load_exec(args, ctx, app, base_dir)
