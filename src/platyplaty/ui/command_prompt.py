@@ -13,13 +13,13 @@ from textual.strip import Strip
 from textual.timer import Timer
 from textual.widget import Widget
 
+from platyplaty.clipboard import get_primary_selection
 from platyplaty.ui.command_key import handle_command_key, return_focus_to_widget
 from platyplaty.ui.command_render import (
     BLINK_INTERVAL_MS,
     calculate_scroll_offset,
     render_command_line,
 )
-from platyplaty.clipboard import get_primary_selection
 from platyplaty.ui.paste_handler import handle_paste
 
 
