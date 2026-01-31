@@ -14,8 +14,8 @@ from textual.widget import Widget
 
 from platyplaty.ui.command_key import handle_command_key, return_focus_to_widget
 from platyplaty.ui.command_prompt_cursor import CursorManager
-from platyplaty.ui.command_render import render_command_line
 from platyplaty.ui.command_prompt_paste import do_paste, do_paste_from_selection
+from platyplaty.ui.command_render import render_command_line
 
 
 class CommandPrompt(Widget, can_focus=True):
