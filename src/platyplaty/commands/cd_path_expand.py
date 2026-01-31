@@ -79,7 +79,8 @@ def expand_cd_path(path_str: str, base_dir: Path) -> tuple[Path | None, str | No
     """
     undefined = find_undefined_variables(path_str)
     if undefined:
-        return (None, _format_variable_error("Error: cd: undefined variable", undefined))
+        err = _format_variable_error("Error: cd: undefined variable", undefined)
+        return (None, err)
     empty = find_empty_variables(path_str)
     if empty:
         return (None, _format_variable_error("Error: cd: empty variable", empty))
