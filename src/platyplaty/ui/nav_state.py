@@ -1,19 +1,8 @@
 """Navigation state model for the file browser.
 
-This module provides the NavigationState class that tracks the current
-directory, selected item, scroll positions, and handles navigation
-state transitions.
-
-The implementation is split across several package-private modules:
-- nav_types: DirectoryMemory dataclass and helper functions
-- nav_listing: Directory listing operations
-- nav_memory: Selection and scroll memory operations
-- nav_moves: Basic move up/down operations
-- nav_left: Move left (parent) operation
-- nav_right: Move right (into directory/file) operation
-- nav_access: Directory accessibility check
-- nav_scroll: Scroll adjustment operations
-- nav_refresh: Refresh after editor operations
+Provides NavigationState class for tracking current directory, selection,
+scroll positions, and per-directory memory. Implementation split across
+nav_* modules.
 """
 
 from pathlib import Path
@@ -25,9 +14,8 @@ from platyplaty.ui.nav_listing import get_selected_entry as _get_selected_entry
 from platyplaty.ui.nav_listing import refresh_listing as _refresh_listing
 from platyplaty.ui.nav_memory import set_initial_selection as _set_initial_selection
 from platyplaty.ui.nav_memory_query import (
+    get_parent_scroll_offset as _get_parent_scroll_offset,
     get_scroll_offset_for_directory as _get_scroll_offset_for_directory,
-)
-from platyplaty.ui.nav_memory_query import (
     get_selected_name_for_directory as _get_selected_name_for_directory,
 )
 from platyplaty.ui.nav_moves import move_down as _move_down
@@ -41,14 +29,8 @@ from platyplaty.ui.nav_types import DirectoryMemory
 class NavigationState:
     """Tracks navigation state for the file browser.
 
-    This class manages the current directory (as a logical path preserving
-    symlink traversal), selected item, and per-directory memory of
-    selections and scroll positions.
-
-    Attributes:
-        current_dir: The current directory as a logical Path.
-        selected_name: The name of the currently selected item.
-        scroll_offset: The current scroll offset in the middle pane.
+    Manages current directory, selected item, scroll positions, and
+    per-directory memory of selections.
     """
 
     current_dir: Path
@@ -103,34 +85,13 @@ class NavigationState:
         _adjust_scroll(self, pane_height)
 
     def get_parent_scroll_offset(self) -> int:
-        """Get the remembered scroll offset for the parent directory.
-
-        Returns:
-            The scroll offset for the parent directory, or 0 if not remembered.
-        """
-        parent = self.current_dir.parent
-        if parent == self.current_dir:
-            return 0
-        return _get_scroll_offset_for_directory(self, str(parent.resolve()))
+        """Get the remembered scroll offset for the parent directory."""
+        return _get_parent_scroll_offset(self, self.current_dir)
 
     def get_selected_name_for_directory(self, directory_path: str) -> str | None:
-        """Get the remembered selected name for a directory.
-
-        Args:
-            directory_path: The directory path to look up.
-
-        Returns:
-            The remembered selected name, or None if not remembered.
-        """
+        """Get the remembered selected name for a directory."""
         return _get_selected_name_for_directory(self, directory_path)
 
     def get_scroll_offset_for_directory(self, directory_path: str) -> int:
-        """Get the remembered scroll offset for a directory.
-
-        Args:
-            directory_path: The directory path to look up.
-
-        Returns:
-            The remembered scroll offset, or 0 if not remembered.
-        """
+        """Get the remembered scroll offset for a directory."""
         return _get_scroll_offset_for_directory(self, directory_path)

@@ -6,6 +6,7 @@ These are package-private functions used by the nav_state module family.
 """
 
 from __future__ import annotations
+from pathlib import Path
 
 from typing import TYPE_CHECKING
 
@@ -49,3 +50,19 @@ def get_selected_name_for_directory(
     if memory:
         return memory.selected_name
     return None
+
+
+def get_parent_scroll_offset(state: NavigationState, current_dir: Path) -> int:
+    """Get the remembered scroll offset for the parent directory.
+
+    Args:
+        state: The navigation state to query.
+        current_dir: The current directory path.
+
+    Returns:
+        The scroll offset for the parent directory, or 0 if not remembered.
+    """
+    parent = current_dir.parent
+    if parent == current_dir:
+        return 0
+    return get_scroll_offset_for_directory(state, str(parent.resolve()))
