@@ -19,7 +19,7 @@ from platyplaty.ui.emacs_cursor import (
     handle_ctrl_e,
     handle_ctrl_f,
 )
-from platyplaty.ui.emacs_cut import CutResult, compute_ctrl_k, compute_ctrl_u
+from platyplaty.ui.emacs_cut import CutResult, compute_ctrl_k, compute_ctrl_u, compute_ctrl_w, compute_alt_d
 from platyplaty.ui.emacs_delete import handle_ctrl_d
 
 # Mapping of keys to cursor movement handlers
@@ -90,6 +90,14 @@ class EmacsEditingMode:
         # Ctrl+U: cut from beginning of line to cursor
         if key == "ctrl+u":
             return self._handle_cut(compute_ctrl_u(state))
+
+        # Ctrl+W: cut previous word (unix word definition)
+        if key == "ctrl+w":
+            return self._handle_cut(compute_ctrl_w(state))
+
+        # Alt+D: cut word forward (alphanumeric word definition)
+        if key in ("alt+d", "escape+d"):
+            return self._handle_cut(compute_alt_d(state))
 
         return None
 

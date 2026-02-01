@@ -43,3 +43,35 @@ def compute_ctrl_u(state: PromptState) -> CutResult:
     cut_text = state.text[:state.cursor]
     new_text = state.text[state.cursor:]
     return CutResult(cut_text, new_text, 0)
+
+
+def compute_ctrl_w(state: PromptState) -> CutResult:
+    """Compute result of Ctrl+W (cut previous word).
+
+    Uses unix word definition: only whitespace acts as a boundary.
+    Returns CutResult with cut_text empty if no word before cursor.
+    """
+    from platyplaty.ui.word_boundary import find_unix_word_start_backward
+
+    target = find_unix_word_start_backward(state.text, state.cursor)
+    if target == state.cursor:
+        return CutResult("", state.text, state.cursor)
+    cut_text = state.text[target:state.cursor]
+    new_text = state.text[:target] + state.text[state.cursor:]
+    return CutResult(cut_text, new_text, target)
+
+
+def compute_alt_d(state: PromptState) -> CutResult:
+    """Compute result of Alt+D (cut word forward).
+
+    Uses alphanumeric word definition: non-alphanumeric characters act as boundaries.
+    Returns CutResult with cut_text empty if no word at or after cursor.
+    """
+    from platyplaty.ui.word_boundary import find_word_end_forward
+
+    target = find_word_end_forward(state.text, state.cursor)
+    if target == state.cursor:
+        return CutResult("", state.text, state.cursor)
+    cut_text = state.text[state.cursor:target]
+    new_text = state.text[:state.cursor] + state.text[target:]
+    return CutResult(cut_text, new_text, state.cursor)
