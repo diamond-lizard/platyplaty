@@ -70,7 +70,7 @@ async def handle_command_key(
         return False
     if key == "shift+insert":
         return prompt.paste_from_selection()
-    if character is not None:
+    if character is not None and character.isprintable():
         idx = prompt.cursor_index
         text = prompt.input_text
         prompt.input_text = text[:idx] + character + text[idx:]

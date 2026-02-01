@@ -61,3 +61,10 @@ class TestHandleCommandKeyCharacterInput:
         assert mock_prompt.input_text == ""
         assert result is False
 
+    @pytest.mark.asyncio
+    async def test_control_character_not_inserted(self, mock_prompt):
+        """Control characters are rejected, not inserted."""
+        result = await handle_command_key("ctrl+k", mock_prompt, "\x0b")
+        assert mock_prompt.input_text == ""
+        assert result is False
+
