@@ -11,14 +11,7 @@ the consecutive cut chain tracker) resets when the prompt opens.
 """
 
 from platyplaty.ui.editing_mode import EditResult, PromptState
-from platyplaty.ui.emacs_cursor import (
-    handle_alt_b,
-    handle_alt_f,
-    handle_ctrl_a,
-    handle_ctrl_b,
-    handle_ctrl_e,
-    handle_ctrl_f,
-)
+from platyplaty.ui.emacs_cursor import CURSOR_HANDLERS
 from platyplaty.ui.emacs_cut import (
     CutResult,
     compute_alt_d,
@@ -27,18 +20,6 @@ from platyplaty.ui.emacs_cut import (
     compute_ctrl_w,
 )
 from platyplaty.ui.emacs_delete import handle_ctrl_d
-
-# Mapping of keys to cursor movement handlers
-_CURSOR_HANDLERS = {
-    "ctrl+a": handle_ctrl_a,
-    "ctrl+e": handle_ctrl_e,
-    "ctrl+b": handle_ctrl_b,
-    "ctrl+f": handle_ctrl_f,
-    "alt+b": handle_alt_b,
-    "escape+b": handle_alt_b,
-    "alt+f": handle_alt_f,
-    "escape+f": handle_alt_f,
-}
 
 
 class EmacsEditingMode:
@@ -80,9 +61,9 @@ class EmacsEditingMode:
     ) -> EditResult | None:
         """Handle a key press and return the result."""
         # Check cursor movement handlers
-        if key in _CURSOR_HANDLERS:
+        if key in CURSOR_HANDLERS:
             self._last_was_cut = False
-            return _CURSOR_HANDLERS[key](state)
+            return CURSOR_HANDLERS[key](state)
 
         # Ctrl+D: delete character at cursor
         if key == "ctrl+d":

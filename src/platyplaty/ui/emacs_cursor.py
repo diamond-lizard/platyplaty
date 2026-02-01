@@ -52,3 +52,16 @@ def handle_alt_f(state: PromptState) -> EditResult:
     new_cursor = find_word_end_forward(state.text, state.cursor)
     moved = new_cursor != state.cursor
     return EditResult(state.text, new_cursor, moved)
+
+
+# Mapping of keys to cursor movement handlers
+CURSOR_HANDLERS = {
+    "ctrl+a": handle_ctrl_a,
+    "ctrl+e": handle_ctrl_e,
+    "ctrl+b": handle_ctrl_b,
+    "ctrl+f": handle_ctrl_f,
+    "alt+b": handle_alt_b,
+    "escape+b": handle_alt_b,
+    "alt+f": handle_alt_f,
+    "escape+f": handle_alt_f,
+}
