@@ -19,7 +19,13 @@ from platyplaty.ui.emacs_cursor import (
     handle_ctrl_e,
     handle_ctrl_f,
 )
-from platyplaty.ui.emacs_cut import CutResult, compute_ctrl_k, compute_ctrl_u, compute_ctrl_w, compute_alt_d
+from platyplaty.ui.emacs_cut import (
+    CutResult,
+    compute_alt_d,
+    compute_ctrl_k,
+    compute_ctrl_u,
+    compute_ctrl_w,
+)
 from platyplaty.ui.emacs_delete import handle_ctrl_d
 
 # Mapping of keys to cursor movement handlers
