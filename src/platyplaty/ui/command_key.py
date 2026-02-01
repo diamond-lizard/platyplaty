@@ -24,7 +24,7 @@ async def handle_command_key(
     Returns:
         True if text or cursor position changed, False otherwise.
     """
-    if key == "escape":
+    if key in ("escape", "ctrl+c"):
         prompt.hide()
         return False
     if key == "enter":
