@@ -72,17 +72,17 @@ class EmacsEditingMode:
         # Ctrl+B: move cursor back one character
         if key == "ctrl+b":
             self._last_was_cut = False
-            if state.cursor == 0:
-                return EditResult(state.text, 0, False)
-            return EditResult(state.text, state.cursor - 1, True)
+            new_cursor = max(0, state.cursor - 1)
+            moved = new_cursor != state.cursor
+            return EditResult(state.text, new_cursor, moved)
 
         # Ctrl+F: move cursor forward one character
         if key == "ctrl+f":
             self._last_was_cut = False
             end = len(state.text)
-            if state.cursor == end:
-                return EditResult(state.text, end, False)
-            return EditResult(state.text, state.cursor + 1, True)
+            new_cursor = min(end, state.cursor + 1)
+            moved = new_cursor != state.cursor
+            return EditResult(state.text, new_cursor, moved)
 
         return None
 
