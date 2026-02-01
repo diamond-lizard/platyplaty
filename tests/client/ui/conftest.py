@@ -17,6 +17,10 @@ from unittest.mock import MagicMock
 
 from platyplaty.dispatch_tables import DispatchTable
 from platyplaty.ui.nav_state import NavigationState
+from platyplaty.app_context import AppContext
+from platyplaty.playlist import Playlist
+from platyplaty.types.app_config import AppConfig
+from platyplaty.types.keybindings import Keybindings
 from test_fakes import FakePrompt, NullEditingMode, create_mock_browser, make_listing
 
 
@@ -101,3 +105,21 @@ def null_editing_mode() -> NullEditingMode:
         A NullEditingMode that returns None for all keys.
     """
     return NullEditingMode()
+
+
+@pytest.fixture
+def minimal_app_context() -> AppContext:
+    """Provide a minimal AppContext for testing.
+
+    Returns:
+        An AppContext with minimal configuration for testing.
+    """
+    config = AppConfig(
+        socket_path="/tmp/test.sock",
+        audio_source="test",
+        preset_duration=30.0,
+        fullscreen=False,
+        keybindings=Keybindings(),
+    )
+    playlist = Playlist(presets=[])
+    return AppContext(config=config, playlist=playlist)
