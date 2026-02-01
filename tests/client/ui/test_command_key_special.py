@@ -34,6 +34,14 @@ class TestHandleCommandKeySpecialKeys:
         mock_prompt.hide.assert_called_once()
         assert result is False
 
+
+    @pytest.mark.asyncio
+    async def test_ctrl_c_hides_prompt(self, mock_prompt):
+        """Ctrl+C hides the prompt like Escape."""
+        result = await handle_command_key("ctrl+c", mock_prompt, None)
+        mock_prompt.hide.assert_called_once()
+        assert result is False
+
     @pytest.mark.asyncio
     async def test_backspace_removes_character(self, mock_prompt):
         """Backspace removes the last character."""
