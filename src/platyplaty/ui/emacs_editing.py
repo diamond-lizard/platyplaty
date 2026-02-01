@@ -54,6 +54,18 @@ class EmacsEditingMode:
         """Break the consecutive cut chain."""
         self._last_was_cut = False
 
+    def _store_cut(self, cut_text: str) -> None:
+        """Store cut text in yank buffer with append logic.
+
+        If the last operation was also a cut, appends to the buffer.
+        Otherwise, replaces the buffer contents.
+        """
+        if self._last_was_cut:
+            self._yank_buffer += cut_text
+        else:
+            self._yank_buffer = cut_text
+        self._last_was_cut = True
+
     def handle_key(
         self, key: str, character: str | None, state: PromptState
     ) -> EditResult | None:
@@ -67,6 +79,22 @@ class EmacsEditingMode:
         if key == "ctrl+d":
             self._last_was_cut = False
             return handle_ctrl_d(state)
+
+        # Ctrl+K: cut from cursor to end of line
+        if key == "ctrl+k":
+            cut_text = state.text[state.cursor:]
+            if not cut_text:
+                return EditResult(state.text, state.cursor, False)
+            self._store_cut(cut_text)
+            return EditResult(state.text[:state.cursor], state.cursor, True)
+
+        # Ctrl+U: cut from beginning of line to cursor
+        if key == "ctrl+u":
+            cut_text = state.text[:state.cursor]
+            if not cut_text:
+                return EditResult(state.text, state.cursor, False)
+            self._store_cut(cut_text)
+            return EditResult(state.text[state.cursor:], 0, True)
 
         return None
 
