@@ -7,7 +7,7 @@ bottom of the terminal for entering commands like load, save, clear, shuffle.
 
 from collections.abc import Awaitable, Callable
 
-from textual.events import Key, Paste
+from textual.events import Key, MouseDown, Paste
 from textual.reactive import reactive
 from textual.strip import Strip
 from textual.widget import Widget
@@ -120,6 +120,13 @@ class CommandPrompt(Widget, can_focus=True):
         """Handle bracketed paste events from terminal."""
         event.stop()
         do_paste(self, event.text)
+
+    def on_mouse_down(self, event: MouseDown) -> None:
+        """Handle middle-click to paste X11 primary selection."""
+        if event.button != 2:
+            return
+        event.stop()
+        do_paste_from_selection(self)
 
     async def on_key(self, event: Key) -> None:
         """Handle key events for the command prompt."""
