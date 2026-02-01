@@ -126,7 +126,7 @@ class CommandPrompt(Widget, can_focus=True):
         if event.button != 2:
             return
         event.stop()
-        do_paste_from_selection(self)
+        self.paste_from_selection()
 
     async def on_key(self, event: Key) -> None:
         """Handle key events for the command prompt."""
