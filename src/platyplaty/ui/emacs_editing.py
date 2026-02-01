@@ -20,6 +20,7 @@ from platyplaty.ui.emacs_cut import (
     compute_ctrl_w,
 )
 from platyplaty.ui.emacs_delete import handle_ctrl_d
+from platyplaty.ui.emacs_yank import compute_yank
 
 
 class EmacsEditingMode:
@@ -89,12 +90,7 @@ class EmacsEditingMode:
         # Ctrl+Y: yank from internal buffer
         if key == "ctrl+y":
             self._last_was_cut = False
-            if not self._yank_buffer:
-                return EditResult(state.text, state.cursor, False)
-            pos = state.cursor
-            new_text = state.text[:pos] + self._yank_buffer + state.text[pos:]
-            new_cursor = state.cursor + len(self._yank_buffer)
-            return EditResult(new_text, new_cursor, True)
+            return compute_yank(state, self._yank_buffer)
 
         return None
 
