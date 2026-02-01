@@ -56,7 +56,34 @@ class EmacsEditingMode:
         Returns:
             EditResult if the key was handled, None if not handled.
         """
-        # Handlers will be added in subsequent phases
+        # Ctrl+A: move cursor to beginning of line
+        if key == "ctrl+a":
+            self._last_was_cut = False
+            moved = state.cursor != 0
+            return EditResult(state.text, 0, moved)
+
+        # Ctrl+E: move cursor to end of line
+        if key == "ctrl+e":
+            self._last_was_cut = False
+            end = len(state.text)
+            moved = state.cursor != end
+            return EditResult(state.text, end, moved)
+
+        # Ctrl+B: move cursor back one character
+        if key == "ctrl+b":
+            self._last_was_cut = False
+            if state.cursor == 0:
+                return EditResult(state.text, 0, False)
+            return EditResult(state.text, state.cursor - 1, True)
+
+        # Ctrl+F: move cursor forward one character
+        if key == "ctrl+f":
+            self._last_was_cut = False
+            end = len(state.text)
+            if state.cursor == end:
+                return EditResult(state.text, end, False)
+            return EditResult(state.text, state.cursor + 1, True)
+
         return None
 
     @property
