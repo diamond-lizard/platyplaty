@@ -119,3 +119,127 @@ class TestCursorMovementSingleChar:
         state = PromptState("hello", 5)
         mode.handle_key("ctrl+f", None, state)
         assert mode._last_was_cut is False
+
+
+class TestCursorMovementWord:
+    """Tests for word-based cursor movement (Alt+B, Alt+F)."""
+
+    def test_alt_b_moves_to_start_of_previous_word(self) -> None:
+        """Alt+B moves cursor to start of previous word."""
+        mode = EmacsEditingMode()
+        state = PromptState("hello world", 11)
+        result = mode.handle_key("alt+b", None, state)
+        assert result is not None
+        assert result.new_cursor == 6
+        assert result.new_text == "hello world"
+        assert result.state_changed is True
+
+    def test_alt_b_skips_non_alphanumeric(self) -> None:
+        """Alt+B skips non-alphanumeric characters between words."""
+        mode = EmacsEditingMode()
+        state = PromptState("hello   world", 13)
+        result = mode.handle_key("alt+b", None, state)
+        assert result is not None
+        assert result.new_cursor == 8
+
+    def test_alt_b_at_start_is_noop(self) -> None:
+        """Alt+B at start is no-op with state_changed False."""
+        mode = EmacsEditingMode()
+        state = PromptState("hello", 0)
+        result = mode.handle_key("alt+b", None, state)
+        assert result is not None
+        assert result.new_cursor == 0
+        assert result.state_changed is False
+
+    def test_alt_b_resets_last_was_cut(self) -> None:
+        """Alt+B resets last_was_cut flag even when no-op (REQ-1900)."""
+        mode = EmacsEditingMode()
+        mode._last_was_cut = True
+        state = PromptState("hello", 0)
+        mode.handle_key("alt+b", None, state)
+        assert mode._last_was_cut is False
+
+    def test_escape_b_also_works(self) -> None:
+        """escape+b works same as alt+b for terminal compatibility."""
+        mode = EmacsEditingMode()
+        state = PromptState("hello world", 11)
+        result = mode.handle_key("escape+b", None, state)
+        assert result is not None
+        assert result.new_cursor == 6
+
+    def test_alt_f_moves_to_end_of_next_word(self) -> None:
+        """Alt+F moves cursor to end of next word."""
+        mode = EmacsEditingMode()
+        state = PromptState("hello world", 0)
+        result = mode.handle_key("alt+f", None, state)
+        assert result is not None
+        assert result.new_cursor == 5
+        assert result.new_text == "hello world"
+        assert result.state_changed is True
+
+    def test_alt_f_skips_non_alphanumeric(self) -> None:
+        """Alt+F skips non-alphanumeric characters between words."""
+        mode = EmacsEditingMode()
+        state = PromptState("hello   world", 5)
+        result = mode.handle_key("alt+f", None, state)
+        assert result is not None
+        assert result.new_cursor == 13
+
+    def test_alt_f_at_end_is_noop(self) -> None:
+        """Alt+F at end is no-op with state_changed False."""
+        mode = EmacsEditingMode()
+        state = PromptState("hello", 5)
+        result = mode.handle_key("alt+f", None, state)
+        assert result is not None
+        assert result.new_cursor == 5
+        assert result.state_changed is False
+
+    def test_alt_f_resets_last_was_cut(self) -> None:
+        """Alt+F resets last_was_cut flag even when no-op (REQ-1900)."""
+        mode = EmacsEditingMode()
+        mode._last_was_cut = True
+        state = PromptState("hello", 5)
+        mode.handle_key("alt+f", None, state)
+        assert mode._last_was_cut is False
+
+    def test_escape_f_also_works(self) -> None:
+        """escape+f works same as alt+f for terminal compatibility."""
+        mode = EmacsEditingMode()
+        state = PromptState("hello world", 0)
+        result = mode.handle_key("escape+f", None, state)
+        assert result is not None
+        assert result.new_cursor == 5
+
+    def test_alt_b_treats_hyphenated_as_two_words(self) -> None:
+        """Alt+B treats 'foo-bar' as two words (alphanumeric boundaries)."""
+        mode = EmacsEditingMode()
+        state = PromptState("foo-bar", 7)
+        result = mode.handle_key("alt+b", None, state)
+        assert result is not None
+        assert result.new_cursor == 4  # Start of "bar"
+
+    def test_alt_f_treats_hyphenated_as_two_words(self) -> None:
+        """Alt+F treats 'foo-bar' as two words (alphanumeric boundaries)."""
+        mode = EmacsEditingMode()
+        state = PromptState("foo-bar", 0)
+        result = mode.handle_key("alt+f", None, state)
+        assert result is not None
+        assert result.new_cursor == 3  # End of "foo"
+
+    def test_alt_b_navigates_path_word_by_word(self) -> None:
+        """Alt+B navigates 'foo/bar/baz.milk' word by word."""
+        mode = EmacsEditingMode()
+        # Start at end, should go to start of "milk"
+        state = PromptState("foo/bar/baz.milk", 16)
+        result = mode.handle_key("alt+b", None, state)
+        assert result is not None
+        assert result.new_cursor == 12  # Start of "milk"
+
+    def test_alt_f_navigates_path_word_by_word(self) -> None:
+        """Alt+F navigates 'foo/bar/baz.milk' word by word."""
+        mode = EmacsEditingMode()
+        # Start at beginning, should go to end of "foo"
+        state = PromptState("foo/bar/baz.milk", 0)
+        result = mode.handle_key("alt+f", None, state)
+        assert result is not None
+        assert result.new_cursor == 3  # End of "foo"
