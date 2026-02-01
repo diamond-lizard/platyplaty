@@ -25,6 +25,7 @@ def mock_prompt():
         prompt, CommandPrompt
     )
     prompt.on_paste = CommandPrompt.on_paste.__get__(prompt, CommandPrompt)
+    prompt.on_mouse_down = CommandPrompt.on_mouse_down.__get__(prompt, CommandPrompt)
     return prompt
 
 
@@ -124,3 +125,49 @@ class TestOnPaste:
         mock_prompt.cursor_index = 0
         mock_prompt.on_paste(event)
         assert mock_prompt.input_text == "pasted"
+
+
+class TestOnMouseDown:
+    """Tests for on_mouse_down event handler."""
+
+    def test_middle_click_calls_paste_from_selection(self, mock_prompt):
+        """Middle-click calls paste_from_selection."""
+        event = MagicMock()
+        event.button = 2
+        mock_prompt.paste_from_selection = MagicMock(return_value=True)
+        mock_prompt.on_mouse_down(event)
+        mock_prompt.paste_from_selection.assert_called_once()
+
+    def test_left_click_does_not_trigger_paste(self, mock_prompt):
+        """Left-click does not trigger paste."""
+        event = MagicMock()
+        event.button = 1
+        mock_prompt.paste_from_selection = MagicMock()
+        mock_prompt.on_mouse_down(event)
+        mock_prompt.paste_from_selection.assert_not_called()
+
+    def test_right_click_does_not_trigger_paste(self, mock_prompt):
+        """Right-click does not trigger paste."""
+        event = MagicMock()
+        event.button = 3
+        mock_prompt.paste_from_selection = MagicMock()
+        mock_prompt.on_mouse_down(event)
+        mock_prompt.paste_from_selection.assert_not_called()
+
+    def test_event_stop_called_only_for_middle_button(self, mock_prompt):
+        """event.stop() is called only for middle button."""
+        middle_event = MagicMock()
+        middle_event.button = 2
+        mock_prompt.paste_from_selection = MagicMock()
+        mock_prompt.on_mouse_down(middle_event)
+        middle_event.stop.assert_called_once()
+
+        left_event = MagicMock()
+        left_event.button = 1
+        mock_prompt.on_mouse_down(left_event)
+        left_event.stop.assert_not_called()
+
+        right_event = MagicMock()
+        right_event.button = 3
+        mock_prompt.on_mouse_down(right_event)
+        right_event.stop.assert_not_called()
