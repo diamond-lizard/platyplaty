@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from platyplaty.ui.prompt_interface import PromptInterface
 
 
+from platyplaty.ui.basic_text_editing import handle_basic_text_key
 from platyplaty.ui.editing_mode import PromptState
 
 
@@ -71,44 +72,8 @@ async def handle_command_key(
         prompt.update_cursor_with_scroll(result.new_cursor)
         return result.state_changed
 
-    # Text-editing keys: use single exit point pattern
-    state_changed = False
-    if key == "left":
-        if prompt.cursor_index > 0:
-            prompt.update_cursor_with_scroll(prompt.cursor_index - 1)
-            state_changed = True
-    elif key == "right":
-        if prompt.cursor_index < len(prompt.input_text):
-            prompt.update_cursor_with_scroll(prompt.cursor_index + 1)
-            state_changed = True
-    elif key == "home":
-        if prompt.cursor_index > 0:
-            prompt.update_cursor_with_scroll(0)
-            state_changed = True
-    elif key == "end":
-        text_len = len(prompt.input_text)
-        if prompt.cursor_index < text_len:
-            prompt.update_cursor_with_scroll(text_len)
-            state_changed = True
-    elif key == "backspace":
-        idx = prompt.cursor_index
-        if idx > 0:
-            prompt.input_text = prompt.input_text[:idx-1] + prompt.input_text[idx:]
-            prompt.update_cursor_with_scroll(idx - 1)
-            state_changed = True
-    elif key == "delete":
-        idx = prompt.cursor_index
-        if idx < len(prompt.input_text):
-            prompt.input_text = prompt.input_text[:idx] + prompt.input_text[idx+1:]
-            state_changed = True
-    elif key == "shift+insert":
-        state_changed = prompt.paste_from_selection()
-    elif character is not None and character.isprintable():
-        idx = prompt.cursor_index
-        text = prompt.input_text
-        prompt.input_text = text[:idx] + character + text[idx:]
-        prompt.update_cursor_with_scroll(idx + 1)
-        state_changed = True
+    # Handle basic text-editing keys
+    state_changed = handle_basic_text_key(key, prompt, character)
     editing_mode.reset_cut_chain()
     return state_changed
 
