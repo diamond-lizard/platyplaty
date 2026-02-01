@@ -12,6 +12,10 @@ chain tracker) resets when the prompt opens.
 """
 
 from platyplaty.ui.editing_mode import EditResult, PromptState
+from platyplaty.ui.word_boundary import (
+    find_word_end_forward,
+    find_word_start_backward,
+)
 
 
 class EmacsEditingMode:
@@ -84,6 +88,19 @@ class EmacsEditingMode:
             moved = new_cursor != state.cursor
             return EditResult(state.text, new_cursor, moved)
 
+        # Alt+B: move cursor back one word
+        if key in ("alt+b", "escape+b"):
+            self._last_was_cut = False
+            new_cursor = find_word_start_backward(state.text, state.cursor)
+            moved = new_cursor != state.cursor
+            return EditResult(state.text, new_cursor, moved)
+
+        # Alt+F: move cursor forward one word
+        if key in ("alt+f", "escape+f"):
+            self._last_was_cut = False
+            new_cursor = find_word_end_forward(state.text, state.cursor)
+            moved = new_cursor != state.cursor
+            return EditResult(state.text, new_cursor, moved)
         return None
 
     @property
