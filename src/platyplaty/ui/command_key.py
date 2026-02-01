@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from textual.app import App
 
-    from platyplaty.ui.prompt_interface import PromptInterface
     from platyplaty.ui.editing_mode import EditingMode
+    from platyplaty.ui.prompt_interface import PromptInterface
 
 
-from platyplaty.ui.editing_mode import EditResult, PromptState
+from platyplaty.ui.editing_mode import PromptState
 
 
 async def handle_prompt_control_key(
