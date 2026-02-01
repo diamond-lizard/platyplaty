@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from textual.app import App
 
-    from platyplaty.ui.command_prompt import CommandPrompt
+    from platyplaty.ui.prompt_interface import PromptInterface
 
 
 async def handle_command_key(
     key: str,
-    prompt: "CommandPrompt",
+    prompt: "PromptInterface",
     character: str | None,
 ) -> bool:
     """Handle a key press in the command prompt.
