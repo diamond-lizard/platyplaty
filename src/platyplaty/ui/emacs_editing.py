@@ -86,6 +86,15 @@ class EmacsEditingMode:
         if key in ("alt+d", "escape+d"):
             return self._handle_cut(compute_alt_d(state))
 
+        # Ctrl+Y: yank from internal buffer
+        if key == "ctrl+y":
+            self._last_was_cut = False
+            if not self._yank_buffer:
+                return EditResult(state.text, state.cursor, False)
+            new_text = state.text[:state.cursor] + self._yank_buffer + state.text[state.cursor:]
+            new_cursor = state.cursor + len(self._yank_buffer)
+            return EditResult(new_text, new_cursor, True)
+
         return None
 
     @property
