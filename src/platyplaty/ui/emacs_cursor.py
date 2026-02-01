@@ -64,4 +64,17 @@ CURSOR_HANDLERS = {
     "escape+b": handle_alt_b,
     "alt+f": handle_alt_f,
     "escape+f": handle_alt_f,
+    # Workaround for Textual issue #6192: In xterm and other terminals,
+    # pressing Alt+F sends ESC followed by 'f' (the standard escape sequence
+    # for Alt+letter). However, Textual's key parser incorrectly interprets
+    # this sequence as ctrl+right instead of alt+f. Similarly, Alt+B is
+    # misinterpreted as ctrl+left. This appears to be a timing issue where
+    # ESC and the letter arrive as separate events, and Textual's parser
+    # matches them against the wrong key definition. By mapping ctrl+right
+    # and ctrl+left to the word movement handlers, we ensure Alt+F and Alt+B
+    # work correctly even when Textual misreports them.
+    #
+    # More information in https://github.com/Textualize/textual/issues/6192
+    "ctrl+right": handle_alt_f,
+    "ctrl+left": handle_alt_b,
 }
