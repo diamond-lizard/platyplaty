@@ -19,6 +19,7 @@ from platyplaty.ui.emacs_cursor import (
     handle_ctrl_e,
     handle_ctrl_f,
 )
+from platyplaty.ui.emacs_cut import CutResult, compute_ctrl_k, compute_ctrl_u
 from platyplaty.ui.emacs_delete import handle_ctrl_d
 
 # Mapping of keys to cursor movement handlers
@@ -54,17 +55,19 @@ class EmacsEditingMode:
         """Break the consecutive cut chain."""
         self._last_was_cut = False
 
-    def _store_cut(self, cut_text: str) -> None:
-        """Store cut text in yank buffer with append logic.
+    def _handle_cut(self, cut_result: CutResult) -> EditResult:
+        """Handle a cut operation, storing text in yank buffer.
 
-        If the last operation was also a cut, appends to the buffer.
-        Otherwise, replaces the buffer contents.
+        No-op cuts (empty cut_text) preserve cut chain state.
         """
+        if not cut_result.cut_text:
+            return EditResult(cut_result.new_text, cut_result.new_cursor, False)
         if self._last_was_cut:
-            self._yank_buffer += cut_text
+            self._yank_buffer += cut_result.cut_text
         else:
-            self._yank_buffer = cut_text
+            self._yank_buffer = cut_result.cut_text
         self._last_was_cut = True
+        return EditResult(cut_result.new_text, cut_result.new_cursor, True)
 
     def handle_key(
         self, key: str, character: str | None, state: PromptState
@@ -82,19 +85,11 @@ class EmacsEditingMode:
 
         # Ctrl+K: cut from cursor to end of line
         if key == "ctrl+k":
-            cut_text = state.text[state.cursor:]
-            if not cut_text:
-                return EditResult(state.text, state.cursor, False)
-            self._store_cut(cut_text)
-            return EditResult(state.text[:state.cursor], state.cursor, True)
+            return self._handle_cut(compute_ctrl_k(state))
 
         # Ctrl+U: cut from beginning of line to cursor
         if key == "ctrl+u":
-            cut_text = state.text[:state.cursor]
-            if not cut_text:
-                return EditResult(state.text, state.cursor, False)
-            self._store_cut(cut_text)
-            return EditResult(state.text[state.cursor:], 0, True)
+            return self._handle_cut(compute_ctrl_u(state))
 
         return None
 
