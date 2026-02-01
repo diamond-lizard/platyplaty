@@ -219,3 +219,145 @@ class TestCutWord:
         assert result is not None
         assert result.new_text == " world"
         assert mode.yank_buffer == "hello"
+
+
+class TestConsecutiveCutAppend:
+    """Tests for consecutive cut commands appending to yank buffer."""
+
+    def test_consecutive_ctrl_k_appends(self) -> None:
+        """Two consecutive Ctrl+K calls append to yank buffer."""
+        mode = EmacsEditingMode()
+        # First cut: "world" from "hello world"
+        state1 = PromptState("hello world", 6)
+        mode.handle_key("ctrl+k", None, state1)
+        assert mode.yank_buffer == "world"
+        # Second cut: "hello" from remaining "hello "
+        state2 = PromptState("hello ", 0)
+        mode.handle_key("ctrl+k", None, state2)
+        assert mode.yank_buffer == "worldhello "
+
+    def test_ctrl_k_then_ctrl_u_appends(self) -> None:
+        """Ctrl+K followed by Ctrl+U appends to yank buffer."""
+        mode = EmacsEditingMode()
+        # Ctrl+K cuts "world"
+        state1 = PromptState("hello world", 6)
+        mode.handle_key("ctrl+k", None, state1)
+        assert mode.yank_buffer == "world"
+        # Ctrl+U cuts "hello " (from remaining "hello ")
+        state2 = PromptState("hello ", 6)
+        mode.handle_key("ctrl+u", None, state2)
+        assert mode.yank_buffer == "worldhello "
+
+    def test_mixed_cut_commands_append(self) -> None:
+        """Mixing different cut commands (Ctrl+W, Alt+D) appends."""
+        mode = EmacsEditingMode()
+        # Alt+D cuts "foo"
+        state1 = PromptState("foo bar baz", 0)
+        mode.handle_key("alt+d", None, state1)
+        assert mode.yank_buffer == "foo"
+        # Ctrl+W cuts "bar" (from remaining " bar baz", cursor at end)
+        state2 = PromptState(" bar baz", 8)
+        mode.handle_key("ctrl+w", None, state2)
+        assert mode.yank_buffer == "foobaz"
+
+    def test_cursor_move_breaks_chain(self) -> None:
+        """Ctrl+K then cursor move then Ctrl+K replaces buffer."""
+        mode = EmacsEditingMode()
+        # First cut
+        state1 = PromptState("hello world", 6)
+        mode.handle_key("ctrl+k", None, state1)
+        assert mode.yank_buffer == "world"
+        # Cursor move (Ctrl+B) breaks chain
+        state2 = PromptState("hello ", 6)
+        mode.handle_key("ctrl+b", None, state2)
+        # Second cut replaces (not appends)
+        state3 = PromptState("hello ", 5)
+        mode.handle_key("ctrl+k", None, state3)
+        assert mode.yank_buffer == " "
+
+    def test_char_insert_breaks_chain(self) -> None:
+        """Ctrl+K then character insert then Ctrl+K replaces buffer."""
+        mode = EmacsEditingMode()
+        # First cut
+        state1 = PromptState("hello world", 6)
+        mode.handle_key("ctrl+k", None, state1)
+        assert mode.yank_buffer == "world"
+        # Character insert breaks chain (simulate by calling reset_cut_chain)
+        mode.reset_cut_chain()
+        # Second cut replaces (not appends)
+        state2 = PromptState("hello X", 6)
+        mode.handle_key("ctrl+k", None, state2)
+        assert mode.yank_buffer == "X"
+
+
+    def test_noop_cut_preserves_chain(self) -> None:
+        """No-op Ctrl+K preserves chain: subsequent cut appends.
+        
+        Starting with text "worldhello" and cursor at position 5:
+        - Ctrl+K cuts "hello" (from cursor to end), text becomes "world"
+        - Ctrl+K (no-op since nothing after cursor)
+        - Ctrl+U cuts "world" (from start to cursor)
+        Verify yank buffer contains "helloworld" (appended, not replaced).
+        """
+        mode = EmacsEditingMode()
+        # First cut: "hello" from position 5 to end
+        state1 = PromptState("worldhello", 5)
+        mode.handle_key("ctrl+k", None, state1)
+        assert mode.yank_buffer == "hello"
+        assert mode._last_was_cut is True
+        # No-op Ctrl+K (cursor at end, nothing to cut)
+        state2 = PromptState("world", 5)
+        result = mode.handle_key("ctrl+k", None, state2)
+        assert result is not None
+        assert result.state_changed is False
+        assert mode._last_was_cut is True  # Chain preserved
+        # Ctrl+U cuts "world"
+        state3 = PromptState("world", 5)
+        mode.handle_key("ctrl+u", None, state3)
+        assert mode.yank_buffer == "helloworld"
+
+    def test_noop_non_cut_breaks_chain(self) -> None:
+        """No-op non-cut command (Ctrl+F at end) breaks chain.
+        
+        Starting with text "ab" and cursor at position 1:
+        - Ctrl+K cuts "b" (yank buffer = "b", last_was_cut = True)
+        - Ctrl+F (no-op since cursor is already at end of text after cut)
+        - Ctrl+A moves cursor to 0
+        - Ctrl+K cuts "a"
+        Verify yank buffer contains only "a" (replaced, not appended).
+        """
+        mode = EmacsEditingMode()
+        # First cut: "b" from position 1
+        state1 = PromptState("ab", 1)
+        mode.handle_key("ctrl+k", None, state1)
+        assert mode.yank_buffer == "b"
+        assert mode._last_was_cut is True
+        # No-op Ctrl+F (cursor already at end after cut)
+        state2 = PromptState("a", 1)
+        result = mode.handle_key("ctrl+f", None, state2)
+        assert result is not None
+        assert result.state_changed is False
+        assert mode._last_was_cut is False  # Chain broken by non-cut
+        # Ctrl+A moves to start
+        state3 = PromptState("a", 1)
+        mode.handle_key("ctrl+a", None, state3)
+        # Second cut replaces (not appends)
+        state4 = PromptState("a", 0)
+        mode.handle_key("ctrl+k", None, state4)
+        assert mode.yank_buffer == "a"
+
+    def test_reset_transient_state_clears_last_was_cut(self) -> None:
+        """reset_transient_state clears last_was_cut, causing next cut to replace."""
+        mode = EmacsEditingMode()
+        # First cut
+        state1 = PromptState("hello world", 6)
+        mode.handle_key("ctrl+k", None, state1)
+        assert mode.yank_buffer == "world"
+        assert mode._last_was_cut is True
+        # Simulate prompt close/reopen
+        mode.reset_transient_state()
+        assert mode._last_was_cut is False
+        # Second cut replaces (not appends) due to reset
+        state2 = PromptState("foo bar", 4)
+        mode.handle_key("ctrl+k", None, state2)
+        assert mode.yank_buffer == "bar"
