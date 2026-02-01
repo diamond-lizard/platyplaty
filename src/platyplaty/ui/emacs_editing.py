@@ -91,7 +91,8 @@ class EmacsEditingMode:
             self._last_was_cut = False
             if not self._yank_buffer:
                 return EditResult(state.text, state.cursor, False)
-            new_text = state.text[:state.cursor] + self._yank_buffer + state.text[state.cursor:]
+            pos = state.cursor
+            new_text = state.text[:pos] + self._yank_buffer + state.text[pos:]
             new_cursor = state.cursor + len(self._yank_buffer)
             return EditResult(new_text, new_cursor, True)
 
