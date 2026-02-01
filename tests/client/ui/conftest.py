@@ -109,3 +109,41 @@ def mock_browser() -> MagicMock:
         side_effect=lambda idx: setattr(browser, 'selected_index', idx)
     )
     return browser
+
+
+class TestPrompt:
+    """Fake implementation of PromptInterface for testing.
+
+    This provides predictable behavior without mock configuration,
+    following the "Don't Mock What You Don't Own" principle.
+    """
+
+    def __init__(self) -> None:
+        """Initialize with empty input and cursor at position 0."""
+        self.input_text: str = ""
+        self.cursor_index: int = 0
+        self.callback = None
+        self.hidden: bool = False
+        self.paste_result: bool = False
+
+    def update_cursor_with_scroll(self, new_cursor: int) -> None:
+        """Update cursor position."""
+        self.cursor_index = new_cursor
+
+    def hide(self) -> None:
+        """Mark the prompt as hidden."""
+        self.hidden = True
+
+    def paste_from_selection(self) -> bool:
+        """Return the configured paste result."""
+        return self.paste_result
+
+
+@pytest.fixture
+def test_prompt() -> TestPrompt:
+    """Provide a fresh TestPrompt instance for testing.
+
+    Returns:
+        A new TestPrompt with default empty state.
+    """
+    return TestPrompt()
