@@ -101,6 +101,14 @@ class EmacsEditingMode:
             new_cursor = find_word_end_forward(state.text, state.cursor)
             moved = new_cursor != state.cursor
             return EditResult(state.text, new_cursor, moved)
+
+        # Ctrl+D: delete character at cursor position
+        if key == "ctrl+d":
+            self._last_was_cut = False
+            if state.cursor >= len(state.text):
+                return EditResult(state.text, state.cursor, False)
+            new_text = state.text[:state.cursor] + state.text[state.cursor + 1:]
+            return EditResult(new_text, state.cursor, True)
         return None
 
     @property
