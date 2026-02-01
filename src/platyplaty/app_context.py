@@ -15,6 +15,7 @@ from platyplaty.build_dispatch_tables import (
     build_playlist_table,
 )
 from platyplaty.dispatch_tables import DispatchTable
+from platyplaty.ui.editing_mode import create_editing_mode
 from platyplaty.undo import UndoManager
 
 if TYPE_CHECKING:
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
     from platyplaty.playlist import Playlist
     from platyplaty.socket_client import SocketClient
     from platyplaty.types.app_config import AppConfig
+    from platyplaty.ui.editing_mode import EditingMode
 
 
 @dataclass
@@ -54,6 +56,7 @@ class AppContext:
         preset_sent_to_renderer: Last preset path sent to renderer for
             crash tracking. Path for files, str for "idle://", None before
             first load.
+        editing_mode: Editing mode for command prompt keybindings.
     """
 
     config: AppConfig
@@ -74,6 +77,7 @@ class AppContext:
     undo_manager: UndoManager = field(default_factory=UndoManager)
     autoplay_manager: AutoplayManager | None = None
     preset_sent_to_renderer: Path | str | None = None
+    editing_mode: EditingMode = field(default_factory=create_editing_mode)
 
     def __post_init__(self) -> None:
         """Build dispatch tables from keybindings."""

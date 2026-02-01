@@ -17,7 +17,7 @@ from unittest.mock import MagicMock
 
 from platyplaty.dispatch_tables import DispatchTable
 from platyplaty.ui.nav_state import NavigationState
-from test_fakes import TestPrompt, create_mock_browser, make_listing
+from test_fakes import FakePrompt, create_mock_browser, make_listing
 
 
 @pytest.fixture
@@ -84,10 +84,10 @@ def mock_browser() -> MagicMock:
 
 
 @pytest.fixture
-def test_prompt() -> TestPrompt:
-    """Provide a fresh TestPrompt instance for testing.
+def test_prompt() -> FakePrompt:
+    """Provide a fresh FakePrompt instance for testing.
 
     Returns:
-        A new TestPrompt with default empty state.
+        A new FakePrompt with default empty state.
     """
-    return TestPrompt()
+    return FakePrompt()

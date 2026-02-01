@@ -7,7 +7,7 @@ provide predictable behavior without mock configuration.
 """
 
 
-class TestPrompt:
+class FakePrompt:
     """Fake implementation of PromptInterface for testing.
 
     This provides predictable behavior without mock configuration,

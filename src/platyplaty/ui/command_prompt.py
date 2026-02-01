@@ -6,6 +6,7 @@ bottom of the terminal for entering commands like load, save, clear, shuffle.
 """
 
 from collections.abc import Awaitable, Callable
+from typing import TYPE_CHECKING
 
 from textual.events import Key, MouseDown, Paste
 from textual.reactive import reactive
@@ -16,6 +17,9 @@ from platyplaty.ui.command_key import handle_command_key, return_focus_to_widget
 from platyplaty.ui.command_prompt_cursor import CursorManager
 from platyplaty.ui.command_prompt_paste import do_paste, do_paste_from_selection
 from platyplaty.ui.command_render import render_command_line
+
+if TYPE_CHECKING:
+    from platyplaty.app import PlatyplatyApp
 
 
 class CommandPrompt(Widget, can_focus=True):
@@ -37,6 +41,13 @@ class CommandPrompt(Widget, can_focus=True):
         display: block;
     }
     """
+
+    @property
+    def platyplaty_app(self) -> "PlatyplatyApp":
+        """Return the app instance typed as PlatyplatyApp."""
+        from platyplaty.app import PlatyplatyApp
+        assert isinstance(self.app, PlatyplatyApp)
+        return self.app
 
     def __init__(
         self,
@@ -64,6 +75,7 @@ class CommandPrompt(Widget, can_focus=True):
         initial_text: str = "",
     ) -> None:
         """Display the command prompt and take focus."""
+        self.platyplaty_app.ctx.editing_mode.reset_transient_state()
         self.input_text = initial_text
         self._cursor.scroll = 0
         self.cursor_index = len(initial_text)
