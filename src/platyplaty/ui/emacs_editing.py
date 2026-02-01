@@ -2,20 +2,36 @@
 """Emacs-style keybindings for the command prompt.
 
 This module implements emacs-style editing keybindings similar to what users
-get from `set -o emacs` in the shell. It provides cursor movement, text
-deletion, cut/yank operations, and word navigation.
+get from `set -o emacs` in the shell. The EmacsEditingMode class implements
+the EditingMode Protocol and dispatches to specialized handler modules.
 
-The EmacsEditingMode class implements the EditingMode Protocol and is stored
-in AppContext for session-level state persistence. The yank buffer persists
-across prompt invocations, while transient state (like the consecutive cut
-chain tracker) resets when the prompt opens.
+The class is stored in AppContext for session-level state persistence. The
+yank buffer persists across prompt invocations, while transient state (like
+the consecutive cut chain tracker) resets when the prompt opens.
 """
 
 from platyplaty.ui.editing_mode import EditResult, PromptState
-from platyplaty.ui.word_boundary import (
-    find_word_end_forward,
-    find_word_start_backward,
+from platyplaty.ui.emacs_cursor import (
+    handle_alt_b,
+    handle_alt_f,
+    handle_ctrl_a,
+    handle_ctrl_b,
+    handle_ctrl_e,
+    handle_ctrl_f,
 )
+from platyplaty.ui.emacs_delete import handle_ctrl_d
+
+# Mapping of keys to cursor movement handlers
+_CURSOR_HANDLERS = {
+    "ctrl+a": handle_ctrl_a,
+    "ctrl+e": handle_ctrl_e,
+    "ctrl+b": handle_ctrl_b,
+    "ctrl+f": handle_ctrl_f,
+    "alt+b": handle_alt_b,
+    "escape+b": handle_alt_b,
+    "alt+f": handle_alt_f,
+    "escape+f": handle_alt_f,
+}
 
 
 class EmacsEditingMode:
@@ -31,84 +47,27 @@ class EmacsEditingMode:
         self._last_was_cut: bool = False
 
     def reset_transient_state(self) -> None:
-        """Reset per-prompt transient state.
-
-        Called when the command prompt opens. Resets the consecutive cut
-        chain tracker but NOT the yank buffer, which persists across
-        prompt invocations.
-        """
+        """Reset per-prompt transient state."""
         self._last_was_cut = False
 
     def reset_cut_chain(self) -> None:
-        """Break the consecutive cut chain.
-
-        Called by handle_command_key after processing any non-emacs key
-        to ensure that non-emacs actions break the consecutive cut chain.
-        """
+        """Break the consecutive cut chain."""
         self._last_was_cut = False
 
     def handle_key(
         self, key: str, character: str | None, state: PromptState
     ) -> EditResult | None:
-        """Handle a key press and return the result.
-
-        Args:
-            key: The key name (e.g., "ctrl+a", "alt+b").
-            character: The character representation, if printable.
-            state: Current prompt state (text and cursor position).
-
-        Returns:
-            EditResult if the key was handled, None if not handled.
-        """
-        # Ctrl+A: move cursor to beginning of line
-        if key == "ctrl+a":
+        """Handle a key press and return the result."""
+        # Check cursor movement handlers
+        if key in _CURSOR_HANDLERS:
             self._last_was_cut = False
-            moved = state.cursor != 0
-            return EditResult(state.text, 0, moved)
+            return _CURSOR_HANDLERS[key](state)
 
-        # Ctrl+E: move cursor to end of line
-        if key == "ctrl+e":
-            self._last_was_cut = False
-            end = len(state.text)
-            moved = state.cursor != end
-            return EditResult(state.text, end, moved)
-
-        # Ctrl+B: move cursor back one character
-        if key == "ctrl+b":
-            self._last_was_cut = False
-            new_cursor = max(0, state.cursor - 1)
-            moved = new_cursor != state.cursor
-            return EditResult(state.text, new_cursor, moved)
-
-        # Ctrl+F: move cursor forward one character
-        if key == "ctrl+f":
-            self._last_was_cut = False
-            end = len(state.text)
-            new_cursor = min(end, state.cursor + 1)
-            moved = new_cursor != state.cursor
-            return EditResult(state.text, new_cursor, moved)
-
-        # Alt+B: move cursor back one word
-        if key in ("alt+b", "escape+b"):
-            self._last_was_cut = False
-            new_cursor = find_word_start_backward(state.text, state.cursor)
-            moved = new_cursor != state.cursor
-            return EditResult(state.text, new_cursor, moved)
-
-        # Alt+F: move cursor forward one word
-        if key in ("alt+f", "escape+f"):
-            self._last_was_cut = False
-            new_cursor = find_word_end_forward(state.text, state.cursor)
-            moved = new_cursor != state.cursor
-            return EditResult(state.text, new_cursor, moved)
-
-        # Ctrl+D: delete character at cursor position
+        # Ctrl+D: delete character at cursor
         if key == "ctrl+d":
             self._last_was_cut = False
-            if state.cursor >= len(state.text):
-                return EditResult(state.text, state.cursor, False)
-            new_text = state.text[:state.cursor] + state.text[state.cursor + 1:]
-            return EditResult(new_text, state.cursor, True)
+            return handle_ctrl_d(state)
+
         return None
 
     @property
