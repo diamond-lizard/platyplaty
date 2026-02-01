@@ -78,3 +78,21 @@ class EditingMode(Protocol):
         to ensure that non-emacs actions break the consecutive cut chain.
         """
         ...
+
+
+def create_editing_mode() -> EditingMode:
+    """Create and return an editing mode instance.
+
+    Factory function that creates the default editing mode. Currently
+    returns an EmacsEditingMode instance. This function is used by
+    AppContext for session-level state initialization.
+
+    The import is done inside the function body (lazy import) to avoid
+    circular imports, since emacs_editing.py imports from this module.
+
+    Returns:
+        An EditingMode implementation instance.
+    """
+    from platyplaty.ui.emacs_editing import EmacsEditingMode
+
+    return EmacsEditingMode()
