@@ -13,10 +13,11 @@ from textual.reactive import reactive
 from textual.strip import Strip
 from textual.widget import Widget
 
-from platyplaty.ui.command_key import handle_command_key, return_focus_to_widget
+from platyplaty.ui.command_key import handle_command_key
 from platyplaty.ui.command_prompt_cursor import CursorManager
 from platyplaty.ui.command_prompt_paste import do_paste, do_paste_from_selection
 from platyplaty.ui.command_render import render_command_line
+from platyplaty.ui.focus_utils import return_focus_to_widget
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp

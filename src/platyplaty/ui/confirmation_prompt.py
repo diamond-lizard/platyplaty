@@ -14,10 +14,8 @@ from textual.reactive import reactive
 from textual.strip import Strip
 from textual.widget import Widget
 
-from platyplaty.ui.confirmation_key import (
-    handle_confirmation_key,
-    return_focus_to_widget,
-)
+from platyplaty.ui.confirmation_key import handle_confirmation_key
+from platyplaty.ui.focus_utils import return_focus_to_widget
 
 PROMPT_STYLE = Style(color="black", bgcolor="red")
 
