@@ -6,6 +6,11 @@ following the "Don't Mock What You Don't Own" principle. These Fakes
 provide predictable behavior without mock configuration.
 """
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from platyplaty.ui.editing_mode import EditResult, PromptState
+
 
 class FakePrompt:
     """Fake implementation of PromptInterface for testing.
@@ -64,3 +69,28 @@ def make_listing(entries: list):
         had_filtered_entries=False,
         permission_denied=False,
     )
+
+
+class NullEditingMode:
+    """Null implementation of EditingMode Protocol for testing.
+
+    This provides a no-op editing mode where handle_key returns None
+    for all keys, allowing existing key handling to continue unchanged.
+    """
+
+    def handle_key(
+        self,
+        key: str,
+        character: str | None,
+        state: "PromptState",
+    ) -> "EditResult | None":
+        """Return None for all keys (not handled)."""
+        return None
+
+    def reset_transient_state(self) -> None:
+        """No-op implementation."""
+        pass
+
+    def reset_cut_chain(self) -> None:
+        """No-op implementation."""
+        pass

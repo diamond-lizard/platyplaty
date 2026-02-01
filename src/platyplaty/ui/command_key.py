@@ -7,7 +7,10 @@ if TYPE_CHECKING:
     from textual.app import App
 
     from platyplaty.ui.prompt_interface import PromptInterface
+    from platyplaty.ui.editing_mode import EditingMode
 
+
+from platyplaty.ui.editing_mode import EditResult, PromptState
 
 
 async def handle_prompt_control_key(
@@ -43,6 +46,7 @@ async def handle_command_key(
     key: str,
     prompt: "PromptInterface",
     character: str | None,
+    editing_mode: "EditingMode",
 ) -> bool:
     """Handle a key press in the command prompt.
 
@@ -50,6 +54,7 @@ async def handle_command_key(
         key: The key that was pressed.
         prompt: The CommandPrompt widget instance.
         character: The printable character, or None if not printable.
+        editing_mode: The editing mode for emacs/vi keybindings.
 
     Returns:
         True if text or cursor position changed, False otherwise.
@@ -58,6 +63,15 @@ async def handle_command_key(
     control_result = await handle_prompt_control_key(key, prompt)
     if control_result is not None:
         return control_result
+
+    # Delegate to editing mode for emacs/vi keybindings
+    result = editing_mode.handle_key(
+        key, character, PromptState(prompt.input_text, prompt.cursor_index)
+    )
+    if result is not None:
+        prompt.input_text = result.new_text
+        prompt.update_cursor_with_scroll(result.new_cursor)
+        return result.state_changed
 
     # Text-editing keys: use single exit point pattern
     state_changed = False
@@ -97,6 +111,7 @@ async def handle_command_key(
         prompt.input_text = text[:idx] + character + text[idx:]
         prompt.update_cursor_with_scroll(idx + 1)
         state_changed = True
+    editing_mode.reset_cut_chain()
     return state_changed
 
 

@@ -16,21 +16,21 @@ class TestShiftInsertPaste:
     """Tests for SHIFT-INSERT paste handling."""
 
     @pytest.mark.asyncio
-    async def test_shift_insert_calls_paste_from_selection(self, test_prompt):
+    async def test_shift_insert_calls_paste_from_selection(self, test_prompt, null_editing_mode):
         test_prompt.paste_result = True
-        result = await handle_command_key("shift+insert", test_prompt, None)
+        result = await handle_command_key("shift+insert", test_prompt, None, null_editing_mode)
         assert result is True  # Verifies paste_from_selection was called
 
     @pytest.mark.asyncio
-    async def test_shift_insert_returns_true_on_success(self, test_prompt):
+    async def test_shift_insert_returns_true_on_success(self, test_prompt, null_editing_mode):
         """SHIFT-INSERT returns True when paste_from_selection returns True."""
         test_prompt.paste_result = True
-        result = await handle_command_key("shift+insert", test_prompt, None)
+        result = await handle_command_key("shift+insert", test_prompt, None, null_editing_mode)
         assert result is True
 
     @pytest.mark.asyncio
-    async def test_shift_insert_returns_false_on_no_paste(self, test_prompt):
+    async def test_shift_insert_returns_false_on_no_paste(self, test_prompt, null_editing_mode):
         """SHIFT-INSERT returns False when paste_from_selection returns False."""
         test_prompt.paste_result = False
-        result = await handle_command_key("shift+insert", test_prompt, None)
+        result = await handle_command_key("shift+insert", test_prompt, None, null_editing_mode)
         assert result is False

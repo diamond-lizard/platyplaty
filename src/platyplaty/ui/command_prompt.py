@@ -143,7 +143,7 @@ class CommandPrompt(Widget, can_focus=True):
     async def on_key(self, event: Key) -> None:
         """Handle key events for the command prompt."""
         event.stop()
-        state_changed = await handle_command_key(event.key, self, event.character)
+        state_changed = await handle_command_key(event.key, self, event.character, self.platyplaty_app.ctx.editing_mode)
         if state_changed:
             self.start_blink_timer()
 

@@ -17,7 +17,7 @@ from unittest.mock import MagicMock
 
 from platyplaty.dispatch_tables import DispatchTable
 from platyplaty.ui.nav_state import NavigationState
-from test_fakes import FakePrompt, create_mock_browser, make_listing
+from test_fakes import FakePrompt, NullEditingMode, create_mock_browser, make_listing
 
 
 @pytest.fixture
@@ -91,3 +91,13 @@ def test_prompt() -> FakePrompt:
         A new FakePrompt with default empty state.
     """
     return FakePrompt()
+
+
+@pytest.fixture
+def null_editing_mode() -> NullEditingMode:
+    """Provide a NullEditingMode instance for testing.
+
+    Returns:
+        A NullEditingMode that returns None for all keys.
+    """
+    return NullEditingMode()
