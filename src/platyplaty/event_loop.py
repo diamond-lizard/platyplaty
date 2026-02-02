@@ -11,11 +11,11 @@ from typing import TYPE_CHECKING
 from textual.events import Key
 
 from platyplaty.crash_handler import handle_renderer_crash
+from platyplaty.dispatch_tables import normalize_key
 from platyplaty.messages import LogMessage
 from platyplaty.netstring_reader import read_netstrings_from_stderr
 from platyplaty.stderr_parser import parse_stderr_event
 from platyplaty.types import StderrEvent
-from platyplaty.dispatch_tables import normalize_key
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
