@@ -180,3 +180,8 @@ class TestFindPathWordStartBackward:
         """Mixed content from end returns start of last path component."""
         # "load /foo/bar" from end (position 13) -> 10 (before 'b' in bar)
         assert find_path_word_start_backward("load /foo/bar", 13) == 10
+
+    def test_mixed_content_lone_slash(self):
+        """Mixed content with lone slash cuts entire string."""
+        # "load /" from end returns 0 (cuts "load /")
+        assert find_path_word_start_backward("load /", 6) == 0
