@@ -12,8 +12,8 @@ from platyplaty.ui.word_boundary import (
     find_word_start_backward,
     find_word_end_forward,
     find_unix_word_start_backward,
-    find_path_word_start_backward,
 )
+from platyplaty.ui.path_boundary import find_path_word_start_backward
 
 
 class TestFindWordStartBackward:
