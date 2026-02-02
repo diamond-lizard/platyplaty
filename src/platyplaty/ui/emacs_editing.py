@@ -10,6 +10,8 @@ yank buffer persists across prompt invocations, while transient state (like
 the consecutive cut chain tracker) resets when the prompt opens.
 """
 
+from enum import Enum, auto
+
 from platyplaty.ui.editing_mode import EditResult, PromptState
 from platyplaty.ui.emacs_cursor import CURSOR_HANDLERS
 from platyplaty.ui.emacs_cut import (
@@ -21,6 +23,13 @@ from platyplaty.ui.emacs_cut import (
 )
 from platyplaty.ui.emacs_delete import handle_ctrl_d
 from platyplaty.ui.emacs_yank import compute_yank
+
+
+class CutDirection(Enum):
+    """Direction of a cut operation for buffer accumulation."""
+
+    FORWARD = auto()
+    BACKWARD = auto()
 
 
 class EmacsEditingMode:
@@ -43,15 +52,19 @@ class EmacsEditingMode:
         """Break the consecutive cut chain."""
         self._last_was_cut = False
 
-    def _handle_cut(self, cut_result: CutResult) -> EditResult:
+    def _handle_cut(self, cut_result: CutResult, direction: CutDirection) -> EditResult:
         """Handle a cut operation, storing text in yank buffer.
 
+        For consecutive cuts: forward cuts append, backward cuts prepend.
         No-op cuts (empty cut_text) preserve cut chain state.
         """
         if not cut_result.cut_text:
             return EditResult(cut_result.new_text, cut_result.new_cursor, False)
         if self._last_was_cut:
-            self._yank_buffer += cut_result.cut_text
+            if direction == CutDirection.BACKWARD:
+                self._yank_buffer = cut_result.cut_text + self._yank_buffer
+            else:
+                self._yank_buffer += cut_result.cut_text
         else:
             self._yank_buffer = cut_result.cut_text
         self._last_was_cut = True
@@ -73,19 +86,19 @@ class EmacsEditingMode:
 
         # Ctrl+K: cut from cursor to end of line
         if key == "ctrl+k":
-            return self._handle_cut(compute_ctrl_k(state))
+            return self._handle_cut(compute_ctrl_k(state), CutDirection.FORWARD)
 
         # Ctrl+U: cut from beginning of line to cursor
         if key == "ctrl+u":
-            return self._handle_cut(compute_ctrl_u(state))
+            return self._handle_cut(compute_ctrl_u(state), CutDirection.BACKWARD)
 
         # Ctrl+W: cut previous word (unix word definition)
         if key == "ctrl+w":
-            return self._handle_cut(compute_ctrl_w(state))
+            return self._handle_cut(compute_ctrl_w(state), CutDirection.BACKWARD)
 
         # Alt+D: cut word forward (alphanumeric word definition)
         if key in ("alt+d", "escape+d"):
-            return self._handle_cut(compute_alt_d(state))
+            return self._handle_cut(compute_alt_d(state), CutDirection.FORWARD)
 
         # Ctrl+Y: yank from internal buffer
         if key == "ctrl+y":

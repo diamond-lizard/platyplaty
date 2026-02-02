@@ -246,7 +246,7 @@ class TestConsecutiveCutAppend:
         # Ctrl+U cuts "hello " (from remaining "hello ")
         state2 = PromptState("hello ", 6)
         mode.handle_key("ctrl+u", None, state2)
-        assert mode.yank_buffer == "worldhello "
+        assert mode.yank_buffer == "hello world"
 
     def test_mixed_cut_commands_append(self) -> None:
         """Mixing different cut commands (Ctrl+W, Alt+D) appends."""
@@ -258,7 +258,7 @@ class TestConsecutiveCutAppend:
         # Ctrl+W cuts "bar" (from remaining " bar baz", cursor at end)
         state2 = PromptState(" bar baz", 8)
         mode.handle_key("ctrl+w", None, state2)
-        assert mode.yank_buffer == "foobaz"
+        assert mode.yank_buffer == "bazfoo"
 
     def test_cursor_move_breaks_chain(self) -> None:
         """Ctrl+K then cursor move then Ctrl+K replaces buffer."""
@@ -297,7 +297,7 @@ class TestConsecutiveCutAppend:
         - Ctrl+K cuts "hello" (from cursor to end), text becomes "world"
         - Ctrl+K (no-op since nothing after cursor)
         - Ctrl+U cuts "world" (from start to cursor)
-        Verify yank buffer contains "helloworld" (appended, not replaced).
+        Verify yank buffer contains "worldhello" (Ctrl+U prepends).
         """
         mode = EmacsEditingMode()
         # First cut: "hello" from position 5 to end
@@ -314,7 +314,7 @@ class TestConsecutiveCutAppend:
         # Ctrl+U cuts "world"
         state3 = PromptState("world", 5)
         mode.handle_key("ctrl+u", None, state3)
-        assert mode.yank_buffer == "helloworld"
+        assert mode.yank_buffer == "worldhello"
 
     def test_noop_non_cut_breaks_chain(self) -> None:
         """No-op non-cut command (Ctrl+F at end) breaks chain.
@@ -361,3 +361,70 @@ class TestConsecutiveCutAppend:
         state2 = PromptState("foo bar", 4)
         mode.handle_key("ctrl+k", None, state2)
         assert mode.yank_buffer == "bar"
+
+    def test_consecutive_backward_cuts_produce_reading_order(self) -> None:
+        """Consecutive backward cuts accumulate text in reading order.
+
+        Starting with text "one two three" and cursor at end (position 13):
+        - Ctrl+W cuts "three" (yank buffer = "three")
+        - Ctrl+W cuts "two" (prepends, yank buffer = "twothree")
+        - Ctrl+W cuts "one" (prepends, yank buffer = "onetwothree")
+        Prepending ensures yanked text appears in original left-to-right order.
+        """
+        mode = EmacsEditingMode()
+        # First cut: "three"
+        state1 = PromptState("one two three", 13)
+        mode.handle_key("ctrl+w", None, state1)
+        assert mode.yank_buffer == "three"
+        # Second cut: "two" prepends
+        state2 = PromptState("one two ", 8)
+        mode.handle_key("ctrl+w", None, state2)
+        assert mode.yank_buffer == "two three"
+        # Third cut: "one" prepends
+        state3 = PromptState("one ", 4)
+        mode.handle_key("ctrl+w", None, state3)
+        assert mode.yank_buffer == "one two three"
+
+    def test_consecutive_forward_cuts_append_in_order(self) -> None:
+        """Consecutive forward cuts append text in order.
+
+        Starting with text "one two three" and cursor at start (position 0):
+        - Alt+D cuts "one" (yank buffer = "one")
+        - Alt+D cuts "two" (appends, yank buffer = "one two")
+        - Alt+D cuts "three" (appends, yank buffer = "one two three")
+        Forward cuts append to preserve left-to-right order.
+        """
+        mode = EmacsEditingMode()
+        # First cut: "one"
+        state1 = PromptState("one two three", 0)
+        mode.handle_key("alt+d", None, state1)
+        assert mode.yank_buffer == "one"
+        # Second cut: "two" appends
+        state2 = PromptState(" two three", 0)
+        mode.handle_key("alt+d", None, state2)
+        assert mode.yank_buffer == "one two"
+        # Third cut: "three" appends
+        state3 = PromptState(" three", 0)
+        mode.handle_key("alt+d", None, state3)
+        assert mode.yank_buffer == "one two three"
+
+    def test_mixed_forward_backward_cuts(self) -> None:
+        """Mixing forward and backward cuts: each direction uses its own rule.
+
+        - Alt+D (forward) cuts "one" -> yank buffer = "one"
+        - Ctrl+W (backward) cuts "three" -> prepends, yank buffer = "threeone"
+        - Ctrl+K (forward) cuts "two" -> appends, yank buffer = "threeonetwo"
+        """
+        mode = EmacsEditingMode()
+        # Forward cut: "one"
+        state1 = PromptState("one two three", 0)
+        mode.handle_key("alt+d", None, state1)
+        assert mode.yank_buffer == "one"
+        # Backward cut: "three" prepends
+        state2 = PromptState(" two three", 10)
+        mode.handle_key("ctrl+w", None, state2)
+        assert mode.yank_buffer == "threeone"
+        # Forward cut: "two" appends
+        state3 = PromptState(" two ", 1)
+        mode.handle_key("ctrl+k", None, state3)
+        assert mode.yank_buffer == "threeonetwo "
