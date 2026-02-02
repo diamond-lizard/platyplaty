@@ -164,3 +164,4 @@ class FileBrowser(Widget):
         if index < 0 or index >= len(listing.entries):
             return
         self._nav_state.selected_name = listing.entries[index].name
+        _refresh_right_pane(self)
