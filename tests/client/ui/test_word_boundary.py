@@ -203,3 +203,8 @@ class TestFindPathWordStartBackward:
         """Path ending with slash includes trailing slash in cut."""
         # /foo/bar/ from end (position 9) -> 5 (cuts "bar/")
         assert find_path_word_start_backward("/foo/bar/", 9) == 5
+
+    def test_path_ending_with_consecutive_slashes(self):
+        """Path ending with consecutive slashes includes both in cut."""
+        # /foo/bar// from end (position 10) -> 5 (cuts "bar//")
+        assert find_path_word_start_backward("/foo/bar//", 10) == 5
