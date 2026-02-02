@@ -121,7 +121,7 @@ class TestKeyPressedNormalization:
         self, mock_ctx: MagicMock, mock_app: MagicMock
     ) -> None:
         """KEY_PRESSED with shift+j creates Key event with key='J'."""
-        event = KeyPressedEvent(event="KEY_PRESSED", key="shift+j")
+        event = KeyPressedEvent(source="PLATYPLATY", event="KEY_PRESSED", key="shift+j")
         await _handle_stderr_event(event, mock_ctx, mock_app)
         mock_app.post_message.assert_called_once()
         key_event = mock_app.post_message.call_args[0][0]
