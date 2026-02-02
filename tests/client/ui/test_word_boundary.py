@@ -160,3 +160,8 @@ class TestFindPathWordStartBackward:
         """Tilde path works like regular path."""
         # ~/foo/bar from end (position 10) -> 7 (before 'b' in bar)
         assert find_path_word_start_backward("~/foo/bar", 9) == 6
+
+    def test_relative_path(self):
+        """Relative path from end returns start of last component."""
+        # foo/bar/baz from end (position 11) -> 8 (before 'b' in baz)
+        assert find_path_word_start_backward("foo/bar/baz", 11) == 8
