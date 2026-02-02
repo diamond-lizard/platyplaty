@@ -135,3 +135,8 @@ class TestFindPathWordStartBackward:
         """Lone slash with multiple spaces still absorbed."""
         # "load  /" from end returns 0 (cuts "load  /")
         assert find_path_word_start_backward("load  /", 7) == 0
+
+    def test_consecutive_slashes_from_end(self):
+        """Consecutive slashes from end returns start of last component."""
+        # /foo//bar from position 9 -> 6 (before 'b' in bar)
+        assert find_path_word_start_backward("/foo//bar", 9) == 6
