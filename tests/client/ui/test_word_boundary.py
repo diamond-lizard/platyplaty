@@ -130,3 +130,8 @@ class TestFindPathWordStartBackward:
         """Lone slash after whitespace is absorbed with preceding word."""
         # "load /" from end returns 0 (cuts "load /")
         assert find_path_word_start_backward("load /", 6) == 0
+
+    def test_lone_slash_with_multiple_spaces(self):
+        """Lone slash with multiple spaces still absorbed."""
+        # "load  /" from end returns 0 (cuts "load  /")
+        assert find_path_word_start_backward("load  /", 7) == 0
