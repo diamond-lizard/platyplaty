@@ -170,3 +170,8 @@ class TestFindPathWordStartBackward:
         """Cursor in middle of component returns start of that component."""
         # /foo/bar/baz with cursor at position 11 (before 'z') -> 9
         assert find_path_word_start_backward("/foo/bar/baz", 11) == 9
+
+    def test_cursor_right_after_slash(self):
+        """Cursor right after slash cuts preceding component with slash."""
+        # /foo/bar/baz with cursor at position 9 (after '/') -> 5 (cuts "bar/")
+        assert find_path_word_start_backward("/foo/bar/baz", 9) == 5
