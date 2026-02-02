@@ -155,3 +155,8 @@ class TestFindPathWordStartBackward:
         """Root slash from end returns 0."""
         # "/" from end (position 1) -> 0
         assert find_path_word_start_backward("/", 1) == 0
+
+    def test_tilde_path(self):
+        """Tilde path works like regular path."""
+        # ~/foo/bar from end (position 10) -> 7 (before 'b' in bar)
+        assert find_path_word_start_backward("~/foo/bar", 9) == 6
