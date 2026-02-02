@@ -212,51 +212,51 @@ class TestFindPathWordStartBackward:
 
 class TestFindPathComponentStartBackward:
     """Tests for find_path_component_start_backward function (Alt+B movement)."""
-    
+
     def test_from_end_of_path(self):
         """From end of /foo/bar/baz returns position 9 (before 'b' in baz)."""
         assert find_path_component_start_backward("/foo/bar/baz", 12) == 9
-    
+
     def test_from_position_9(self):
         """From position 9 returns position 5 (before 'b' in bar)."""
         assert find_path_component_start_backward("/foo/bar/baz", 9) == 5
-    
+
     def test_from_position_5(self):
         """From position 5 returns position 1 (before 'f' in foo)."""
         assert find_path_component_start_backward("/foo/bar/baz", 5) == 1
-    
+
     def test_from_position_1_to_leading_slash(self):
         """From position 1 returns position 0 (before leading slash)."""
         assert find_path_component_start_backward("/foo/bar/baz", 1) == 0
-    
+
     def test_from_position_0_returns_0(self):
         """From position 0 returns 0."""
         assert find_path_component_start_backward("/foo/bar/baz", 0) == 0
-    
+
     def test_empty_string_returns_0(self):
         """Empty string returns 0."""
         assert find_path_component_start_backward("", 0) == 0
-    
+
     def test_path_with_whitespace_from_end(self):
         """Path with whitespace from end returns start of last component."""
         # "load /foo" from end (position 9) -> 6 (before 'f' in foo)
         assert find_path_component_start_backward("load /foo", 9) == 6
-    
+
     def test_consecutive_slashes_from_end(self):
         """Consecutive slashes are skipped, lands at start of last component."""
         # "foo//bar" from end (position 8) -> 5 (before 'b' in bar)
         assert find_path_component_start_backward("foo//bar", 8) == 5
-    
+
     def test_relative_path_from_end(self):
         """Relative path from end returns start of last component."""
         # "foo/bar" from end (position 7) -> 4 (before 'b' in bar)
         assert find_path_component_start_backward("foo/bar", 7) == 4
-    
+
     def test_from_start_of_component_skips_to_previous(self):
         """From start of component skips slash and space to previous component."""
         # "load /foo" from position 6 (at 'f') -> 0 (skip slash, space, to 'load')
         assert find_path_component_start_backward("load /foo", 6) == 0
-    
+
     def test_double_leading_slash(self):
         """Double leading slash from position 2 returns position 0."""
         # "//foo" from position 2 (at 'f') -> 0 (consecutive leading slashes)
