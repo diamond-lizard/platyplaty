@@ -13,7 +13,7 @@ from platyplaty.ui.word_boundary import (
     find_word_end_forward,
     find_unix_word_start_backward,
 )
-from platyplaty.ui.path_boundary import find_path_word_start_backward, find_path_component_start_backward
+from platyplaty.ui.path_boundary import find_path_word_start_backward, find_path_component_start_backward, find_path_word_end_forward
 
 
 class TestFindWordStartBackward:
@@ -261,3 +261,51 @@ class TestFindPathComponentStartBackward:
         """Double leading slash from position 2 returns position 0."""
         # "//foo" from position 2 (at 'f') -> 0 (consecutive leading slashes)
         assert find_path_component_start_backward("//foo", 2) == 0
+
+
+class TestFindPathWordEndForward:
+    """Tests for find_path_word_end_forward function (Alt+F movement)."""
+
+    def test_load_path_from_start(self):
+        """From start of 'load /foo/bar' returns position 6 (after 'load /')."""
+        # Moves through "load", absorbs space and lone slash
+        assert find_path_word_end_forward("load /foo/bar", 0) == 6
+
+    def test_from_position_6(self):
+        """From position 6 of 'load /foo/bar' returns 10 (after 'foo/')."""
+        assert find_path_word_end_forward("load /foo/bar", 6) == 10
+
+    def test_from_position_10(self):
+        """From position 10 of 'load /foo/bar' returns 13 (after 'bar')."""
+        assert find_path_word_end_forward("load /foo/bar", 10) == 13
+
+    def test_cursor_at_end_returns_length(self):
+        """Cursor at end returns len(text)."""
+        assert find_path_word_end_forward("load /foo/bar", 13) == 13
+
+    def test_empty_string_returns_0(self):
+        """Empty string returns 0."""
+        assert find_path_word_end_forward("", 0) == 0
+
+    def test_leading_slash_from_position_0(self):
+        """Leading slash from position 0 returns 1 (after leading slash)."""
+        assert find_path_word_end_forward("/foo/bar", 0) == 1
+
+    def test_from_position_1_of_leading_slash_path(self):
+        """From position 1 of '/foo/bar' returns 5 (after 'foo/')."""
+        assert find_path_word_end_forward("/foo/bar", 1) == 5
+
+    def test_consecutive_slashes_absorbed(self):
+        """Consecutive slashes are absorbed into the component."""
+        # "foo//bar" from position 0 -> 5 (after "foo//")
+        assert find_path_word_end_forward("foo//bar", 0) == 5
+
+    def test_trailing_whitespace_at_end(self):
+        """Trailing whitespace at end of string is not included."""
+        # "foo/bar " from position 4 -> 7 (after "bar", before space)
+        assert find_path_word_end_forward("foo/bar ", 4) == 7
+
+    def test_leading_whitespace_with_lone_slash(self):
+        """Leading whitespace with lone slash from position 0 returns 2."""
+        # " /foo/bar" from position 0 -> 2 (skip space, lone slash is own unit)
+        assert find_path_word_end_forward(" /foo/bar", 0) == 2
