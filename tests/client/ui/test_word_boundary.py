@@ -185,3 +185,7 @@ class TestFindPathWordStartBackward:
         """Mixed content with lone slash cuts entire string."""
         # "load /" from end returns 0 (cuts "load /")
         assert find_path_word_start_backward("load /", 6) == 0
+
+    def test_empty_string(self):
+        """Empty string returns 0."""
+        assert find_path_word_start_backward("", 0) == 0
