@@ -12,6 +12,7 @@ from platyplaty.ui.word_boundary import (
     find_word_start_backward,
     find_word_end_forward,
     find_unix_word_start_backward,
+    find_path_word_start_backward,
 )
 
 
@@ -110,3 +111,22 @@ class TestFindUnixWordStartBackward:
     def test_cursor_at_zero_returns_zero(self):
         """Cursor at position 0 returns 0."""
         assert find_unix_word_start_backward("hello", 0) == 0
+
+
+class TestFindPathWordStartBackward:
+    """Tests for find_path_word_start_backward function."""
+
+    def test_basic_path_from_end(self):
+        """Basic path from end returns start of last component."""
+        # /foo/bar/baz from position 12 -> 9 (before 'b' in baz)
+        assert find_path_word_start_backward("/foo/bar/baz", 12) == 9
+
+    def test_path_with_trailing_space(self):
+        """Path with trailing space absorbs the space."""
+        # /foo/bar/baz  from position 13 -> 9 (cuts "baz ")
+        assert find_path_word_start_backward("/foo/bar/baz ", 13) == 9
+
+    def test_lone_slash_after_whitespace(self):
+        """Lone slash after whitespace is absorbed with preceding word."""
+        # "load /" from end returns 0 (cuts "load /")
+        assert find_path_word_start_backward("load /", 6) == 0
