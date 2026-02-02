@@ -175,3 +175,8 @@ class TestFindPathWordStartBackward:
         """Cursor right after slash cuts preceding component with slash."""
         # /foo/bar/baz with cursor at position 9 (after '/') -> 5 (cuts "bar/")
         assert find_path_word_start_backward("/foo/bar/baz", 9) == 5
+
+    def test_mixed_content_from_end(self):
+        """Mixed content from end returns start of last path component."""
+        # "load /foo/bar" from end (position 13) -> 10 (before 'b' in bar)
+        assert find_path_word_start_backward("load /foo/bar", 13) == 10
