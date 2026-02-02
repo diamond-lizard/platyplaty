@@ -96,7 +96,8 @@ def find_path_word_start_backward(text: str, cursor: int) -> int:
         1. Skip trailing whitespace backward (absorb into cut region)
         2. If at slashes, skip backward over all consecutive slashes
         3. Check what precedes the slashes:
-            - If whitespace or start-of-line: "lone slash" - absorb and repeat from step 1
+            - If whitespace or start-of-line: "lone slash" - absorb and
+              repeat from step 1
             - If non-whitespace: cut backward through component to next slash/whitespace
         4. If at non-slash after step 1, cut back through component
 
