@@ -140,3 +140,8 @@ class TestFindPathWordStartBackward:
         """Consecutive slashes from end returns start of last component."""
         # /foo//bar from position 9 -> 6 (before 'b' in bar)
         assert find_path_word_start_backward("/foo//bar", 9) == 6
+
+    def test_consecutive_slashes_absorbed_into_component(self):
+        """Consecutive slashes absorbed into preceding component."""
+        # /foo//bar from position 6 (before 'bar') -> 1 (cuts "foo//")
+        assert find_path_word_start_backward("/foo//bar", 6) == 1
