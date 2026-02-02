@@ -165,3 +165,8 @@ class TestFindPathWordStartBackward:
         """Relative path from end returns start of last component."""
         # foo/bar/baz from end (position 11) -> 8 (before 'b' in baz)
         assert find_path_word_start_backward("foo/bar/baz", 11) == 8
+
+    def test_cursor_in_middle_of_component(self):
+        """Cursor in middle of component returns start of that component."""
+        # /foo/bar/baz with cursor at position 11 (before 'z') -> 9
+        assert find_path_word_start_backward("/foo/bar/baz", 11) == 9
