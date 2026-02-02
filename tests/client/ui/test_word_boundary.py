@@ -189,3 +189,7 @@ class TestFindPathWordStartBackward:
     def test_empty_string(self):
         """Empty string returns 0."""
         assert find_path_word_start_backward("", 0) == 0
+
+    def test_cursor_at_zero(self):
+        """Cursor at position 0 returns 0."""
+        assert find_path_word_start_backward("/foo/bar", 0) == 0
