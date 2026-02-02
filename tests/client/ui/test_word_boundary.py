@@ -150,3 +150,8 @@ class TestFindPathWordStartBackward:
         """Trailing consecutive slashes absorbed into component."""
         # /foo// from end (position 6) -> 1 (cuts "foo//")
         assert find_path_word_start_backward("/foo//", 6) == 1
+
+    def test_root_slash_from_end(self):
+        """Root slash from end returns 0."""
+        # "/" from end (position 1) -> 0
+        assert find_path_word_start_backward("/", 1) == 0
