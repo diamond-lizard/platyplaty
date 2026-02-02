@@ -193,3 +193,8 @@ class TestFindPathWordStartBackward:
     def test_cursor_at_zero(self):
         """Cursor at position 0 returns 0."""
         assert find_path_word_start_backward("/foo/bar", 0) == 0
+
+    def test_multiple_spaces_between_words(self):
+        """Multiple spaces between words are absorbed."""
+        # "foo   bar" from end returns 6 (before 'b', spaces absorbed)
+        assert find_path_word_start_backward("foo   bar", 9) == 6
