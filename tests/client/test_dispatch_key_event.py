@@ -90,13 +90,3 @@ class TestDispatchKeyEvent:
         result = await dispatch_key_event("n", table, mock_ctx, mock_app)
         assert result is True  # Key was handled
         mock_app.exit.assert_not_called()  # No exit on ConnectionError
-
-    @pytest.mark.asyncio
-    async def test_dispatch_normalizes_shift_letter_to_uppercase(
-        self, mock_ctx: MagicMock, mock_app: MagicMock
-    ) -> None:
-        """shift+j from renderer matches table entry keyed by J."""
-        table = {"J": "play_next_preset"}
-        result = await dispatch_key_event("shift+j", table, mock_ctx, mock_app)
-        assert result is True
-        mock_app.run_action.assert_awaited_once_with("play_next_preset")

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 from platyplaty.command_prompt_show import show_command_prompt
-from platyplaty.dispatch_tables import DispatchTable, normalize_key
+from platyplaty.dispatch_tables import DispatchTable
 from platyplaty.ui import CommandLine
 
 
@@ -38,7 +38,6 @@ async def dispatch_key_event(
     Returns:
         True if key was bound and action invoked, False otherwise.
     """
-    key = normalize_key(key)
     action_name = table.get(key)
     if action_name is None:
         return False

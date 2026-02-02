@@ -15,6 +15,7 @@ from platyplaty.messages import LogMessage
 from platyplaty.netstring_reader import read_netstrings_from_stderr
 from platyplaty.stderr_parser import parse_stderr_event
 from platyplaty.types import StderrEvent
+from platyplaty.dispatch_tables import normalize_key
 
 if TYPE_CHECKING:
     from platyplaty.app import PlatyplatyApp
@@ -58,8 +59,9 @@ async def _handle_stderr_event(
         msg = f"Audio error: {event.reason}, visualization continues silently"
         app.post_message(LogMessage(msg, level="warning"))
     elif event.event == "KEY_PRESSED":
-        char = event.key if len(event.key) == 1 else None
-        app.post_message(Key(key=event.key, character=char))
+        key = normalize_key(event.key)
+        char = key if len(key) == 1 else None
+        app.post_message(Key(key=key, character=char))
 
 
 async def stderr_monitor_task(ctx: "AppContext", app: "PlatyplatyApp") -> None:

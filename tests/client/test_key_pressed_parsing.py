@@ -90,3 +90,41 @@ class TestKeyPressedParsing:
         event = parse_stderr_event(line)
         assert event is not None
         assert event.event == "QUIT"
+
+
+from unittest.mock import AsyncMock, MagicMock, patch
+from textual.events import Key
+
+from platyplaty.event_loop import _handle_stderr_event
+from platyplaty.types import KeyPressedEvent
+
+
+class TestKeyPressedNormalization:
+    """Tests for KEY_PRESSED event normalization in event_loop."""
+
+    @pytest.fixture
+    def mock_ctx(self) -> MagicMock:
+        """Create a mock AppContext."""
+        ctx = MagicMock()
+        ctx.exiting = False
+        return ctx
+
+    @pytest.fixture
+    def mock_app(self) -> MagicMock:
+        """Create a mock PlatyplatyApp."""
+        app = MagicMock()
+        app.post_message = MagicMock()
+        return app
+
+    @pytest.mark.asyncio
+    async def test_shift_j_normalized_to_uppercase_J(
+        self, mock_ctx: MagicMock, mock_app: MagicMock
+    ) -> None:
+        """KEY_PRESSED with shift+j creates Key event with key='J'."""
+        event = KeyPressedEvent(event="KEY_PRESSED", key="shift+j")
+        await _handle_stderr_event(event, mock_ctx, mock_app)
+        mock_app.post_message.assert_called_once()
+        key_event = mock_app.post_message.call_args[0][0]
+        assert isinstance(key_event, Key)
+        assert key_event.key == "J"
+        assert key_event.character == "J"
