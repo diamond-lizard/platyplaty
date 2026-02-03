@@ -125,18 +125,18 @@ class TestCutWord:
         assert result.new_cursor == 0
         assert result.state_changed is False
 
-    def test_ctrl_w_unix_word_includes_slashes(self) -> None:
-        """Ctrl+W treats slashes as part of the word (unix word definition)."""
+    def test_ctrl_w_path_aware_slashes_are_boundaries(self) -> None:
+        """Ctrl+W treats slashes as word boundaries (path-aware)."""
         mode = EmacsEditingMode()
         state = PromptState("xyz foo/bar/baz.milk", 20)
         result = mode.handle_key("ctrl+w", None, state)
         assert result is not None
-        assert result.new_text == "xyz "
-        assert result.new_cursor == 4
-        assert mode.yank_buffer == "foo/bar/baz.milk"
+        assert result.new_text == "xyz foo/bar/"
+        assert result.new_cursor == 12
+        assert mode.yank_buffer == "baz.milk"
 
-    def test_ctrl_w_unix_word_includes_hyphens_underscores_dots(self) -> None:
-        """Ctrl+W treats hyphens, underscores, dots as part of word."""
+    def test_ctrl_w_path_component_includes_hyphens_underscores_dots(self) -> None:
+        """Ctrl+W keeps hyphens, underscores, dots within path component."""
         mode = EmacsEditingMode()
         state = PromptState("path my-file_name.txt", 21)
         result = mode.handle_key("ctrl+w", None, state)
@@ -158,6 +158,36 @@ class TestCutWord:
         state = PromptState("hello", 0)
         mode.handle_key("ctrl+w", None, state)
         assert mode._last_was_cut is True
+
+    def test_ctrl_w_path_aware_cuts_component(self) -> None:
+        """Ctrl+W cuts only the last path component."""
+        mode = EmacsEditingMode()
+        state = PromptState("/foo/bar/baz", 12)
+        result = mode.handle_key("ctrl+w", None, state)
+        assert result is not None
+        assert result.new_text == "/foo/bar/"
+        assert result.new_cursor == 9
+        assert mode.yank_buffer == "baz"
+
+    def test_ctrl_w_path_aware_absorbs_trailing_whitespace(self) -> None:
+        """Ctrl+W absorbs trailing whitespace with the cut."""
+        mode = EmacsEditingMode()
+        state = PromptState("/foo/bar/baz ", 13)
+        result = mode.handle_key("ctrl+w", None, state)
+        assert result is not None
+        assert result.new_text == "/foo/bar/"
+        assert result.new_cursor == 9
+        assert mode.yank_buffer == "baz "
+
+    def test_ctrl_w_path_aware_lone_slash(self) -> None:
+        """Ctrl+W treats lone slash after word as part of preceding word."""
+        mode = EmacsEditingMode()
+        state = PromptState("load /", 6)
+        result = mode.handle_key("ctrl+w", None, state)
+        assert result is not None
+        assert result.new_text == ""
+        assert result.new_cursor == 0
+        assert mode.yank_buffer == "load /"
 
     def test_alt_d_cuts_word_forward(self) -> None:
         """Alt+D cuts word forward from cursor."""
