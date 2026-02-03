@@ -48,12 +48,12 @@ def compute_ctrl_u(state: PromptState) -> CutResult:
 def compute_ctrl_w(state: PromptState) -> CutResult:
     """Compute result of Ctrl+W (cut previous word).
 
-    Uses unix word definition: only whitespace acts as a boundary.
+    Uses path-aware boundaries: slashes act as word separators.
     Returns CutResult with cut_text empty if no word before cursor.
     """
-    from platyplaty.ui.word_boundary import find_unix_word_start_backward
+    from platyplaty.ui.path_boundary import find_path_word_start_backward
 
-    target = find_unix_word_start_backward(state.text, state.cursor)
+    target = find_path_word_start_backward(state.text, state.cursor)
     if target == state.cursor:
         return CutResult("", state.text, state.cursor)
     cut_text = state.text[target:state.cursor]
