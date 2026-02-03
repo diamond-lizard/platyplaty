@@ -216,15 +216,15 @@ class TestCutWord:
         assert result.new_cursor == 5
         assert result.state_changed is False
 
-    def test_alt_d_alphanumeric_boundary(self) -> None:
-        """Alt+D uses alphanumeric word boundaries (punctuation is boundary)."""
+    def test_alt_d_path_aware_boundary(self) -> None:
+        """Alt+D uses path-aware boundaries (slashes are boundaries, hyphens are not)."""
         mode = EmacsEditingMode()
         state = PromptState("foo-bar baz", 0)
         result = mode.handle_key("alt+d", None, state)
         assert result is not None
-        # Only "foo" is cut, hyphen is a boundary
-        assert result.new_text == "-bar baz"
-        assert mode.yank_buffer == "foo"
+        # "foo-bar" is cut, hyphen is NOT a boundary but space is
+        assert result.new_text == " baz"
+        assert mode.yank_buffer == "foo-bar"
 
     def test_alt_d_sets_last_was_cut(self) -> None:
         """Alt+D sets last_was_cut flag for consecutive append."""
@@ -240,6 +240,37 @@ class TestCutWord:
         state = PromptState("hello", 5)
         mode.handle_key("alt+d", None, state)
         assert mode._last_was_cut is True
+
+
+    def test_alt_d_path_aware_excludes_trailing_slash(self) -> None:
+        """Alt+D cuts path component but excludes trailing slash."""
+        mode = EmacsEditingMode()
+        state = PromptState("/foo/bar", 1)
+        result = mode.handle_key("alt+d", None, state)
+        assert result is not None
+        # Cuts "foo" but NOT the trailing slash
+        assert result.new_text == "//bar"
+        assert mode.yank_buffer == "foo"
+
+    def test_alt_d_path_aware_absorbs_leading_whitespace(self) -> None:
+        """Alt+D absorbs leading whitespace and lone slash."""
+        mode = EmacsEditingMode()
+        state = PromptState(" /foo/bar", 0)
+        result = mode.handle_key("alt+d", None, state)
+        assert result is not None
+        # Cuts " /foo" (space + lone slash absorbed with component)
+        assert result.new_text == "/bar"
+        assert mode.yank_buffer == " /foo"
+
+    def test_alt_d_path_aware_word_before_path(self) -> None:
+        """Alt+D cuts word only, not the following path."""
+        mode = EmacsEditingMode()
+        state = PromptState("load /foo", 0)
+        result = mode.handle_key("alt+d", None, state)
+        assert result is not None
+        # Cuts only "load", not the path
+        assert result.new_text == " /foo"
+        assert mode.yank_buffer == "load"
 
     def test_escape_d_works_same_as_alt_d(self) -> None:
         """escape+d is equivalent to alt+d for terminal compatibility."""
