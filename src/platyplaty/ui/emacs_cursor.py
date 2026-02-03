@@ -6,8 +6,7 @@ PromptState and returns an EditResult with the new cursor position.
 """
 
 from platyplaty.ui.editing_mode import EditResult, PromptState
-from platyplaty.ui.path_boundary import find_path_component_start_backward
-from platyplaty.ui.word_boundary import find_word_end_forward
+from platyplaty.ui.path_boundary import find_path_component_start_backward, find_path_word_end_forward
 
 
 def handle_ctrl_a(state: PromptState) -> EditResult:
@@ -46,8 +45,8 @@ def handle_alt_b(state: PromptState) -> EditResult:
 
 
 def handle_alt_f(state: PromptState) -> EditResult:
-    """Move cursor forward one word."""
-    new_cursor = find_word_end_forward(state.text, state.cursor)
+    """Move cursor forward one path component."""
+    new_cursor = find_path_word_end_forward(state.text, state.cursor)
     moved = new_cursor != state.cursor
     return EditResult(state.text, new_cursor, moved)
 
