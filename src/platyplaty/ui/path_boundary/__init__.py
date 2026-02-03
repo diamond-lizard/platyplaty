@@ -8,14 +8,17 @@ Functions:
     find_path_word_start_backward: Backward cut boundary for Ctrl+W
     find_path_component_start_backward: Backward movement boundary for Alt+B
     find_path_word_end_forward: Forward movement boundary for Alt+F
+    find_path_cut_end_forward: Forward cut boundary for Alt+D
 """
 
 from .cut_backward import find_path_word_start_backward
 from .move_backward import find_path_component_start_backward
 from .move_forward import find_path_word_end_forward
+from .cut_forward import find_path_cut_end_forward
 
 __all__ = [
     "find_path_word_start_backward",
     "find_path_component_start_backward",
     "find_path_word_end_forward",
+    "find_path_cut_end_forward",
 ]
