@@ -210,13 +210,13 @@ class TestCursorMovementWord:
         assert result is not None
         assert result.new_cursor == 5
 
-    def test_alt_b_treats_hyphenated_as_two_words(self) -> None:
-        """Alt+B treats 'foo-bar' as two words (alphanumeric boundaries)."""
+    def test_alt_b_treats_hyphenated_as_one_component(self) -> None:
+        """Alt+B treats 'foo-bar' as one path component (path-aware boundaries)."""
         mode = EmacsEditingMode()
         state = PromptState("foo-bar", 7)
         result = mode.handle_key("alt+b", None, state)
         assert result is not None
-        assert result.new_cursor == 4  # Start of "bar"
+        assert result.new_cursor == 0  # Start of "foo-bar" (path component)
 
     def test_alt_f_treats_hyphenated_as_two_words(self) -> None:
         """Alt+F treats 'foo-bar' as two words (alphanumeric boundaries)."""
@@ -227,13 +227,13 @@ class TestCursorMovementWord:
         assert result.new_cursor == 3  # End of "foo"
 
     def test_alt_b_navigates_path_word_by_word(self) -> None:
-        """Alt+B navigates 'foo/bar/baz.milk' word by word."""
+        """Alt+B navigates 'foo/bar/baz.milk' path component by component."""
         mode = EmacsEditingMode()
-        # Start at end, should go to start of "milk"
+        # Start at end, should go to start of "baz.milk" (path component)
         state = PromptState("foo/bar/baz.milk", 16)
         result = mode.handle_key("alt+b", None, state)
         assert result is not None
-        assert result.new_cursor == 12  # Start of "milk"
+        assert result.new_cursor == 8  # Start of "baz.milk" (path component)
 
     def test_alt_f_navigates_path_word_by_word(self) -> None:
         """Alt+F navigates 'foo/bar/baz.milk' word by word."""
@@ -243,3 +243,41 @@ class TestCursorMovementWord:
         result = mode.handle_key("alt+f", None, state)
         assert result is not None
         assert result.new_cursor == 3  # End of "foo"
+
+    def test_alt_b_navigates_absolute_path(self) -> None:
+        """Alt+B navigates through absolute path landing at component starts."""
+        mode = EmacsEditingMode()
+        # /foo/bar/baz from end (pos 12) -> 9 (start of baz)
+        state = PromptState("/foo/bar/baz", 12)
+        result = mode.handle_key("alt+b", None, state)
+        assert result is not None
+        assert result.new_cursor == 9  # Start of "baz"
+        # Continue: 9 -> 5 (start of bar)
+        state = PromptState("/foo/bar/baz", 9)
+        result = mode.handle_key("alt+b", None, state)
+        assert result.new_cursor == 5  # Start of "bar"
+        # Continue: 5 -> 1 (start of foo)
+        state = PromptState("/foo/bar/baz", 5)
+        result = mode.handle_key("alt+b", None, state)
+        assert result.new_cursor == 1  # Start of "foo"
+        # Continue: 1 -> 0 (leading slash)
+        state = PromptState("/foo/bar/baz", 1)
+        result = mode.handle_key("alt+b", None, state)
+        assert result.new_cursor == 0  # Leading slash
+
+    def test_alt_b_mixed_content_with_spaces(self) -> None:
+        """Alt+B handles mixed content with spaces correctly."""
+        mode = EmacsEditingMode()
+        # "load /foo/bar" from end (pos 13) -> 10 (start of bar)
+        state = PromptState("load /foo/bar", 13)
+        result = mode.handle_key("alt+b", None, state)
+        assert result is not None
+        assert result.new_cursor == 10  # Start of "bar"
+        # Continue: 10 -> 6 (start of foo)
+        state = PromptState("load /foo/bar", 10)
+        result = mode.handle_key("alt+b", None, state)
+        assert result.new_cursor == 6  # Start of "foo"
+        # Continue: 6 -> 0 (start of load, skipping slash and space)
+        state = PromptState("load /foo/bar", 6)
+        result = mode.handle_key("alt+b", None, state)
+        assert result.new_cursor == 0  # Start of "load"
