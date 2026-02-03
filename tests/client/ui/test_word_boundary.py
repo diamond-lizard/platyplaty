@@ -13,7 +13,7 @@ from platyplaty.ui.word_boundary import (
     find_word_end_forward,
     find_unix_word_start_backward,
 )
-from platyplaty.ui.path_boundary import find_path_word_start_backward, find_path_component_start_backward, find_path_word_end_forward
+from platyplaty.ui.path_boundary import find_path_word_start_backward, find_path_component_start_backward, find_path_word_end_forward, find_path_cut_end_forward
 
 
 class TestFindWordStartBackward:
@@ -309,3 +309,47 @@ class TestFindPathWordEndForward:
         """Leading whitespace with lone slash from position 0 returns 2."""
         # " /foo/bar" from position 0 -> 2 (skip space, lone slash is own unit)
         assert find_path_word_end_forward(" /foo/bar", 0) == 2
+
+
+class TestFindPathCutEndForward:
+    """Tests for find_path_cut_end_forward function (Alt+D forward cut)."""
+
+    def test_from_start_cuts_word_only(self):
+        """From start of 'load /foo/bar' returns 4 (cuts 'load' only)."""
+        assert find_path_cut_end_forward("load /foo/bar", 0) == 4
+
+    def test_space_then_slash_cuts_through_component(self):
+        """From start of ' /foo/bar' returns 5 (cuts ' /foo')."""
+        assert find_path_cut_end_forward(" /foo/bar", 0) == 5
+
+    def test_slash_before_bar_cuts_slash_bar(self):
+        """From position 5 of ' /foo/bar' (at '/') returns 9 (cuts '/bar')."""
+        assert find_path_cut_end_forward(" /foo/bar", 5) == 9
+
+    def test_cursor_at_end_returns_cursor(self):
+        """Cursor at end returns cursor (no-op)."""
+        assert find_path_cut_end_forward("foo", 3) == 3
+
+    def test_empty_string_returns_zero(self):
+        """Empty string returns 0."""
+        assert find_path_cut_end_forward("", 0) == 0
+
+    def test_leading_slash_absorbed_with_component(self):
+        """From position 0 of '/foo/bar' returns 4 (cuts '/foo')."""
+        assert find_path_cut_end_forward("/foo/bar", 0) == 4
+
+    def test_consecutive_slashes_stops_before_them(self):
+        """From position 0 of 'foo//bar' returns 3 (cuts 'foo' only)."""
+        assert find_path_cut_end_forward("foo//bar", 0) == 3
+
+    def test_consecutive_slashes_from_slash_position(self):
+        """From position 3 of 'foo//bar' (at first slash) returns 8 (cuts '//bar')."""
+        assert find_path_cut_end_forward("foo//bar", 3) == 8
+
+    def test_trailing_slash_cuts_word_only(self):
+        """From position 0 of 'foo/' returns 3 (cuts 'foo')."""
+        assert find_path_cut_end_forward("foo/", 0) == 3
+
+    def test_trailing_slash_from_slash_position(self):
+        """From position 3 of 'foo/' returns 4 (cuts '/')."""
+        assert find_path_cut_end_forward("foo/", 3) == 4

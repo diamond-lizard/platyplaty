@@ -12,9 +12,9 @@ Functions:
 """
 
 from .cut_backward import find_path_word_start_backward
+from .cut_forward import find_path_cut_end_forward
 from .move_backward import find_path_component_start_backward
 from .move_forward import find_path_word_end_forward
-from .cut_forward import find_path_cut_end_forward
 
 __all__ = [
     "find_path_word_start_backward",
