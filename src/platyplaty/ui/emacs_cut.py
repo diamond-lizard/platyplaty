@@ -64,12 +64,12 @@ def compute_ctrl_w(state: PromptState) -> CutResult:
 def compute_alt_d(state: PromptState) -> CutResult:
     """Compute result of Alt+D (cut word forward).
 
-    Uses alphanumeric word definition: non-alphanumeric characters act as boundaries.
+    Uses path-aware boundaries: slashes act as word separators.
     Returns CutResult with cut_text empty if no word at or after cursor.
     """
-    from platyplaty.ui.word_boundary import find_word_end_forward
+    from platyplaty.ui.path_boundary import find_path_cut_end_forward
 
-    target = find_word_end_forward(state.text, state.cursor)
+    target = find_path_cut_end_forward(state.text, state.cursor)
     if target == state.cursor:
         return CutResult("", state.text, state.cursor)
     cut_text = state.text[state.cursor:target]
