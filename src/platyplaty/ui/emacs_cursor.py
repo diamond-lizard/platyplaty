@@ -6,7 +6,10 @@ PromptState and returns an EditResult with the new cursor position.
 """
 
 from platyplaty.ui.editing_mode import EditResult, PromptState
-from platyplaty.ui.path_boundary import find_path_component_start_backward, find_path_word_end_forward
+from platyplaty.ui.path_boundary import (
+    find_path_component_start_backward,
+    find_path_word_end_forward,
+)
 
 
 def handle_ctrl_a(state: PromptState) -> EditResult:

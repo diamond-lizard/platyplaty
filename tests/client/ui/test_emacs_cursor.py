@@ -218,13 +218,13 @@ class TestCursorMovementWord:
         assert result is not None
         assert result.new_cursor == 0  # Start of "foo-bar" (path component)
 
-    def test_alt_f_treats_hyphenated_as_two_words(self) -> None:
-        """Alt+F treats 'foo-bar' as two words (alphanumeric boundaries)."""
+    def test_alt_f_treats_hyphenated_as_one_component(self) -> None:
+        """Alt+F treats 'foo-bar' as one path component (path-aware boundaries)."""
         mode = EmacsEditingMode()
         state = PromptState("foo-bar", 0)
         result = mode.handle_key("alt+f", None, state)
         assert result is not None
-        assert result.new_cursor == 3  # End of "foo"
+        assert result.new_cursor == 7  # End of "foo-bar" (path component)
 
     def test_alt_b_navigates_path_word_by_word(self) -> None:
         """Alt+B navigates 'foo/bar/baz.milk' path component by component."""
@@ -236,13 +236,13 @@ class TestCursorMovementWord:
         assert result.new_cursor == 8  # Start of "baz.milk" (path component)
 
     def test_alt_f_navigates_path_word_by_word(self) -> None:
-        """Alt+F navigates 'foo/bar/baz.milk' word by word."""
+        """Alt+F navigates 'foo/bar/baz.milk' path component by component (path-aware boundaries)."""
         mode = EmacsEditingMode()
-        # Start at beginning, should go to end of "foo"
+        # Start at beginning, should go past "foo/" (path component)
         state = PromptState("foo/bar/baz.milk", 0)
         result = mode.handle_key("alt+f", None, state)
         assert result is not None
-        assert result.new_cursor == 3  # End of "foo"
+        assert result.new_cursor == 4  # End of "foo/" (includes trailing slash)
 
     def test_alt_b_navigates_absolute_path(self) -> None:
         """Alt+B navigates through absolute path landing at component starts."""
@@ -281,3 +281,37 @@ class TestCursorMovementWord:
         state = PromptState("load /foo/bar", 6)
         result = mode.handle_key("alt+b", None, state)
         assert result.new_cursor == 0  # Start of "load"
+
+    def test_alt_f_navigates_load_command_with_path(self) -> None:
+        """Alt+F navigates 'load /foo/bar' absorbing lone slash after word."""
+        mode = EmacsEditingMode()
+        # Start at beginning, should go past "load /" (absorbs lone slash)
+        state = PromptState("load /foo/bar", 0)
+        result = mode.handle_key("alt+f", None, state)
+        assert result is not None
+        assert result.new_cursor == 6  # After "load /"
+        # Continue: 6 -> 10 (after "foo/")
+        state = PromptState("load /foo/bar", 6)
+        result = mode.handle_key("alt+f", None, state)
+        assert result.new_cursor == 10  # After "foo/"
+        # Continue: 10 -> 13 (after "bar")
+        state = PromptState("load /foo/bar", 10)
+        result = mode.handle_key("alt+f", None, state)
+        assert result.new_cursor == 13  # After "bar"
+
+    def test_alt_f_leading_slash_is_own_unit(self) -> None:
+        """Alt+F from position 0 with leading slash moves to position 1."""
+        mode = EmacsEditingMode()
+        state = PromptState("/foo/bar", 0)
+        result = mode.handle_key("alt+f", None, state)
+        assert result is not None
+        assert result.new_cursor == 1  # After leading slash
+
+    def test_alt_f_trailing_whitespace_not_absorbed(self) -> None:
+        """Alt+F does not absorb trailing whitespace unless lone slash follows."""
+        mode = EmacsEditingMode()
+        # "foo   bar" from 0 should stop at 3 (end of foo, not absorbing spaces)
+        state = PromptState("foo   bar", 0)
+        result = mode.handle_key("alt+f", None, state)
+        assert result is not None
+        assert result.new_cursor == 3  # After "foo", not absorbing spaces
