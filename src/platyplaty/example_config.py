@@ -14,6 +14,11 @@ audio-source = "@DEFAULT_SINK@.monitor"
 # Start in fullscreen mode
 fullscreen = false
 
+# Transition type when loading presets
+# "soft" provides smooth blending between presets
+# "hard" provides instant switching
+transition-type = "hard"
+
 # Keybindings available in all sections.
 # Keys defined here work regardless of which section (file browser or playlist)
 # has focus.

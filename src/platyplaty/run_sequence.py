@@ -70,6 +70,7 @@ def run_startup_sequence(config: Config, path_argument: str | None) -> None:
         preset_duration=config.keybindings.playlist.preset_duration,
         fullscreen=config.renderer.fullscreen,
         keybindings=config.keybindings,
+        transition_type=config.renderer.transition_type,
     )
 
     # Create and run Textual app

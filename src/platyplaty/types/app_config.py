@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Application configuration dataclass for Platyplaty."""
 
+from typing import Literal
 from dataclasses import dataclass
 
 from platyplaty.types.keybindings import Keybindings
@@ -20,6 +21,7 @@ class AppConfig:
         preset_duration: Seconds to display each preset before advancing.
         fullscreen: Whether to start in fullscreen mode.
         keybindings: Keybindings for renderer, client, and file browser.
+        transition_type: Transition type for preset loading ("soft" or "hard").
     """
 
     socket_path: str
@@ -27,3 +29,4 @@ class AppConfig:
     preset_duration: float
     fullscreen: bool
     keybindings: Keybindings
+    transition_type: Literal["soft", "hard"]

@@ -23,6 +23,7 @@ def make_test_app() -> PlatyplatyApp:
         preset_duration=30.0,
         fullscreen=False,
         keybindings=Keybindings(),
+        transition_type="hard",
     )
     playlist = Playlist([])
     return PlatyplatyApp(config, playlist)

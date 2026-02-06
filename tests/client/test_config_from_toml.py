@@ -15,7 +15,10 @@ class TestConfigFromToml:
     def test_load_minimal_config(self, tmp_path: Path) -> None:
         """Load a minimal TOML config with all defaults."""
         config_file = tmp_path / "config.toml"
-        config_file.write_text("")
+        config_file.write_text(
+            "[renderer]\n"
+            'transition-type = "hard"\n'
+        )
         config = load_config(str(config_file))
         assert config.playlist is None
         assert config.keybindings.globals.quit == ["q"]
@@ -23,7 +26,11 @@ class TestConfigFromToml:
     def test_load_with_playlist_path(self, tmp_path: Path) -> None:
         """Load config with playlist path specified."""
         config_file = tmp_path / "config.toml"
-        config_file.write_text('playlist = "/home/user/my.platy"')
+        config_file.write_text(
+            'playlist = "/home/user/my.platy"\n'
+            "[renderer]\n"
+            'transition-type = "hard"\n'
+        )
         config = load_config(str(config_file))
         assert config.playlist == "/home/user/my.platy"
 
@@ -33,6 +40,7 @@ class TestConfigFromToml:
 [renderer]
 audio-source = "custom_source"
 fullscreen = true
+transition-type = "hard"
 '''
         config_file = tmp_path / "config.toml"
         config_file.write_text(toml_content)
@@ -43,6 +51,9 @@ fullscreen = true
     def test_load_with_global_keybindings(self, tmp_path: Path) -> None:
         """Load config with custom global keybindings."""
         toml_content = '''
+[renderer]
+transition-type = "hard"
+
 [keybindings.global]
 quit = ["ctrl+q", "escape"]
 '''
@@ -55,6 +66,9 @@ quit = ["ctrl+q", "escape"]
     def test_load_with_playlist_keybindings(self, tmp_path: Path) -> None:
         """Load config with custom playlist keybindings and duration."""
         toml_content = '''
+[renderer]
+transition-type = "hard"
+
 [keybindings.playlist]
 preset-duration = 60
 shuffle-playlist = ["r"]

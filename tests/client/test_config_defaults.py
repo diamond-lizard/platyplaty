@@ -14,14 +14,14 @@ class TestConfigDefaults:
 
     def test_config_empty_creates_defaults(self) -> None:
         """Empty config should create all defaults."""
-        config = Config()
+        config = Config(renderer={"transition-type": "hard"})
         assert config.playlist is None
         assert config.renderer.audio_source == "@DEFAULT_SINK@.monitor"
         assert config.renderer.fullscreen is False
 
     def test_keybindings_global_defaults(self) -> None:
         """Global keybindings should have correct defaults."""
-        config = Config()
+        config = Config(renderer={"transition-type": "hard"})
         kb = config.keybindings.globals
         assert kb.switch_focus == ["tab"]
         assert kb.quit == ["q"]
@@ -33,7 +33,7 @@ class TestConfigDefaults:
 
     def test_keybindings_file_browser_defaults(self) -> None:
         """File browser keybindings should have correct defaults."""
-        config = Config()
+        config = Config(renderer={"transition-type": "hard"})
         kb = config.keybindings.file_browser
         assert kb.open_parent == ["h", "left"]
         assert kb.add_preset_or_load_playlist == ["a"]
@@ -42,7 +42,7 @@ class TestConfigDefaults:
 
     def test_keybindings_playlist_defaults(self) -> None:
         """Playlist keybindings should have correct defaults."""
-        config = Config()
+        config = Config(renderer={"transition-type": "hard"})
         kb = config.keybindings.playlist
         assert kb.play_previous == ["K"]
         assert kb.play_next == ["J"]
@@ -55,6 +55,6 @@ class TestConfigDefaults:
 
     def test_keybindings_error_view_defaults(self) -> None:
         """Error view keybindings should have correct defaults."""
-        config = Config()
+        config = Config(renderer={"transition-type": "hard"})
         kb = config.keybindings.error_view
         assert kb.clear_errors == ["c"]

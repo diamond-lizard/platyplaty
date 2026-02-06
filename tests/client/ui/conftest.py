@@ -120,6 +120,7 @@ def minimal_app_context() -> AppContext:
         preset_duration=30.0,
         fullscreen=False,
         keybindings=Keybindings(),
+        transition_type="hard",
     )
     playlist = Playlist(presets=[])
     return AppContext(config=config, playlist=playlist)
