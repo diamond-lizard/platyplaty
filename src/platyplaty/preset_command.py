@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 async def send_load_preset(
     ctx: AppContext,
     path: Path | str,
-    transition_type: str = "hard",
+    transition_type: str,
 ) -> None:
     """Send LOAD PRESET command with crash tracking.
 
@@ -85,7 +85,7 @@ async def load_preset(
 
     # Send the load command with crash tracking
     try:
-        await send_load_preset(ctx, path)
+        await send_load_preset(ctx, path, ctx.config.transition_type)
         # Show window and set fullscreen on success
         assert ctx.client is not None
         await ctx.client.send_command("SHOW WINDOW")

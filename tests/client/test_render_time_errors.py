@@ -34,6 +34,7 @@ class TestManualPlaybackErrors:
         )
         ctx.renderer_process = MagicMock()
         ctx.renderer_process.returncode = None
+        ctx.config.transition_type = "hard"
 
         app = MagicMock()
         app.query_one = MagicMock(return_value=MagicMock())
@@ -63,6 +64,7 @@ class TestAutoplayErrors:
         )
         ctx.renderer_process = MagicMock()
         ctx.renderer_process.returncode = None
+        ctx.config.transition_type = "hard"
 
         with patch("platyplaty.autoplay_helpers.is_preset_playable", return_value=True):
             success, error = await load_preset(ctx, MagicMock(), Path("/test/preset.milk"))
@@ -90,6 +92,7 @@ class TestAutoplayErrors:
         ctx.client.send_command = mock_send_command
         ctx.renderer_process = MagicMock()
         ctx.renderer_process.returncode = None
+        ctx.config.transition_type = "hard"
 
         playlist = Playlist([
             Path("/test/preset1.milk"),

@@ -22,6 +22,7 @@ def mock_context() -> MagicMock:
     ctx.client.send_command = AsyncMock()
     ctx.renderer_process = MagicMock()
     ctx.renderer_process.returncode = None
+    ctx.config.transition_type = "hard"
     return ctx
 
 
