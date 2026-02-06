@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from platyplaty.app_context import AppContext
 
 
-async def send_load_preset(ctx: AppContext, path: Path | str) -> None:
+async def send_load_preset(ctx: AppContext, path: Path | str, transition_type: str = "hard") -> None:
     """Send LOAD PRESET command with crash tracking.
 
     This function sets ctx.preset_sent_to_renderer before sending the
@@ -30,10 +30,11 @@ async def send_load_preset(ctx: AppContext, path: Path | str) -> None:
     Args:
         ctx: Application context with client for sending commands.
         path: Preset file path (Path) or special URL like "idle://" (str).
+        transition_type: "soft" for smooth blending, "hard" for instant switch.
     """
     ctx.preset_sent_to_renderer = path
     assert ctx.client is not None, "Client must exist before loading preset"
-    await ctx.client.send_command("LOAD PRESET", path=str(path))
+    await ctx.client.send_command("LOAD PRESET", path=str(path), transition_type=transition_type)
 
 
 async def load_preset(

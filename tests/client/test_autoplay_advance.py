@@ -83,5 +83,5 @@ class TestAdvanceToNext:
         manager = AutoplayManager(mock_context, mock_app, preset_duration=30.0)
         await manager.advance_to_next()
         mock_context.client.send_command.assert_any_call(
-            "LOAD PRESET", path=str(b_milk)
+            "LOAD PRESET", path=str(b_milk), transition_type="hard"
         )
