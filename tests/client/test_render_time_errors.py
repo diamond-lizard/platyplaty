@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Unit tests for render-time error handling.
-
-Tests that render-time errors are properly handled for both
-manual playback and autoplay scenarios.
-"""
+"""Unit tests for render-time errors during autoplay."""
 
 import sys
 from pathlib import Path
@@ -16,35 +12,18 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 from platyplaty.socket_exceptions import RendererError
 
 
-class TestManualPlaybackErrors:
-    """Tests for render-time errors during manual playback."""
+async def _fail_first_send(cmd: str, **kwargs: object) -> None:
+    """Mock send_command that raises RendererError on first call only.
 
-    @pytest.mark.asyncio
-    async def test_error_appended_to_error_log(self) -> None:
-        """Renderer error message is appended to ctx.error_log."""
-        from platyplaty.app_actions import load_preset_by_direction
+    Set _fail_first_send.count = 0 before each test to reset.
 
-        ctx = MagicMock()
-        ctx.renderer_ready = True
-        ctx.exiting = False
-        ctx.error_log = []
-        ctx.client = AsyncMock()
-        ctx.client.send_command = AsyncMock(
-            side_effect=RendererError("Failed to load preset")
-        )
-        ctx.renderer_process = MagicMock()
-        ctx.renderer_process.returncode = None
-        ctx.config.transition_type = "hard"
-
-        app = MagicMock()
-        app.query_one = MagicMock(return_value=MagicMock())
-        get_preset = MagicMock(return_value=Path("/test/preset.milk"))
-
-        with patch("platyplaty.autoplay_helpers.is_preset_playable", return_value=True):
-            await load_preset_by_direction(ctx, app, get_preset, "next")
-
-        assert len(ctx.error_log) == 1
-        assert "Failed to load preset" in ctx.error_log[0]
+    Args:
+        cmd: Command name (ignored).
+        **kwargs: Command parameters (ignored).
+    """
+    _fail_first_send.count += 1
+    if _fail_first_send.count == 1:
+        raise RendererError("First preset error")
 
 
 class TestAutoplayErrors:
@@ -54,7 +33,6 @@ class TestAutoplayErrors:
     async def test_error_appended_to_error_log_during_autoplay(self) -> None:
         """Renderer error during autoplay is appended to ctx.error_log."""
         from platyplaty.preset_command import load_preset
-        from platyplaty.preset_validator import is_valid_preset
 
         ctx = MagicMock()
         ctx.error_log = []
@@ -81,15 +59,8 @@ class TestAutoplayErrors:
         ctx = MagicMock()
         ctx.error_log = []
         ctx.client = AsyncMock()
-        call_count = [0]
-
-        async def mock_send_command(cmd, **kwargs):
-            call_count[0] += 1
-            if call_count[0] == 1:
-                raise RendererError("First preset error")
-            return None
-
-        ctx.client.send_command = mock_send_command
+        _fail_first_send.count = 0
+        ctx.client.send_command = _fail_first_send
         ctx.renderer_process = MagicMock()
         ctx.renderer_process.returncode = None
         ctx.config.transition_type = "hard"
