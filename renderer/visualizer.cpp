@@ -38,7 +38,7 @@ void Visualizer::render_frame() {
     projectm_opengl_render_frame(m_handle);
 }
 
-PresetLoadResult Visualizer::load_preset(const std::string& path) {
+PresetLoadResult Visualizer::load_preset(const std::string& path, bool smooth_transition) {
     // Clear error buffer before attempting load
     m_error_buffer[0] = '\0';
 
@@ -56,7 +56,7 @@ PresetLoadResult Visualizer::load_preset(const std::string& path) {
     file.close();
 
     // Attempt to load the preset with smooth transition
-    projectm_load_preset_file(m_handle, path.c_str(), true);
+    projectm_load_preset_file(m_handle, path.c_str(), smooth_transition);
 
     // Check if callback captured an error
     if (m_error_buffer[0] != '\0') {

@@ -27,7 +27,7 @@ CommandType string_to_command_type(const std::string& cmd) {
 const std::set<std::string>& allowed_fields(CommandType type) {
     static const std::set<std::string> audio_fields = {"audio_source"};
     static const std::set<std::string> empty_fields = {};
-    static const std::set<std::string> preset_fields = {"path"};
+    static const std::set<std::string> preset_fields = {"path", "transition_type"};
     static const std::set<std::string> fullscreen_fields = {"enabled"};
 
     switch (type) {
@@ -52,6 +52,18 @@ std::string parse_preset_path(const nlohmann::json& j, Command& cmd) {
         return "LOAD PRESET requires 'path' string";
     }
     cmd.preset_path = j["path"].get<std::string>();
+    return "";
+}
+
+std::string parse_transition_type(const nlohmann::json& j, Command& cmd) {
+    if (!j.contains("transition_type") || !j["transition_type"].is_string()) {
+        return "LOAD PRESET requires 'transition_type' string";
+    }
+    const auto& val = j["transition_type"].get<std::string>();
+    if (val != "soft" && val != "hard") {
+        return "LOAD PRESET 'transition_type' must be 'soft' or 'hard'";
+    }
+    cmd.transition_type = val;
     return "";
 }
 
@@ -121,6 +133,9 @@ CommandParseResult parse_command(const std::string& json_str) {
             break;
         case CommandType::LOAD_PRESET:
             field_error = parse_preset_path(j, cmd);
+            if (field_error.empty()) {
+                field_error = parse_transition_type(j, cmd);
+            }
             break;
         case CommandType::SET_FULLSCREEN:
             field_error = parse_fullscreen(j, cmd);

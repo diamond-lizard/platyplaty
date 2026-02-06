@@ -35,7 +35,8 @@ def test_preset_path_matches_load_preset(
     resp = send_command(sock, {
         "command": "LOAD PRESET",
         "id": 10,
-        "path": preset
+        "path": preset,
+        "transition_type": "hard"
     })
     assert resp.get("success"), f"LOAD PRESET failed: {resp}"
     resp = send_command(sock, {"command": "GET STATUS", "id": 11})
@@ -54,14 +55,16 @@ def test_preset_path_unchanged_after_failed_load(
     resp = send_command(sock, {
         "command": "LOAD PRESET",
         "id": 10,
-        "path": good_preset
+        "path": good_preset,
+        "transition_type": "hard"
     })
     assert resp.get("success"), f"LOAD PRESET failed: {resp}"
     bad_preset = "/nonexistent/path/to/preset.milk"
     resp = send_command(sock, {
         "command": "LOAD PRESET",
         "id": 11,
-        "path": bad_preset
+        "path": bad_preset,
+        "transition_type": "hard"
     })
     assert not resp.get("success"), "LOAD PRESET should fail for bad path"
     resp = send_command(sock, {"command": "GET STATUS", "id": 12})

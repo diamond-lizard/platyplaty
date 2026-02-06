@@ -26,6 +26,7 @@ struct Command {
     std::optional<int> id{std::nullopt};
     std::string audio_source{};
     std::string preset_path{};
+    std::string transition_type{};
     bool fullscreen_enabled{false};
 };
 

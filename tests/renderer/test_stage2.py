@@ -82,7 +82,8 @@ def _send_preset_and_show(sock: socket.socket) -> None:
         resp = send_command(sock, {
             "command": "LOAD PRESET",
             "id": 3,
-            "path": os.path.abspath(preset)
+            "path": os.path.abspath(preset),
+            "transition_type": "hard"
         })
         assert resp.get("success"), f"LOAD PRESET failed: {resp}"
     resp = send_command(sock, {"command": "SHOW WINDOW", "id": 4})

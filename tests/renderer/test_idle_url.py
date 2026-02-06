@@ -23,7 +23,8 @@ def test_idle_url_load_succeeds(
     resp = send_command(sock, {
         "command": "LOAD PRESET",
         "id": 10,
-        "path": "idle://"
+        "path": "idle://",
+        "transition_type": "hard"
     })
     assert resp.get("success"), f"LOAD PRESET idle:// failed: {resp}"
     sock.close()
@@ -38,7 +39,8 @@ def test_idle_url_sets_preset_path(
     send_command(sock, {
         "command": "LOAD PRESET",
         "id": 10,
-        "path": "idle://"
+        "path": "idle://",
+        "transition_type": "hard"
     })
     resp = send_command(sock, {"command": "GET STATUS", "id": 11})
     assert resp.get("success"), f"GET STATUS failed: {resp}"
@@ -56,12 +58,14 @@ def test_idle_url_after_real_preset(
     send_command(sock, {
         "command": "LOAD PRESET",
         "id": 10,
-        "path": preset
+        "path": preset,
+        "transition_type": "hard"
     })
     send_command(sock, {
         "command": "LOAD PRESET",
         "id": 11,
-        "path": "idle://"
+        "path": "idle://",
+        "transition_type": "hard"
     })
     resp = send_command(sock, {"command": "GET STATUS", "id": 12})
     assert resp.get("success"), f"GET STATUS failed: {resp}"

@@ -28,7 +28,8 @@ Response handle_command(
             resp.error = "relative path not allowed: " + cmd.preset_path;
             break;
         }
-        auto result = viz.load_preset(cmd.preset_path);
+        const bool smooth = (cmd.transition_type == "soft");
+        auto result = viz.load_preset(cmd.preset_path, smooth);
         resp.success = result.success;
         if (result.success) {
             resp.data = nlohmann::json::object();

@@ -41,7 +41,7 @@ public:
     void render_frame();
 
     // Load preset from file path. Returns success/failure with error.
-    PresetLoadResult load_preset(const std::string& path);
+    PresetLoadResult load_preset(const std::string& path, bool smooth_transition);
 
     // Add audio samples for visualization. Samples must be
     // interleaved stereo float32. Count is samples per channel.
