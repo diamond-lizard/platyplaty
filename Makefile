@@ -19,7 +19,7 @@ SDL2_LIBS := $(shell pkg-config --libs sdl2)
 PULSE_CFLAGS := $(shell pkg-config --cflags libpulse)
 PULSE_LIBS := $(shell pkg-config --libs libpulse)
 
-CFLAGS := $(CXXFLAGS) $(PROJECTM_CFLAGS) $(SDL2_CFLAGS) $(PULSE_CFLAGS)
+CFLAGS := $(CXXFLAGS) -MMD -MP $(PROJECTM_CFLAGS) $(SDL2_CFLAGS) $(PULSE_CFLAGS)
 LDFLAGS := $(PROJECTM_LIBS) $(SDL2_LIBS) $(PULSE_LIBS)
 
 
@@ -30,6 +30,7 @@ BUILD_DIR := build
 # Source files
 SOURCES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJECTS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
+DEPS := $(OBJECTS:.o=.d)
 
 # Target binary
 TARGET := $(BUILD_DIR)/platyplaty-renderer
@@ -78,3 +79,6 @@ ruff-fix:
 
 test: ruff mypy
 	uv run pytest -x tests/
+
+# Include auto-generated header dependencies
+-include $(DEPS)
