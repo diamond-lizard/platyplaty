@@ -63,6 +63,7 @@ def run_startup_sequence(config: Config, path_argument: str | None) -> None:
     except RendererNotFoundError as e:
         raise StartupError(str(e)) from None
 
+    assert config.renderer.transition_type is not None
     # Create AppConfig with computed socket_path and config values
     app_config = AppConfig(
         socket_path=socket_path,
