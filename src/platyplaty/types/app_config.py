@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Application configuration dataclass for Platyplaty."""
 
-from typing import Literal
 from dataclasses import dataclass
+from typing import Literal
 
 from platyplaty.types.keybindings import Keybindings
 
