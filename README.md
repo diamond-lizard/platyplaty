@@ -50,7 +50,7 @@ make renderer
 Generate an example configuration file:
 
 ```bash
-python -m platyplaty --generate-config ~/.config/platyplaty.toml
+bin/platyplaty --generate-config ~/.config/platyplaty.toml
 ```
 
 Use `-` to print the example config to stdout instead of writing a file.
@@ -67,14 +67,14 @@ The config file (`conf/platyplaty-conf.toml` has an annotated example) controls:
 ## Running
 
 ```bash
-python -m platyplaty --config-file ~/.config/platyplaty.toml [path]
+bin/platyplaty --config-file ~/.config/platyplaty.toml [path]
 ```
 
 The optional `path` argument can be a directory to open in the file browser or
 a `.platy` playlist file to load at startup.
 
-A shell wrapper is also provided in `bin/platyplaty`; symlink it somewhere on
-your `PATH` and run `platyplaty` directly.
+Symlink `bin/platyplaty` into a directory on
+your `PATH` to run it from anywhere.
 
 ## Terminal UI
 
