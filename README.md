@@ -1,6 +1,6 @@
 # Platyplaty
 
-A music visualizer that pairs a C++ renderer (libprojectM + SDL2 + PulseAudio)
+A music visualizer that pairs a C++ renderer ([libprojectM](https://github.com/projectM-visualizer/projectm) + SDL2 + PulseAudio)
 with a Python terminal UI for browsing presets and managing playlists.
 
 ## How It Works
