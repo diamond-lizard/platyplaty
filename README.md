@@ -86,32 +86,32 @@ The TUI has three areas:
 
 ### Default Keybindings
 
-| Key | Scope | Action |
-|-----|-------|--------|
-| `tab` | global | switch focus between file browser and playlist |
-| `j`/`down` | global | move selection down |
-| `k`/`up` | global | move selection up |
-| `enter` | global | play the selected preset |
-| `l`/`right` | global | enter directory / open in editor |
-| `e` | global | view error log |
-| `q` | global | quit |
-| `h`/`left` | file browser | go to parent directory |
-| `a` | file browser | add preset to playlist (or load a `.platy` file) |
-| `shift+j` | file browser | skip to next `.milk` file and play |
-| `shift+k` | file browser | skip to previous `.milk` file and play |
-| `space` | playlist | toggle autoplay |
-| `shift+j` | playlist | play next preset |
-| `shift+k` | playlist | play previous preset |
-| `ctrl+j` | playlist | move selected item down |
-| `ctrl+k` | playlist | move selected item up |
-| `shift+d`/`delete` | playlist | remove preset from playlist |
-| `u` | playlist | undo |
-| `ctrl+r` | playlist | redo |
-| `ctrl+s` | playlist | save playlist |
-| `s` | playlist | shuffle playlist |
-| `pageup`/`pagedown` | playlist | page up / page down |
-| `home`/`end` | playlist | jump to first / last preset |
-| `c` | error view | clear errors |
+| Key                 | Scope        | Action                                           |
+|---------------------|--------------|--------------------------------------------------|
+| `tab`               | global       | switch focus between file browser and playlist   |
+| `j`/`down`          | global       | move selection down                              |
+| `k`/`up`            | global       | move selection up                                |
+| `enter`             | global       | play the selected preset                         |
+| `l`/`right`         | global       | enter directory / open in editor                 |
+| `e`                 | global       | view error log                                   |
+| `q`                 | global       | quit                                             |
+| `h`/`left`          | file browser | go to parent directory                           |
+| `a`                 | file browser | add preset to playlist (or load a `.platy` file) |
+| `shift+j`           | file browser | skip to next `.milk` file and play               |
+| `shift+k`           | file browser | skip to previous `.milk` file and play           |
+| `space`             | playlist     | toggle autoplay                                  |
+| `shift+j`           | playlist     | play next preset                                 |
+| `shift+k`           | playlist     | play previous preset                             |
+| `ctrl+j`            | playlist     | move selected item down                          |
+| `ctrl+k`            | playlist     | move selected item up                            |
+| `shift+d`/`delete`  | playlist     | remove preset from playlist                      |
+| `u`                 | playlist     | undo                                             |
+| `ctrl+r`            | playlist     | redo                                             |
+| `ctrl+s`            | playlist     | save playlist                                    |
+| `s`                 | playlist     | shuffle playlist                                 |
+| `pageup`/`pagedown` | playlist     | page up / page down                              |
+| `home`/`end`        | playlist     | jump to first / last preset                      |
+| `c`                 | error view   | clear errors                                     |
 
 All keybindings are reconfigurable in the TOML config file.
 
@@ -119,13 +119,13 @@ All keybindings are reconfigurable in the TOML config file.
 
 Type `:` to open the command prompt (supports Emacs-style editing):
 
-| Command | Description |
-|---------|-------------|
-| `:load <path>` | load a `.platy` playlist file |
-| `:save [path]` | save the current playlist |
-| `:clear` | clear the playlist |
-| `:shuffle` | randomize playlist order |
-| `:cd [path]` | change the file browser directory |
+| Command        | Description                       |
+|----------------|-----------------------------------|
+| `:load <path>` | load a `.platy` playlist file     |
+| `:save [path]` | save the current playlist         |
+| `:clear`       | clear the playlist                |
+| `:shuffle`     | randomize playlist order          |
+| `:cd [path]`   | change the file browser directory |
 
 ## Playlists
 
@@ -140,12 +140,12 @@ make clean
 
 ## Make Targets
 
-| Target | Description |
-|--------|-------------|
-| `make renderer` | build the C++ renderer |
-| `make clean` | remove build artifacts |
-| `make test` | run ruff, mypy, then pytest |
-| `make test-renderer` | run cppcheck + renderer tests |
-| `make ruff` | lint Python source with ruff |
-| `make mypy` | type-check Python source with mypy |
-| `make cppcheck-renderer` | run cppcheck on renderer source |
+| Target                   | Description                        |
+|--------------------------|------------------------------------|
+| `make renderer`          | build the C++ renderer             |
+| `make clean`             | remove build artifacts             |
+| `make test`              | run ruff, mypy, then pytest        |
+| `make test-renderer`     | run cppcheck + renderer tests      |
+| `make ruff`              | lint Python source with ruff       |
+| `make mypy`              | type-check Python source with mypy |
+| `make cppcheck-renderer` | run cppcheck on renderer source    |
